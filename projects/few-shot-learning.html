@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feature Extractors for Few-Shot Learning — Yiming Cao</title>
+<meta name="description" content="ResNet, DenseNet and ConvNeXt as feature extractors for Prototypical Networks on CUB — with an interactive prototype classifier, real training curves, and the ideas that failed first.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/project.css">
+<script defer src="../assets/js/site.js"></script>
+<script defer src="../assets/js/fsl-runs.js"></script>
+<script defer src="../assets/js/proto-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>Yiming Cao</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">Work</a>
+      <a href="../index.html#about">About</a>
+      <a href="mailto:caoyimingeric@gmail.com">Contact</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle colour theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      All work
+    </a>
+    <p class="eyebrow">Deep learning · solo research project</p>
+    <h1>Which backbone should a few-shot classifier trust?</h1>
+    <p class="lede">
+      Prototypical Networks classify by distance to a class mean in feature space, which means
+      the feature extractor is the whole model. I trained ResNet-18, DenseNet-121 and ConvNeXt-T
+      from scratch as extractors for 5-way 5-shot classification on CUB, ran an ablation on
+      augmentation, and documented the two improvements to the classifier I tried first —
+      neither of which worked.
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../assets/files/fsl-report.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Read the report
+      </a>
+      <a class="btn" href="#walkthrough">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Watch the walkthrough
+      </a>
+      <a class="btn" href="../assets/files/fsl-notebook.ipynb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        The notebook
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>Type</dt><dd>Course research project</dd></div>
+      <div><dt>Context</dt><dd>EECE 570, UBC</dd></div>
+      <div><dt>Date</dt><dd>April 2023</dd></div>
+      <div><dt>Team</dt><dd>Solo</dd></div>
+      <div><dt>Stack</dt><dd>PyTorch, torchvision, easyfsl, Colab GPU</dd></div>
+      <div><dt>Setting</dt><dd>5-way · 5-shot · 5-query · CUB-200</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PLAYGROUND ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-proto-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">The classifier, in two dimensions</h2>
+        <p class="lab__note">
+          Algorithm 1 from the report, run live: prototypes are the mean of each class's support
+          features, and every query goes to the nearest one. Drag any filled point.
+        </p>
+      </div>
+
+      <div class="proto-grid">
+        <div>
+          <canvas data-proto-canvas aria-label="A 2-D prototypical network: support points, class prototypes, decision regions and classified queries"></canvas>
+          <div class="proto-legend" data-proto-legend></div>
+        </div>
+        <div class="proto-controls">
+          <div class="proto-field">
+            <label for="proto-n">Ways (classes)</label>
+            <select id="proto-n" data-proto-n>
+              <option value="3" selected>3-way</option>
+              <option value="5">5-way</option>
+            </select>
+          </div>
+          <div class="proto-field">
+            <label for="proto-k">Shots (support per class)</label>
+            <select id="proto-k" data-proto-k>
+              <option value="1">1-shot</option>
+              <option value="5" selected>5-shot</option>
+              <option value="10">10-shot</option>
+            </select>
+          </div>
+          <button class="btn" type="button" data-proto-resample>Sample a new episode</button>
+          <label class="proto-toggle">
+            <input type="checkbox" data-proto-outlier>
+            <span>
+              Inject an unrepresentative support example into class 1
+              <small>A plain mean has no way to discount it. The prototype is dragged toward it, the boundary moves, and queries start falling on the wrong side. This is the failure Appendix B was aimed at.</small>
+            </span>
+          </label>
+          <div class="lab__readout" style="grid-template-columns:1fr 1fr">
+            <div><span>query accuracy</span><b data-out-acc>—</b></div>
+            <div><span>prototype shift</span><b data-out-shift>—</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:70ch">
+      In the real model the points live in a 512- or 1024-dimensional space produced by a CNN, not
+      on a plane — but the arithmetic is identical, and so is the weakness. Try 1-shot: with a
+      single support example per class, the prototype <em>is</em> that example, noise and all.
+    </p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The setup</h2>
+      <p>
+        Few-shot classification asks a model to recognise new categories from a handful of
+        labelled examples — five images per class, say, of bird species it has never seen. The
+        standard formulation is episodic: each training step samples <em>N</em> classes, gives
+        the model <em>K</em> labelled images per class (the support set) and asks it to classify
+        <em>Q</em> more (the query set). Here <em>N</em> = <em>K</em> = <em>Q</em> = 5, with 500
+        episodes per epoch sampled from CUB-200's training split and 50 from its validation split.
+      </p>
+      <p>
+        Prototypical Networks are the simplest thing that works: push support and query images
+        through a CNN, average each class's support features into a prototype, and classify a
+        query by which prototype is nearest. There is no classification head to learn. The CNN is
+        the entire model, which makes "which CNN?" the entire question.
+      </p>
+      <div class="callout">
+        <p>
+          <strong>One choice worth flagging.</strong> All three backbones were trained from
+          random initialisation — <code>resnet18()</code>, not
+          <code>resnet18(weights=…)</code>. That makes the absolute accuracies lower than
+          you'd see with ImageNet-pretrained features, and makes the comparison between
+          architectures cleaner: nothing is inherited.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>What the three backbones did</h2>
+      <p>
+        Test accuracy per epoch for a single training run of each, straight from the notebook's
+        logs. Hover for values. The report's headline numbers below average ten runs.
+      </p>
+    </div>
+
+    <div class="curves reveal" data-curves>
+      <div class="curves__head">
+        <div class="curves__legend">
+          <span><i style="background:#2a78d6"></i>ResNet-18</span>
+          <span><i style="background:#eb6834"></i>DenseNet-121</span>
+          <span><i style="background:#1baf7a"></i>ConvNeXt-T</span>
+        </div>
+        <label class="proto-toggle" style="font-size:.84rem">
+          <input type="checkbox" data-curves-noaug>
+          <span>Overlay the runs without data augmentation (dashed)</span>
+        </label>
+      </div>
+      <canvas data-curves-canvas aria-label="Test accuracy against epoch for three backbones"></canvas>
+      <div class="curves__tip" data-curves-tip hidden></div>
+    </div>
+
+    <div class="table-wrap reveal" style="margin-top:2.25rem">
+      <table class="data-table">
+        <caption>Reported results (Table 1 of the report): mean ± s.d. over 10 runs, 100 epochs, Adam 1e-3. Training time is per 100 epochs on a Colab GPU.</caption>
+        <thead>
+          <tr><th scope="col">Backbone</th><th scope="col">Accuracy</th><th scope="col">Training time</th><th scope="col">Without augmentation</th><th scope="col">Drop</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">ResNet-18</th><td>81.84 ±1.2 %</td><td>1 h</td><td>69.28 %</td><td class="delta">−12.56</td></tr>
+          <tr><th scope="row">DenseNet-121</th><td class="delta delta--big">83.76 ±0.9 %</td><td>2 h</td><td>74.56 %</td><td class="delta">−8.80</td></tr>
+          <tr><th scope="row">ConvNeXt-T</th><td>78.56 ±1.5 %</td><td>2.5 h</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>Reading it</h3>
+      <p>
+        <strong>ResNet-18</strong> is the workhorse for a reason: best accuracy per hour by a
+        wide margin, and the most stable curve. <strong>DenseNet-121</strong> edges it on
+        accuracy — two points, outside the error bars — and loses far less when augmentation is
+        removed (−8.8 vs −12.6), which is the signature of a model that generalises from less.
+        The cost is that it trains twice as slowly despite having fewer parameters; the dense
+        connections mean every layer sees every earlier feature map, and the activations, not the
+        weights, are what you pay for.
+      </p>
+      <p>
+        <strong>ConvNeXt-T</strong> underperformed its own predecessor. The report's reading is
+        that its 7×7 kernels widen the receptive field at the cost of local detail, and a
+        distance-based classifier on a small dataset needs exactly the detail being averaged away.
+        A modern architecture tuned for ImageNet-scale data is not automatically a better
+        architecture for 25 images per episode.
+      </p>
+      <p>
+        The ablation settles one question cleanly: augmentation is not optional here. Removing
+        it costs 9 to 13 points — larger than the gap between any two backbones.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHAT FAILED ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>What I tried first, and why it didn't work</h2>
+      <p>
+        The original plan was not a backbone comparison. It was to improve the classifier. Two
+        ideas made it to implementation before I understood why they couldn't work as stated;
+        both are in the report's appendix, and I think they belong on this page too.
+      </p>
+
+      <h3>Kernelised prototypes</h3>
+      <p>
+        Nearest-prototype classification is a linear decision rule in feature space. If classes
+        aren't linearly separable there, the classical fix is a kernel — map to a higher dimension
+        where they are. The flaw: a CNN's output features already sit in 512 or more dimensions.
+        Linear inseparability is not the bottleneck at that width, so a kernel has nothing to
+        add. If anything the useful direction is the opposite — a smaller, sharper feature space.
+      </p>
+
+      <h3>Attention-weighted prototypes</h3>
+      <p>
+        A plain mean treats every support example as equally trustworthy. With five examples per
+        class, one bad one moves the prototype a fifth of the way toward wherever it sits — the
+        figure at the top of this page shows exactly that. The idea was to weight support
+        features by their similarity to the queries, borrowing the transformer's
+        <em>softmax(QKᵀ/√d)·V</em>, with queries as Q, prototypes as K and support features as V.
+      </p>
+      <p>
+        The flaw: in the transformer the three matrices share a dimension by construction. Here
+        they don't — there are <em>N</em> prototypes, <em>N·K</em> support features and
+        <em>N·Q</em> queries — so the formula can't be applied as written. It needs a
+        differently-shaped attention, which is a real research problem rather than a course
+        project, and I said so instead of forcing it.
+      </p>
+
+      <div class="callout">
+        <p>
+          <strong>Why keep the failures.</strong> The pivot from "improve the classifier" to
+          "characterise the extractor" happened because the first two ideas were understood well
+          enough to rule out, not because they were abandoned. Knowing why the obvious fix
+          doesn't apply is most of what I took from this project.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CODE ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The model, in full</h2>
+      <p>
+        The entire classifier is one module. The backbone's classification head is replaced with
+        <code>nn.Flatten()</code> so it emits raw features; prototypes are class means; the
+        output is negative Euclidean distance, which cross-entropy turns into a softmax over
+        classes.
+      </p>
+      <pre><code>class PrototNet(nn.Module):
+    def __init__(self, FE):
+        super().__init__()
+        self.FE = FE                              # any torchvision backbone, head removed
+
+    def forward(self, images_K, labels_K, images_Q):
+        features_K = self.FE(images_K)            # support features, (N*K, D)
+        features_Q = self.FE(images_Q)            # query features,   (N*Q, D)
+
+        prototypes = torch.stack([               # one mean per class -> (N, D)
+            features_K[labels_K == c].mean(0)
+            for c in labels_K.unique()
+        ])
+        return -torch.cdist(features_Q, prototypes)   # logits: nearer is likelier
+
+FE = resnet18()                                   # from scratch: no weights=
+FE.fc = nn.Flatten()                              # emit features, not classes
+model = PrototNet(FE).cuda()
+
+# one episode:
+loss = nn.CrossEntropyLoss()(model(x_K, y_K, x_Q), y_Q)</code></pre>
+      <p style="font-size:.85rem;color:var(--text-faint)">
+        Lightly tidied from the notebook — the original builds the prototype tensor with a loop
+        and <code>torch.cat</code>; this is the same computation.
+      </p>
+      <p>
+        Episodes are sampled with <code>easyfsl</code>'s <code>TaskSampler</code>, which
+        handles the N-way K-shot bookkeeping. Everything else — training loop, evaluation,
+        augmentation pipelines, the three backbone swaps and the ablation — is in the
+        notebook.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIDEO ============ -->
+<section class="section--tight" id="walkthrough">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Recorded walkthrough</h2>
+      <p>A four-and-a-half minute narrated walk through the report, recorded at submission.</p>
+    </div>
+    <div class="video-frame reveal">
+      <video controls preload="metadata" poster="../assets/img/fsl/walkthrough-poster.jpg">
+        <source src="../assets/files/fsl-walkthrough.mp4" type="video/mp4">
+        Your browser can't play this video.
+        <a href="../assets/files/fsl-walkthrough.mp4">Download it instead.</a>
+      </video>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The report</h2>
+      <p>
+        Nine pages, NeurIPS format.
+        <a href="../assets/files/fsl-report.pdf" target="_blank" rel="noopener">Open it in its own tab ↗</a>
+      </p>
+    </div>
+    <object class="pdf-embed" data="../assets/files/fsl-report.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>Your browser can't display the PDF inline.</p>
+        <a class="btn btn--primary" href="../assets/files/fsl-report.pdf" target="_blank" rel="noopener">Open the report (PDF, 9 pp.)</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose"><h2>Everything, in its original form</h2></div>
+    <div class="artifacts">
+      <a class="artifact" href="../assets/files/fsl-report.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>Project report ↗</strong><span>9 pages · PDF · with appendix of failed ideas</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/fsl-notebook.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>Training notebook</strong><span>Jupyter · model, loops, all five runs with logs</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/fsl-walkthrough.mp4">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <span><strong>Recorded walkthrough</strong><span>MP4 · 4:45 · 12 MB</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>Credits</h2>
+      <div class="credits">
+        <h3>Solo project</h3>
+        <p>
+          Topic, implementation, experiments, report and recording by Yiming Cao, April 2023.
+          The interactive figures on this page were built afterwards and are not part of the
+          original submission.
+        </p>
+      </div>
+
+      <h3>Built on</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>J. Snell, K. Swersky, R. Zemel. <em>Prototypical Networks for Few-shot Learning.</em> NeurIPS 2017.</li>
+        <li>C. Wah et al. <em>The Caltech-UCSD Birds-200-2011 Dataset.</em> Caltech, 2011.</li>
+        <li>Y. Bendou et al. <em>EASY: Ensemble Augmented-Shot Y-shaped Learning.</em> arXiv:2201.09699, 2022 — and the <code>easyfsl</code> library.</li>
+        <li>K. He et al., <em>Deep Residual Learning</em> (CVPR 2016); G. Huang et al., <em>Densely Connected Convolutional Networks</em> (CVPR 2017); Z. Liu et al., <em>A ConvNet for the 2020s</em> (CVPR 2022).</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> Yiming Cao</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">Email</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
