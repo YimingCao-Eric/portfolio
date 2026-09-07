@@ -371,3 +371,16 @@
 .bar__fill--stack { background: var(--accent); }
 .bar__val { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
 .bar--best .bar__val { color: var(--accent-text); }
+
+/* ---------- k-means vs GMM playground ---------- */
+.gmm-grid { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; }
+@media (max-width: 640px) { .gmm-grid { grid-template-columns: 1fr; } }
+.gmm-grid canvas { width: 100%; display: block; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--bg-sunken); }
+.gmm-controls { display: grid; gap: 1rem; grid-template-columns: auto 1fr auto auto; align-items: center; margin-top: 1.25rem; }
+@media (max-width: 700px) { .gmm-controls { grid-template-columns: 1fr 1fr; } }
+.gmm-field { display: grid; gap: .3rem; }
+.gmm-field label { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
+.gmm-field select { font: inherit; font-size: .88rem; padding: .42rem .6rem; border-radius: var(--r-sm); border: 1px solid var(--border-strong); background: var(--bg-elev); color: var(--text); }
+.gmm-field input[type=range] { width: 100%; accent-color: var(--accent); }
+.gmm-legend { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; font-size: .78rem; color: var(--text-faint); margin-top: .8rem; }
+.gmm-legend b { font-weight: 500; color: var(--text-soft); }

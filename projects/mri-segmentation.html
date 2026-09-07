@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unsupervised Brain Tumour Segmentation — Yiming Cao</title>
+<meta name="description" content="k-means versus a hand-written GMM-EM for unsupervised brain tumour segmentation on BraTS 2018 — with a live side-by-side of both algorithms and the small-tumour failure they share.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/project.css">
+<script defer src="../assets/js/site.js"></script>
+<script defer src="../assets/js/gmm-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>Yiming Cao</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">Work</a>
+      <a href="../index.html#about">About</a>
+      <a href="mailto:caoyimingeric@gmail.com">Contact</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle colour theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      All work
+    </a>
+    <p class="eyebrow">Medical imaging · unsupervised learning</p>
+    <h1>Finding a tumour with no labels</h1>
+    <p class="lede">
+      Brain-tumour segmentation on BraTS 2018 using nothing but clustering: k-means, and a Gaussian
+      mixture model fit by an EM algorithm written from scratch in PyTorch and run on the GPU over
+      nine million voxels at a time. On six of ten patients both hit a Dice score around 0.9. On
+      the other four they showed exactly where unsupervised methods break — and one of those
+      breaks needed a human in the loop to paper over.
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../assets/files/segmentation-report.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Read the paper
+      </a>
+      <a class="btn" href="../assets/files/segmentation-notebook.ipynb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        The notebook
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>Type</dt><dd>Course research paper</dd></div>
+      <div><dt>Context</dt><dd>EECE 562, UBC</dd></div>
+      <div><dt>Date</dt><dd>December 2022</dd></div>
+      <div><dt>Team</dt><dd>2 authors</dd></div>
+      <div><dt>Stack</dt><dd>PyTorch (GPU), NumPy, scikit-learn, nibabel</dd></div>
+      <div><dt>Data</dt><dd>BraTS 2018 · 10 patients · 4 modalities</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PLAYGROUND ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-gmm-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">k-means and EM, side by side</h2>
+        <p class="lab__note">
+          Synthetic tissue populations of very different size and shape — the situation voxel
+          intensities put you in. Same points, same K, GMM initialised from the k-means centroids
+          exactly as the project did. Ringed points are the true tumour.
+        </p>
+      </div>
+
+      <div class="gmm-grid">
+        <canvas data-gmm-kmeans aria-label="k-means clustering of synthetic tissue data"></canvas>
+        <canvas data-gmm-em aria-label="Gaussian mixture model clustering of the same data, with covariance ellipses"></canvas>
+      </div>
+
+      <div class="gmm-controls">
+        <div class="gmm-field">
+          <label for="gmm-k">Clusters K</label>
+          <select id="gmm-k" data-gmm-k>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <div class="gmm-field">
+          <label for="gmm-t">Tumour size &nbsp;<span data-out-tumour-n>40</span> voxels</label>
+          <input id="gmm-t" type="range" min="6" max="90" value="40" step="2" data-gmm-tumour>
+        </div>
+        <button class="btn" type="button" data-gmm-play>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Replay EM
+        </button>
+        <button class="btn" type="button" data-gmm-resample>Resample</button>
+      </div>
+
+      <div class="lab__readout" style="grid-template-columns:repeat(4,1fr)">
+        <div><span>k-means · tumour Dice</span><b data-out-km>—</b></div>
+        <div><span>GMM-EM · tumour Dice</span><b data-out-em>—</b></div>
+        <div><span>EM iterations</span><b data-out-iter>—</b></div>
+        <div><span>mean log-likelihood</span><b data-out-ll>—</b></div>
+      </div>
+      <p class="gmm-legend">
+        <b>Solid ellipse</b> 1σ &nbsp; <b>dashed</b> 2σ &nbsp; <b>large ring</b> k-means centroid &nbsp;
+        <b>ringed point</b> ground-truth tumour &nbsp; <b>Dice</b> is for the single cluster that best matches it
+      </p>
+    </div>
+
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      k-means can only draw circles of equal size, so it cuts the long white-matter population in
+      half and smears the tumour into whatever is nearest. The GMM fits an ellipse to each
+      population and usually wins outright. Now drag the tumour down to a dozen voxels: both
+      collapse. That's patient 7. Then raise K to 5 — the small cluster comes back, along with the
+      question of which of five clusters is the tumour. That's the manual step in the pipeline.
+    </p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Why unsupervised</h2>
+      <p>
+        BraTS 2018 provides 285 patients, each scanned in four MRI modalities — T1, contrast T1,
+        T2 and FLAIR — at 240×240×155 voxels, with tumour regions outlined by neuroradiologists.
+        The supervised route is well trodden. The question here was different: with no labels at
+        all, how far do classical clustering methods get, and where exactly do they stop?
+      </p>
+      <p>
+        The framing is deliberate. Manual annotation is the expensive part of every medical
+        imaging pipeline. A method that needs none of it is worth understanding even when it loses
+        to one that does — especially if you know precisely which tumours it will miss.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The pipeline</h2>
+      <h3>Voxels into feature vectors</h3>
+      <p>
+        Each modality is z-scored to zero mean and unit variance, so contrast differences between
+        scanners don't dominate. Then every voxel is replaced by the mean of its 3×3×3
+        neighbourhood — a light 3-D smoothing that cuts the noise which otherwise fragments
+        clusters. The result is one 4-vector per voxel, (μ<sub>T1</sub>, μ<sub>T1c</sub>,
+        μ<sub>T2</sub>, μ<sub>FLAIR</sub>), and 8.9 million of them per patient.
+      </p>
+
+      <h3>Cluster with K = 5</h3>
+      <p>
+        Five populations are assumed: background, white and grey matter together, CSF, the brain
+        edge, and whole tumour. k-means is scikit-learn's. The Gaussian mixture is not — it is a
+        hand-written EM in PyTorch with full 4×4 covariances per component, log-sum-exp in the
+        E-step for stability, a Cholesky log-determinant, and a guard that reverts the parameters
+        if the log-likelihood ever drops. It runs on the GPU because at nine million points per
+        patient nothing else is practical, and it is seeded with the k-means centroids so that EM
+        starts near a sensible optimum rather than a random one.
+      </p>
+
+      <figure class="figure">
+        <img src="../assets/img/seg/clusters-gmm-vs-kmeans.png" alt="Five-cluster maps from GMM and k-means on one slice, with clusters labelled CSF, background, edge, white and grey matter, and whole tumour">
+        <figcaption>
+          Figure 1 from the paper: the five clusters on one patient, GMM on the left and k-means
+          on the right. Both find the tumour (yellow); k-means bleeds it into CSF.
+        </figcaption>
+      </figure>
+
+      <h3>Pick the tumour out of five clusters</h3>
+      <p>
+        Clustering gives labels, not names. Three of the five were assigned by rule: the mode of
+        the corner voxels is background; the largest remaining cluster is white and grey matter;
+        the smallest is the brain edge. That leaves two — CSF and tumour — and they could not be
+        told apart by count or by probability.
+      </p>
+      <div class="callout callout--warn">
+        <p>
+          <strong>The step that isn't automated.</strong> CSF and tumour were separated by looking
+          at them. The paper says so plainly, and it is the honest limit of the method: the
+          pipeline is unsupervised right up to the final binary decision, where it needs a person.
+          It is also the same problem the playground shows when K goes to 5.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Ten patients, three metrics</h2>
+      <p>
+        Ten high-grade glioma cases drawn at random, each clustered independently. Ground truth
+        was used only to score the result.
+      </p>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <caption>Whole-tumour segmentation, Tables I and II of the paper. Dice = 2|GT∩PM| / (|GT|+|PM|). Bold marks the better Dice per patient.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Patient</th>
+            <th scope="col" colspan="3">k-means</th>
+            <th scope="col" colspan="3">GMM-EM</th>
+          </tr>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Dice</th><th scope="col">Sens.</th><th scope="col">Prec.</th>
+            <th scope="col">Dice</th><th scope="col">Sens.</th><th scope="col">Prec.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">1</th><td>0.886</td><td>0.877</td><td>0.894</td><td class="delta">0.889</td><td>0.865</td><td>0.915</td></tr>
+          <tr><th scope="row">2</th><td>0.887</td><td>0.933</td><td>0.845</td><td class="delta">0.892</td><td>0.944</td><td>0.846</td></tr>
+          <tr><th scope="row">3</th><td class="delta">0.452</td><td>0.896</td><td>0.302</td><td>0.447</td><td>0.869</td><td>0.301</td></tr>
+          <tr><th scope="row">4</th><td class="delta">0.886</td><td>0.896</td><td>0.878</td><td>0.841</td><td>0.929</td><td>0.767</td></tr>
+          <tr><th scope="row">5</th><td>0.901</td><td>0.840</td><td>0.971</td><td class="delta">0.915</td><td>0.848</td><td>0.994</td></tr>
+          <tr><th scope="row">6</th><td class="delta">0.904</td><td>0.903</td><td>0.906</td><td>0.891</td><td>0.946</td><td>0.815</td></tr>
+          <tr><th scope="row">7</th><td>0.004</td><td>1.000</td><td>0.002</td><td class="delta">0.009</td><td>1.000</td><td>0.004</td></tr>
+          <tr><th scope="row">8</th><td>0.003</td><td>0.003</td><td>0.004</td><td class="delta delta--big">0.348</td><td>0.661</td><td>0.236</td></tr>
+          <tr><th scope="row">9</th><td>0.871</td><td>0.782</td><td>0.982</td><td class="delta delta--big">0.929</td><td>0.918</td><td>0.940</td></tr>
+          <tr><th scope="row">10</th><td>0.388</td><td>0.943</td><td>0.244</td><td class="delta">0.485</td><td>0.977</td><td>0.322</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <p>
+        Six patients — 1, 2, 4, 5, 6, 9 — segment well by either method, with GMM ahead on most
+        and its best case reaching Dice 0.929. The other four are the interesting ones, and they
+        fail in three distinct ways.
+      </p>
+      <p>
+        <strong>Patients 3 and 10</strong> have sensitivity above 0.87 and precision around 0.3:
+        the tumour was found, but a lot of non-tumour came with it. That is over-segmentation, and
+        the higher-K fix the paper proposes would address it directly.
+      </p>
+      <p>
+        <strong>Patient 8</strong> is where the two methods part company. k-means scores 0.003 —
+        it found nothing. GMM scores 0.348, which is poor, but it outlined the tumour where k-means
+        drew a blank.
+      </p>
+    </div>
+
+    <figure class="figure reveal">
+      <img src="../assets/img/seg/patient8.png" alt="Patient 8: k-means result showing no tumour, GMM result outlining the tumour, and the ground truth mask">
+      <figcaption>Patient 8 — k-means, GMM, ground truth. The arrow marks the tumour GMM recovered and k-means missed entirely.</figcaption>
+    </figure>
+
+    <div class="prose">
+      <p>
+        <strong>Patient 7</strong> defeats both, and the reason is visible before any clustering
+        runs. The tumour is tiny. With five clusters there is no fifth population for it to
+        occupy; it is absorbed into whatever tissue surrounds it. Sensitivity 1.0 and precision
+        0.002 says it all — the "tumour" cluster is almost everything, so it technically contains
+        the real one.
+      </p>
+    </div>
+
+    <figure class="figure reveal">
+      <img src="../assets/img/seg/patient7.png" alt="Patient 7: contrast T1 and T2 slices, and the very small ground-truth tumour mask">
+      <figcaption>Patient 7 — T1c, T2, and the ground truth. A tumour this small is invisible to a five-component mixture.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ LIMITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Where it stops</h2>
+      <p>
+        The paper closes with two limitations, and both are structural rather than incidental.
+        The small-tumour failure follows from fixing K at five: a population that small can't
+        claim its own component. Raising K would help, and the playground above shows it helping
+        — but every extra cluster makes the last step, deciding which cluster is the tumour, harder.
+        And that step was already manual.
+      </p>
+      <p>
+        Which is the more honest conclusion: unsupervised clustering gets a long way on large,
+        well-contrasted tumours, and the point at which it needs a human is precisely the point at
+        which the human's judgement is hardest to replace. The directions named for future work —
+        dimensionality reduction to fit across patients jointly, and GAN-based unsupervised
+        segmentation — both attack that boundary.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The paper</h2>
+      <p>
+        Five pages, IEEE format, with the EM derivation.
+        <a href="../assets/files/segmentation-report.pdf" target="_blank" rel="noopener">Open it in its own tab ↗</a>
+      </p>
+    </div>
+    <object class="pdf-embed" data="../assets/files/segmentation-report.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>Your browser can't display the PDF inline.</p>
+        <a class="btn btn--primary" href="../assets/files/segmentation-report.pdf" target="_blank" rel="noopener">Open the paper (PDF, 5 pp.)</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose"><h2>Everything, in its original form</h2></div>
+    <div class="artifacts">
+      <a class="artifact" href="../assets/files/segmentation-report.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>Research paper ↗</strong><span>5 pages · PDF · IEEE format</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/segmentation-notebook.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>Project notebook</strong><span>Jupyter · preprocessing, k-means, the PyTorch EM, metrics</span></span>
+      </a>
+    </div>
+    <p class="lab__note" style="margin-top:1rem;max-width:70ch">
+      BraTS 2018 is distributed under its own data-use terms, so the volumes themselves are not
+      redistributed here. The figures above are reproduced from the paper.
+    </p>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>Credits</h2>
+      <div class="credits">
+        <h3>A two-person course project</h3>
+        <!-- TODO(Yiming): your division of work. You are listed second on this paper. -->
+        <p>
+          Produced jointly by Yiming Cao and a team member in December 2022.
+        </p>
+        <p>
+          The k-means / EM playground on this page was built afterwards by Yiming Cao and is not
+          part of the original submission. It uses synthetic data, not BraTS voxels.
+        </p>
+      </div>
+
+      <h3>Data and prior work</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>S. Bakas et al. <em>Identifying the best machine learning algorithms for brain tumor segmentation, progression assessment, and overall survival prediction in the BraTS challenge.</em> arXiv:1811.02629, 2018 — the BraTS 2018 dataset.</li>
+        <li>J. Liu, L. Guo. <em>An improved k-means algorithm for brain MRI image segmentation.</em> ICMRA 2015 — the neighbourhood-mean feature.</li>
+        <li>J. Qiao et al. <em>Data on MRI brain lesion segmentation using k-means and Gaussian mixture model-expectation maximization.</em> Data in Brief 27, 2019.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> Yiming Cao</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">Email</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
