@@ -86,12 +86,36 @@
         </div>
       </article>
 
+      <!-- ---- MRI denoising ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="assets/img/mri/comparison.jpg" alt="Three axial MRI slices: original, DCT denoised, PCA denoised">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">Research paper · Dec 2022</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/mri-denoising.html">Denoising diffusion-weighted MRI</a>
+          </h3>
+          <p class="card__desc">
+            DCT and PCA denoisers built from scratch and measured across three subjects and
+            four b-values. PCA wins by ~3.5 dB — but both hit the same wall, and the
+            trade-off curve is the real finding.
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">Interactive</span>
+            <span class="tag">Signal processing</span>
+            <span class="tag">Medical imaging</span>
+            <span class="tag">NumPy</span>
+          </div>
+        </div>
+      </article>
+
       <!--
         ============================================================
         TO ADD A PROJECT: copy one <article class="card"> block above
         and change the media, text and tags. Nothing else to update.
-        The three cards below are placeholders — swap in real copy
-        and delete the "is-draft" class once each write-up exists.
+        The cards below are placeholders — swap in real copy and drop
+        the "card--draft" class once each write-up exists.
         ============================================================
       -->
 

@@ -224,3 +224,70 @@
 }
 .deck-links a { color: var(--text-soft); text-decoration-color: var(--border-strong); }
 .deck-links a:hover { color: var(--text); }
+
+/* ---------- MRI lab ---------- */
+.mri-panels { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; }
+@media (max-width: 560px) { .mri-panels { grid-template-columns: 1fr; } }
+
+.mri-side {
+  display: grid; gap: 1.25rem; margin-top: 1.25rem;
+  grid-template-columns: 172px minmax(0, 1fr); align-items: start;
+  max-width: 640px;
+}
+@media (max-width: 620px) { .mri-side { grid-template-columns: 1fr; } }
+
+.mri-panels canvas {
+  width: 100%; border-radius: var(--r-md);
+  border: 1px solid var(--border); background: #000;
+}
+.mri-side canvas {
+  width: 100%; border-radius: var(--r-md);
+  border: 1px solid var(--border); background: var(--bg-sunken);
+}
+.mri-mask-panel { max-width: 172px; }
+.mri-chart-panel h4 em { font-family: var(--font-mono); font-style: normal; text-transform: none; }
+.mri-caption { font-size: .74rem; color: var(--text-faint); margin: .5rem 0 0; line-height: 1.45; }
+.mri-label { font-size: .85rem; color: var(--text-soft); white-space: nowrap; }
+.mri-label em { font-family: var(--font-mono); font-style: normal; color: var(--text); }
+
+.mri-unavailable { display: none; font-size: .85rem; color: var(--warn); margin: 1rem 0 0; }
+.is-unavailable .mri-panels,
+.is-unavailable .mri-side,
+.is-unavailable .lab__controls { display: none; }
+.is-unavailable .mri-unavailable { display: block; }
+
+/* ---------- paired figures ---------- */
+.figure-pair { display: grid; gap: 1.5rem; grid-template-columns: 1fr 1fr; margin: 2rem 0; }
+@media (max-width: 760px) { .figure-pair { grid-template-columns: 1fr; } }
+.figure-pair .figure { margin: 0; }
+.figure-pair img {
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  background: #fff; padding: .5rem;
+}
+
+/* ---------- data table ---------- */
+.table-wrap { overflow-x: auto; margin: 2rem 0; -webkit-overflow-scrolling: touch; }
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: .86rem;
+  font-variant-numeric: tabular-nums; min-width: 560px;
+}
+.data-table caption {
+  caption-side: bottom; text-align: left; font-size: .8rem;
+  color: var(--text-faint); padding-top: .85rem; line-height: 1.5;
+}
+.data-table th, .data-table td { padding: .5rem .7rem; text-align: right; }
+.data-table thead th {
+  font-size: .72rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--text-faint); border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+.data-table thead th:first-child, .data-table tbody th { text-align: left; }
+.data-table tbody th {
+  font-weight: 600; vertical-align: top; padding-top: .65rem;
+  color: var(--text); border-bottom: 1px solid var(--border);
+}
+.data-table tbody td { border-bottom: 1px solid var(--border); color: var(--text-soft); }
+.data-table tbody tr:hover td { background: var(--bg-sunken); }
+.data-table .delta { color: var(--text); font-weight: 550; }
+.data-table .delta--big { color: var(--accent-text); font-weight: 600; }
+.data-table .row-group th, .data-table .row-group td { border-top: 2px solid var(--border-strong); }

@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Denoising Diffusion-Weighted MRI — Yiming Cao</title>
+<meta name="description" content="Comparing DCT and PCA denoising on diffusion-weighted MRI across three subjects and four b-values — with a live in-browser DCT denoiser.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/project.css">
+<script defer src="../assets/js/site.js"></script>
+<script defer src="../assets/js/dwi-slice.js"></script>
+<script defer src="../assets/js/mri-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>Yiming Cao</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">Work</a>
+      <a href="../index.html#about">About</a>
+      <a href="mailto:caoyimingeric@gmail.com">Contact</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle colour theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      All work
+    </a>
+    <p class="eyebrow">Biomedical imaging · course research</p>
+    <h1>Denoising diffusion-weighted MRI: DCT versus PCA</h1>
+    <p class="lede">
+      Diffusion-weighted MRI trades signal for speed, and comes out grainy enough that
+      quantitative measurements drift. We implemented two classical denoisers from scratch,
+      measured both across three subjects and four b-values, and found PCA ahead by roughly
+      3.5&nbsp;dB — but the more interesting result was the ceiling both of them hit.
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../assets/files/mri-denoising-report.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Read the paper
+      </a>
+      <a class="btn" href="../assets/files/mri-denoising-slides.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        View the slides
+      </a>
+      <a class="btn" href="#artifacts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        All files
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>Type</dt><dd>Course research paper + talk</dd></div>
+      <!-- TODO(Yiming): confirm the course code -->
+      <div><dt>Context</dt><dd>Graduate coursework</dd></div>
+      <div><dt>Date</dt><dd>December 2022</dd></div>
+      <div><dt>Team</dt><dd>5 authors</dd></div>
+      <div><dt>Stack</dt><dd>Python, NumPy, SciPy</dd></div>
+      <div><dt>Data</dt><dd>3 subjects · 4 b-values</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ INTERACTIVE ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-mri-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">The DCT denoiser, running on a real slice</h2>
+        <p class="lab__note">
+          Genuine 8×8 block DCT, coefficient truncation and inverse DCT — computed in your
+          browser on an actual diffusion-weighted slice from the dataset.
+        </p>
+      </div>
+
+      <div class="mri-panels">
+        <div class="lab__panel">
+          <h4>Original</h4>
+          <canvas data-mri-original aria-label="A noisy diffusion-weighted MRI slice"></canvas>
+        </div>
+        <div class="lab__panel">
+          <h4>DCT denoised</h4>
+          <canvas data-mri-denoised aria-label="The same slice after DCT denoising"></canvas>
+        </div>
+      </div>
+
+      <div class="mri-side">
+        <div class="lab__panel mri-mask-panel">
+          <h4>Coefficients kept</h4>
+          <canvas data-mri-mask aria-label="An 8 by 8 grid showing which DCT coefficients survive truncation"></canvas>
+          <p class="mri-caption">
+            Low frequency top-left, high frequency bottom-right.
+          </p>
+        </div>
+        <div class="lab__panel mri-chart-panel">
+          <h4>Structural similarity against <em>d</em></h4>
+          <canvas data-mri-chart aria-label="Structural similarity plotted against the truncation parameter d"></canvas>
+          <p class="mri-caption">
+            Computed live on this slice, not read off the paper.
+          </p>
+        </div>
+      </div>
+
+      <div class="lab__controls">
+        <div class="lab__row">
+          <label for="mri-d" class="mri-label">Coefficients kept &nbsp;<em>d</em></label>
+          <input class="lab__slider" type="range" min="1" max="7" value="3" step="1"
+                 id="mri-d" data-mri-slider aria-label="DCT truncation parameter d">
+        </div>
+        <div class="lab__readout">
+          <div><span>d</span><b data-out-d>3</b></div>
+          <div><span>coefficients</span><b data-out-kept>12 / 64</b></div>
+          <div><span>SSIM vs original</span><b data-out-ssim>0.0000</b></div>
+        </div>
+      </div>
+
+      <p class="mri-unavailable">
+        The live denoiser couldn't start in this browser. The figures below show the
+        same results.
+      </p>
+    </div>
+
+    <p class="lab__note" style="margin-top:.9rem;max-width:70ch">
+      Drag <em>d</em> down and the speckle in the background goes with it — along with the
+      cortical detail you were trying to measure. That coupling is the entire problem, and
+      no choice of <em>d</em> escapes it.
+    </p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Why this image is noisy on purpose</h2>
+      <p>
+        Diffusion-weighted imaging measures the Brownian motion of water molecules inside
+        tissue. Where that motion is restricted — an acute stroke, a tumour — the signal
+        changes, which makes DWI one of the fastest ways to see an infarct that a
+        conventional MRI would miss entirely.
+      </p>
+      <p>
+        The catch is physics. Diffusion weighting deliberately destroys signal amplitude,
+        and the fast echo-planar readout it needs picks up a lot of thermal noise. The result
+        is an intrinsically poor signal-to-noise ratio — and because the diffusion
+        coefficients clinicians actually care about are computed from ratios of these
+        images, that noise doesn't just look bad. It biases the numbers.
+      </p>
+      <div class="callout">
+        <p>
+          <strong>The question.</strong> Two classical, non-learned denoisers — one working in
+          the frequency domain, one in the pixel domain — how much SNR can each recover, and
+          what does it cost in structural fidelity? No neural network, no training data, no
+          GPU. Just transforms with a knob on them.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Two transforms, one idea</h2>
+      <p>
+        Both methods share a shape: cut the slice into small overlapping patches, move each
+        patch into a basis where signal and noise separate, throw away the components that
+        are mostly noise, and transform back. They differ only in which basis.
+      </p>
+
+      <h3>Shared: patches in, image out</h3>
+      <p>
+        A sliding window steps one pixel at a time across the slice, so patches overlap
+        heavily. On the way back, every output pixel is the sum of each patch that covered
+        it, divided by a weight map counting those overlaps. The averaging is not incidental
+        — it is doing real work, suppressing the block artifacts that a non-overlapping
+        transform would leave behind.
+      </p>
+
+      <h3>DCT — throw away high frequencies</h3>
+      <p>
+        On 8×8 patches, take the 2-D discrete cosine transform and keep only the top-left
+        <em>d</em> × (<em>d</em>+1) coefficients, zeroing the rest. Noise is broadband and
+        therefore mostly lives in the high-frequency corner; image structure concentrates in
+        the low-frequency one. Truncation is a low-pass filter, and <em>d</em> is its cutoff.
+        That is exactly what the figure at the top of this page is doing.
+      </p>
+
+      <h3>PCA — throw away minor components</h3>
+      <p>
+        On 5×5 patches, flatten each patch into a 25-element vector, stack them into a
+        matrix <em>X</em>, centre the columns, and take the SVD. Pixels from the same tissue
+        covary strongly; noise does not covary with anything. So the leading principal
+        components carry the anatomy and the trailing ones carry mostly noise — keep the top
+        <em>k</em>, discard the rest, reconstruct.
+      </p>
+      <figure class="figure">
+        <img src="../assets/img/mri/pca-svd.png" alt="Diagram: the patch matrix X factorised into scores Z and principal components W">
+        <figcaption>
+          The decomposition, from the paper: <em>X</em> ≈ <em>Z</em><em>W</em>, keeping only
+          the first <em>k</em> components. Reducing <em>k</em> discards information — the
+          bet is that what goes first is noise.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE TRADE-OFF ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The result that actually matters</h2>
+      <p>
+        Both knobs work. Turn <em>d</em> or <em>k</em> down and SNR climbs. But structural
+        similarity to the original falls at the same time, and it falls faster. Plotting both
+        against the parameter makes the bind obvious: there is no setting where you get the
+        noise reduction for free.
+      </p>
+    </div>
+
+    <div class="figure-pair reveal">
+      <figure class="figure">
+        <img src="../assets/img/mri/tradeoff-dct.png" alt="SNR and SSIM plotted against d for the DCT method">
+        <figcaption><strong>DCT.</strong> SNR (blue) falls as <em>d</em> rises; SSIM (green) climbs. Dashed line is the undenoised SNR of 17.49 dB.</figcaption>
+      </figure>
+      <figure class="figure">
+        <img src="../assets/img/mri/tradeoff-pca.png" alt="SNR and SSIM plotted against k for the PCA method">
+        <figcaption><strong>PCA.</strong> The same shape against <em>k</em>, but the SNR curve starts far higher — nearly 30 dB at <em>k</em>=1.</figcaption>
+      </figure>
+    </div>
+
+    <div class="prose">
+      <p>
+        A low SSIM means the image has been smoothed into uselessness. A high SSIM means
+        you've faithfully preserved the original — including its noise. Neither extreme is
+        the goal, so the operating point had to be chosen rather than optimised. Scoring
+        denoised images by eye, the usable window turned out to be <strong>SSIM between 0.88
+        and 0.93</strong>, which pins <em>d</em> to [2, 5] for DCT and <em>k</em> to [8, 16]
+        for PCA.
+      </p>
+      <div class="callout">
+        <p>
+          <strong>Why that matters more than the headline number.</strong> A denoiser with a
+          free parameter can be tuned to win almost any single metric. Reporting the range
+          where both metrics stay acceptable — and admitting it was fixed by human
+          judgement, not by an objective function — is the difference between a result and a
+          number.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Measured across three subjects</h2>
+      <p>
+        The dataset images the same three people on identical acquisition settings, at four
+        diffusion weightings. That gives twelve independent chances for the comparison to
+        come out differently. It never does.
+      </p>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <caption>SNR in dB, mean ± standard deviation. Δ columns are the gain over the undenoised image.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Subject</th><th scope="col">b-value</th>
+            <th scope="col">Original</th>
+            <th scope="col">DCT</th><th scope="col">Δ</th>
+            <th scope="col">PCA</th><th scope="col">Δ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row" rowspan="4">sub-1</th><td>0</td>    <td>14.4 ±0.2</td><td>15.8 ±0.3</td><td class="delta">+1.4</td><td>18.8 ±0.3</td><td class="delta delta--big">+4.4</td></tr>
+          <tr><td>1000</td> <td>16.8 ±0.2</td><td>18.4 ±0.2</td><td class="delta">+1.6</td><td>21.5 ±0.1</td><td class="delta delta--big">+4.7</td></tr>
+          <tr><td>2000</td> <td>16.0 ±0.3</td><td>17.7 ±0.3</td><td class="delta">+1.7</td><td>21.1 ±0.5</td><td class="delta delta--big">+5.1</td></tr>
+          <tr><td>3000</td> <td>16.3 ±0.1</td><td>18.1 ±0.1</td><td class="delta">+1.8</td><td>21.6 ±0.1</td><td class="delta delta--big">+5.2</td></tr>
+
+          <tr class="row-group"><th scope="row" rowspan="4">sub-2</th><td>0</td>    <td>15.7 ±0.4</td><td>17.3 ±0.4</td><td class="delta">+1.6</td><td>20.9 ±0.4</td><td class="delta delta--big">+5.2</td></tr>
+          <tr><td>1000</td> <td>17.1 ±0.4</td><td>18.9 ±0.4</td><td class="delta">+1.7</td><td>22.8 ±0.4</td><td class="delta delta--big">+5.7</td></tr>
+          <tr><td>2000</td> <td>16.7 ±0.1</td><td>18.9 ±0.3</td><td class="delta">+2.1</td><td>22.7 ±0.1</td><td class="delta delta--big">+5.9</td></tr>
+          <tr><td>3000</td> <td>16.5 ±0.2</td><td>18.5 ±0.1</td><td class="delta">+1.9</td><td>22.7 ±0.3</td><td class="delta delta--big">+6.2</td></tr>
+
+          <tr class="row-group"><th scope="row" rowspan="4">sub-3</th><td>0</td>    <td>16.3 ±0.2</td><td>17.8 ±0.2</td><td class="delta">+1.5</td><td>21.2 ±0.1</td><td class="delta delta--big">+5.0</td></tr>
+          <tr><td>1000</td> <td>17.7 ±0.3</td><td>19.4 ±0.2</td><td class="delta">+1.6</td><td>22.9 ±0.1</td><td class="delta delta--big">+5.2</td></tr>
+          <tr><td>2000</td> <td>17.1 ±0.4</td><td>18.8 ±0.4</td><td class="delta">+1.7</td><td>22.5 ±0.2</td><td class="delta delta--big">+5.4</td></tr>
+          <tr><td>3000</td> <td>16.6 ±0.2</td><td>18.8 ±0.2</td><td class="delta">+2.1</td><td>22.7 ±0.1</td><td class="delta delta--big">+5.7</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <p>
+        PCA wins all twelve, by 4.4 to 6.2 dB against DCT's 1.4 to 2.1. The gap also widens
+        with b-value — the noisier the acquisition, the more PCA's advantage shows, which is
+        the useful direction for it to run, since high-b images are the ones that need help.
+      </p>
+      <p>
+        SNR was measured following the NEMA two-adjacent-slice standard, using the whole
+        brain as the region of interest rather than a small white-matter patch. That choice
+        was deliberate: a small ROI lets a heavily blurred image post a flattering SNR, and
+        we wanted the metric to resist exactly the failure mode we were most likely to
+        produce.
+      </p>
+    </div>
+
+    <figure class="figure reveal">
+      <img src="../assets/img/mri/comparison.jpg" alt="Three axial DWI slices side by side: original, DCT denoised, PCA denoised">
+      <figcaption>
+        The same slice, undenoised and through both methods. The PCA result retains
+        noticeably fewer of the dark speckles that pepper the original.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ LIMITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>What we'd fix</h2>
+      <p>Two problems we found and did not solve:</p>
+      <ol>
+        <li>
+          <strong>Denoising and blurring are the same operation here.</strong> Both methods
+          lose overall image quality as they gain SNR. The trade-off curves quantify it; they
+          don't escape it. A method that separates noise from structure using more than
+          second-order statistics — a learned prior — would not face the same wall.
+        </li>
+        <li>
+          <strong>We worked slice by slice.</strong> DWI is volumetric, and adjacent slices
+          are highly correlated. Denoising each 2-D slice independently throws that away and
+          loses components when the slices are stacked back into a volume. Operating on 3-D
+          patches is the obvious next step.
+        </li>
+      </ol>
+      <p>
+        The natural continuation is the one the related work already pointed at: a
+        convolutional network denoising the whole volume, trained voxel-to-voxel on low-noise
+        acquisitions. That is a considerably larger project, and it is honestly where the
+        field went.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDES ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose"><h2>The talk</h2></div>
+    <div class="slides reveal"
+         data-slides="../assets/img/slides-mri/slide-"
+         data-slides-count="18" data-slides-pad="2" data-slides-ext="jpg">
+      <div class="slides__stage" data-slide-stage></div>
+      <div class="slides__bar">
+        <button type="button" data-slide-prev aria-label="Previous slide">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" data-slide-next aria-label="Next slide">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <span class="slides__label" data-slide-label>1 / 18</span>
+        <span class="slides__hint">arrow keys to navigate</span>
+      </div>
+      <div class="slides__rail" data-slide-rail></div>
+    </div>
+    <p class="deck-links">
+      <a href="../assets/files/mri-denoising-slides.pdf" target="_blank" rel="noopener">Open as PDF ↗</a>
+    </p>
+  </div>
+</section>
+
+<!-- ============ PAPER ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The paper</h2>
+      <p>
+        Six pages, IEEE format.
+        <a href="../assets/files/mri-denoising-report.pdf" target="_blank" rel="noopener">Open it in its own tab ↗</a>
+        to read full-screen.
+      </p>
+    </div>
+    <object class="pdf-embed" data="../assets/files/mri-denoising-report.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>Your browser can't display the PDF inline.</p>
+        <a class="btn btn--primary" href="../assets/files/mri-denoising-report.pdf" target="_blank" rel="noopener">Open the paper (PDF, 6 pp.)</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Everything, in its original form</h2>
+      <p>PDFs open in a new tab; notebooks download.</p>
+    </div>
+    <div class="artifacts">
+      <a class="artifact" href="../assets/files/mri-denoising-report.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>Research paper ↗</strong><span>6 pages · PDF · IEEE format</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/mri-denoising-slides.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span><strong>Presentation ↗</strong><span>18 slides · PDF</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/mri-denoising-dct.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>DCT notebook</strong><span>Jupyter · transform, truncate, reconstruct</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/mri-denoising-pca.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>PCA notebook</strong><span>Jupyter · SVD, component selection</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/mri-denoising-main.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>Pipeline notebook</strong><span>Jupyter · loading, metrics, evaluation</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>Credit where it's due</h2>
+      <div class="credits">
+        <h3>A five-person course project</h3>
+        <!-- TODO(Yiming): replace with your actual division of work. With five authors this
+             matters more, not less — be specific about which parts were yours. -->
+        <p>
+          The paper, the implementation and the presentation were produced jointly by
+          Yiming&nbsp;Cao, Li&nbsp;Guo, Yingrui&nbsp;Yang, Shengyu&nbsp;Zuo and
+          Haoxiang&nbsp;Lei in December 2022.
+        </p>
+        <p>
+          The interactive denoiser on this page was written afterwards by Yiming Cao. It
+          reimplements the project's DCT method in JavaScript and is not part of the original
+          submission.
+        </p>
+        <div class="credits__people">
+          <span class="tag">Yiming Cao</span>
+          <span class="tag">Li Guo</span>
+          <span class="tag">Yingrui Yang</span>
+          <span class="tag">Shengyu Zuo</span>
+          <span class="tag">Haoxiang Lei</span>
+        </div>
+      </div>
+
+      <h3>Data</h3>
+      <p style="font-size:.9rem;color:var(--text-soft)">
+        Q. Tong, H. He, T. Gong, C. Li, P. Liang, T. Qian, Y. Sun, Q. Ding, K. Li, J. Zhong.
+        <em>Multicenter dataset of multi-shell diffusion MRI in healthy traveling adults with
+        identical settings.</em> Scientific Data <strong>7</strong>, 2020. Open dataset,
+        healthy adult volunteers, 1.5&nbsp;mm isotropic, b = 0/1000/2000/3000 s·mm⁻².
+      </p>
+
+      <h3>Prior work the methods build on</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>L. Zhang et al. <em>Two-stage image denoising by principal component analysis with local pixel grouping.</em> Pattern Recognition, 2010.</li>
+        <li>J. V. Manjón et al. <em>Diffusion weighted image denoising using overcomplete local PCA.</em> PLoS ONE, 2013.</li>
+        <li>H. Cheng et al. <em>Denoising diffusion weighted imaging data using convolutional neural networks.</em> bioRxiv, 2022.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> Yiming Cao</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">Email</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
