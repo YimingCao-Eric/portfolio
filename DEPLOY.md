@@ -33,8 +33,10 @@ Go to <https://github.com/new>:
 ### 2. Push this folder
 
 A git repo has already been initialised in `E:\workSpace\portfolio\site` with
-everything committed. Open a terminal there (Git Bash, PowerShell, or the
-terminal in your editor) and run:
+everything committed.
+
+**Use PowerShell or Git Bash, not WSL.** Git on a Windows drive through WSL is
+slow and the credential prompt is fussier. In PowerShell or Git Bash:
 
 ```bash
 cd E:\workSpace\portfolio\site
@@ -42,6 +44,32 @@ git remote add origin https://github.com/YimingCao-Eric/YimingCao-Eric.github.io
 git branch -M main
 git push -u origin main
 ```
+
+<details>
+<summary>If you insist on WSL</summary>
+
+Bash doesn't understand `E:\...` — backslashes are escape characters there and
+drive letters mean nothing. Your E: drive lives under `/mnt/e`:
+
+```bash
+cd /mnt/e/workSpace/portfolio/site
+```
+
+If `/mnt/e` doesn't exist, mount it:
+
+```bash
+sudo mkdir -p /mnt/e && sudo mount -t drvfs E: /mnt/e
+```
+
+Git will then probably refuse with a "dubious ownership" warning, because the
+repo was created under a different user. One line clears it for good:
+
+```bash
+git config --global --add safe.directory /mnt/e/workSpace/portfolio/site
+```
+
+Then the same remote/push commands as above.
+</details>
 
 If git asks who you are, set it once:
 
