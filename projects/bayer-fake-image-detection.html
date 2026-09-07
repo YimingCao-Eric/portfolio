@@ -453,15 +453,20 @@
     <div class="prose">
       <h2>Everything, in its original form</h2>
       <p>
-        The code and the 100 MB of per-image results live in the team's repository; the
-        in-browser version above is faithful to the method and the numbers on this page come
-        from those result files.
+        The project code is bundled below: the MATLAB prototype, the PyTorch re-demosaicing and
+        metric implementations, the batch pipeline, the analysis notebooks and the tests, with
+        the team's README. Left out are the 100 MB of per-image result JSONs (the numbers on
+        this page come from them) and the ChatGPT transcript the README refers to.
       </p>
     </div>
     <div class="artifacts">
       <a class="artifact" href="../assets/files/bayer-paper.pdf" target="_blank" rel="noopener">
         <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
         <span><strong>Final paper ↗</strong><span>6 pages · PDF · IEEE format</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/bayer-code.zip">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>Project code</strong><span>Python / PyTorch pipeline, notebooks, tests, MATLAB prototype · .zip · 4 MB</span></span>
       </a>
       <a class="artifact" href="../assets/files/bayer-final-slides.pdf" target="_blank" rel="noopener">
         <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
@@ -490,10 +495,9 @@
       <h2>Credits</h2>
       <div class="credits">
         <h3>A four-person course project</h3>
-        <!-- TODO(Yiming): your division of work. You are third author on the paper. -->
         <p>
-          Produced jointly with three team members, January to April 2024. Yiming Cao is third
-          author on the paper.
+          Produced jointly with three team members, January to April 2024, with the work divided
+          equally among the four. Yiming Cao is third author on the paper.
         </p>
         <p>
           The demosaicing and metric code adapts the open-source <em>colour-demosaicing</em> and
