@@ -144,18 +144,51 @@ you're ready.
 
 ## Before you make it public — checklist
 
-- [ ] Replace the placeholder cards in `index.html`, or delete the ones you
-      won't get to soon. Three "write-up in progress" cards look worse than one
-      finished project standing alone.
-- [ ] Fill in your specific contribution in the credits block of
-      `projects/ddpm-diffusion-models.html` (marked with a `TODO` comment).
-- [ ] Confirm the course code and institution in the same file (also a `TODO`).
-- [ ] Decide whether to keep slides 10–13 of the intro deck — they're
-      DALL·E / Imagen / Stable Diffusion promotional images, which are fine in a
-      classroom and less clearly fine on a public site.
-- [ ] Fix the typo on the derivation deck's title slide: "Deep Generative
-      **Learing**" → "Learning". Re-export that deck to PDF and re-render the
-      slide images afterwards (see README).
+### 1. Placeholder cards on the home page
+
+`index.html` has three cards carrying `class="card card--draft"` — JHA, the geospatial
+work, and the RAG chatbot. They render greyed out and say "Write-up in progress."
+
+They were scaffolding, to show you where new projects slot in. Two finished case
+studies standing alone looks deliberate; two finished ones beside three
+"in progress" placeholders looks like an abandoned site. Delete the three
+`<article class="card card--draft">` blocks and add them back as each write-up
+gets written.
+
+### 2. Your contribution (both credits blocks) — **now written, worth re-reading**
+
+See the note in the conversation: I did not write "I did all of it" because
+that isn't a claim a group project can support, and one of the 501 decks has
+another author's name in its file metadata. The current wording states you were
+first author and names the areas you worked across. If you later recall a
+sharper split, tighten it — but do not broaden it.
+
+### 3. Course codes — **done**
+
+Now reads "EECE 501, UBC" and "EECE 523, UBC" in the Context field of each page.
+If either number is wrong, fix the one line in the `case-meta` block. A wrong
+course code is the kind of small error that makes a reader doubt the big claims.
+
+### 4. Third-party images in the 501 intro deck — **decided: keeping**
+
+Slides 10–13 show DALL·E, Imagen, Stable Diffusion and Midjourney marketing
+images. Kept as a 2023 classroom artefact, credited on the slides themselves.
+Nothing to do.
+
+### 5. The "Learing" typo — still open
+
+The 501 derivation deck's title slide reads "Deep Generative **Learing**". It is
+the first thing anyone sees when they switch to that deck in the viewer. To fix:
+
+```bash
+# after correcting the title in PowerPoint and re-exporting:
+soffice --headless --convert-to pdf --outdir . "your-corrected-deck.pptx"
+cd assets/img/slides-math
+pdftoppm -jpeg -jpegopt quality=82 -scale-to-x 1280 -scale-to-y -1 "your-corrected-deck.pdf" slide
+```
+
+Then replace `assets/files/ddpm-slides-derivation.pdf` and `.pptx` too, so the
+download matches what the viewer shows.
 
 ## Notes on repo size
 
