@@ -9,26 +9,32 @@ route I'd recommend, plus a no-git fallback.
 
 Free, permanent, and the URL is a fine thing to put on a résumé.
 
-### Name the repo carefully
+### Name the repo
 
-GitHub gives you two different URLs depending on the repo name:
+Call it **`portfolio`**. The repo URL is then
+`github.com/YimingCao-Eric/portfolio` and the site lands at:
 
-| Repo name                    | Your site lives at                                  |
-| ---------------------------- | --------------------------------------------------- |
-| `YimingCao-Eric.github.io`   | `https://yimingcao-eric.github.io/`  ← **use this**  |
-| anything else, e.g. `portfolio` | `https://yimingcao-eric.github.io/portfolio/`     |
+```
+https://yimingcao-eric.github.io/portfolio/
+```
 
-Use the first one. A portfolio at the root of your own domain reads better than
-one buried in a subpath, and you only get one of these per account — spend it here.
+The `/portfolio/` subpath is the trade-off. GitHub only serves a site from the
+root of your account if the repo is named exactly `YimingCao-Eric.github.io`,
+which repeats your name in the repo URL. If the subpath ever bothers you, a
+custom domain removes it completely (see below) — and that works without
+renaming or moving anything, so nothing here is a one-way door.
+
+Every path in this site is relative, so it works from a subdirectory with no
+config changes.
 
 ### 1. Create the repo on GitHub
 
 Go to <https://github.com/new>:
 
-- **Repository name:** `YimingCao-Eric.github.io`
+- **Repository name:** `portfolio`
 - **Public** (Pages needs public on the free plan)
 - Do **not** tick "Add a README" / .gitignore / licence — the folder already has
-  a commit and an extra one here would collide.
+  commits and an extra one here would collide.
 
 ### 2. Push this folder
 
@@ -40,7 +46,7 @@ slow and the credential prompt is fussier. In PowerShell or Git Bash:
 
 ```bash
 cd E:\workSpace\portfolio\site
-git remote add origin https://github.com/YimingCao-Eric/YimingCao-Eric.github.io.git
+git remote add origin https://github.com/YimingCao-Eric/portfolio.git
 git branch -M main
 git push -u origin main
 ```
@@ -109,7 +115,9 @@ That's the whole loop.
 
 ## Custom domain (optional)
 
-If you buy something like `yimingcao.dev`:
+This is what removes the `/portfolio/` subpath. If you buy something like
+`yimingcao.dev`, the site is served from the root of that domain instead and the
+repo name becomes invisible:
 
 1. At your registrar, add a `CNAME` record for `www` pointing to
    `yimingcao-eric.github.io`, and four `A` records for the apex domain pointing
