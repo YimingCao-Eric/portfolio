@@ -190,6 +190,17 @@ pdftoppm -jpeg -jpegopt quality=82 -scale-to-x 1280 -scale-to-y -1 "your-correct
 Then replace `assets/files/ddpm-slides-derivation.pdf` and `.pptx` too, so the
 download matches what the viewer shows.
 
+### 6. EECE 541 (Bayer-pattern fake-image detection) — credits still open
+
+`projects/bayer-fake-image-detection.html` carries a `TODO(Yiming)` comment in
+its Credits block. It currently says only "Produced jointly with three team
+members … Yiming Cao is third author on the paper." Tell me your division of
+work and I'll write it in; teammates stay unnamed on the page, as everywhere else.
+
+The team's code repository is not bundled (it is a teammate's GitHub repo and
+contains a ChatGPT chat log). If you want a code artefact on the page, the
+options are: link the repo, or bundle only the `python/` scripts. Your call.
+
 ## Notes on repo size
 
 The two original `.pptx` files add about 21 MB, most of it the intro deck's

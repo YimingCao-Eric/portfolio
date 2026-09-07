@@ -416,3 +416,62 @@
 @media (max-width: 640px) { .thr-controls { grid-template-columns: 1fr; } }
 .thr-controls .gmm-field input[type=range] { width: 100%; accent-color: var(--accent); }
 .fig-white img { background: #fff; padding: .75rem; border: 1px solid var(--border); border-radius: var(--r-md); }
+
+/* ---------- Bayer redemosaic lab ---------- */
+.bl-grid { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1.6fr) minmax(250px, 1fr); align-items: start; }
+@media (max-width: 860px) { .bl-grid { grid-template-columns: 1fr; } }
+.bl-panels { display: grid; gap: .85rem; grid-template-columns: 1fr 1fr; }
+@media (max-width: 560px) { .bl-panels { grid-template-columns: 1fr; } }
+.bl-panels canvas { width: 100%; display: block; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--bg-sunken); image-rendering: auto; }
+.bl-dim { font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--text-faint); }
+.bl-source { font-size: .78rem; color: var(--text-faint); margin: .6rem 0 0; }
+.bl-source span:first-child { font-weight: 600; letter-spacing: .05em; text-transform: uppercase; font-size: .7rem; }
+.bl-bars { display: grid; gap: .4rem; margin: .9rem 0 0; }
+.bl-bar {
+  display: grid; grid-template-columns: 4.2rem 1fr 5.6rem; gap: .7rem; align-items: center; width: 100%;
+  padding: .3rem .45rem; border: 1px solid transparent; border-radius: var(--r-sm); background: transparent;
+  font: inherit; font-size: .84rem; color: var(--text-soft); cursor: pointer; text-align: left; transition: all .18s var(--ease);
+}
+.bl-bar:hover { background: var(--bg-sunken); }
+.bl-bar.is-selected { border-color: var(--border-strong); background: var(--bg-sunken); }
+.bl-bar__label { font-family: var(--font-mono); font-weight: 600; color: var(--text); font-size: .8rem; }
+.bl-bar__track { position: relative; height: 16px; background: var(--bg-sunken); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+.bl-bar__fill { position: absolute; inset: 0 auto 0 0; border-radius: 3px; transition: width .35s var(--ease); }
+.bl-bar__val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); font-family: var(--font-mono); font-size: .8rem; }
+.bl-bar.is-best .bl-bar__val { color: var(--accent-text); }
+.bl-hint { font-size: .76rem; color: var(--text-faint); line-height: 1.5; margin: .5rem 0 0; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.bl-row { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1.5fr) minmax(180px, 1fr); align-items: start; margin-top: .9rem; }
+@media (max-width: 560px) { .bl-row { grid-template-columns: 1fr; } }
+.bl-row .bl-bars { margin-top: 0; }
+.bl-side { display: grid; gap: 1.1rem; }
+.bl-prov { display: grid; gap: .35rem; }
+.bl-prov label {
+  display: flex; gap: .6rem; align-items: flex-start; padding: .5rem .6rem; border-radius: var(--r-sm);
+  border: 1px solid var(--border); cursor: pointer; transition: all .18s var(--ease); background: var(--bg-elev);
+  text-transform: none; letter-spacing: 0; font-weight: 400; font-size: .86rem; color: var(--text);
+}
+.bl-prov label:hover { border-color: var(--border-strong); }
+.bl-prov label:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.bl-prov input { margin-top: .25rem; accent-color: var(--accent); flex: none; }
+.bl-prov b { display: block; font-size: .86rem; font-weight: 600; color: var(--text); }
+.bl-prov small { display: block; font-size: .74rem; color: var(--text-faint); line-height: 1.4; margin-top: .1rem; }
+.bl-file { font: inherit; font-size: .82rem; color: var(--text-soft); max-width: 100%; }
+.bl-file::file-selector-button {
+  font: inherit; font-size: .82rem; padding: .38rem .7rem; margin-right: .6rem; border-radius: var(--r-sm); cursor: pointer;
+  border: 1px solid var(--border-strong); background: var(--bg-elev); color: var(--text);
+}
+.bl-zoom { width: 100%; display: block; border-radius: var(--r-md); border: 1px solid var(--border); background: #000; }
+.bl-strip-wrap { margin-top: 1rem; }
+.bl-strip { width: 100%; display: block; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--bg-sunken); }
+.lab.is-busy .bl-panels canvas, .lab.is-busy .bl-bars { opacity: .55; transition: opacity .2s var(--ease); }
+
+/* ---------- Bayer distributions ---------- */
+.bd-controls { display: grid; gap: .9rem; margin-top: 1rem; }
+.bd-controls .gmm-field label { text-transform: none; letter-spacing: 0; font-size: .82rem; font-weight: 500; color: var(--text-soft); }
+.bd-controls .gmm-field label span { font-family: var(--font-mono); color: var(--text); font-weight: 600; }
+.bd-toggles { display: flex; flex-wrap: wrap; gap: .4rem .9rem; font-size: .82rem; color: var(--text-soft); }
+.bd-toggles label { display: inline-flex; gap: .4rem; align-items: center; cursor: pointer; }
+.bd-toggles input { accent-color: var(--accent); }
+.bd-table { min-width: 520px; }
+.bd-table th i { display: inline-block; width: 12px; height: 8px; border-radius: 2px; vertical-align: middle; margin-right: .5rem; }
+.bd-table tr.is-off { opacity: .45; }
