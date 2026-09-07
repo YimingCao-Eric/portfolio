@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Denoising Diffusion Probabilistic Models — Yiming Cao</title>
+<meta name="description" content="A first-principles derivation of DDPMs: from the forward diffusion process through the ELBO to the one-line noise-prediction loss — with an interactive forward-process lab.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/project.css">
+<link rel="stylesheet" href="../assets/vendor/katex/katex.min.css">
+<script defer src="../assets/vendor/katex/katex.min.js"></script>
+<script defer src="../assets/vendor/katex/auto-render.min.js"></script>
+<script defer src="../assets/js/site.js"></script>
+<script defer src="../assets/js/diffusion-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>Yiming Cao</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">Work</a>
+      <a href="../index.html#about">About</a>
+      <a href="mailto:caoyimingeric@gmail.com">Contact</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle colour theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      All work
+    </a>
+    <p class="eyebrow">Graduate research report</p>
+    <h1>Denoising Diffusion Probabilistic Models, derived from first principles</h1>
+    <p class="lede">
+      A full derivation of the DDPM training objective — starting from maximum likelihood,
+      passing through the evidence lower bound and a Gaussian KL divergence, and collapsing
+      to a single line: predict the noise. The page below reconstructs that argument
+      step by step, and lets you run the forward process yourself.
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../assets/files/ddpm-report.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Read the report
+      </a>
+      <a class="btn" href="../assets/files/ddpm-slides-intro.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        View the slides
+      </a>
+      <a class="btn" href="#artifacts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        All files
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>Type</dt><dd>Course research report + talk</dd></div>
+      <!-- TODO(Yiming): confirm course code + institution -->
+      <div><dt>Context</dt><dd>Graduate coursework</dd></div>
+      <div><dt>Date</dt><dd>December 2023</dd></div>
+      <div><dt>Team</dt><dd>3 authors</dd></div>
+      <div><dt>Artifacts</dt><dd>14-page report, 2 decks, notebook</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ INTERACTIVE LAB ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-diffusion-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">The forward process, running live</h2>
+        <p class="lab__note">
+          Nothing here is a recording — every pixel and point is computed in your browser from
+          equation&nbsp;(10) of the report.
+        </p>
+      </div>
+
+      <div class="lab__panels">
+        <div class="lab__panel">
+          <h4>Image data</h4>
+          <canvas data-lab-image aria-label="A synthetic image progressively destroyed by Gaussian noise"></canvas>
+        </div>
+        <div class="lab__panel">
+          <h4>2-D data</h4>
+          <canvas data-lab-points aria-label="A two-armed spiral dataset collapsing toward an isotropic Gaussian"></canvas>
+        </div>
+        <div class="lab__panel lab__panel--chart">
+          <h4>Schedule</h4>
+          <canvas data-lab-chart aria-label="Alpha-bar and beta plotted against timestep"></canvas>
+        </div>
+      </div>
+
+      <div class="lab__controls">
+        <div class="lab__row">
+          <button class="lab__play" type="button" data-lab-play data-state="paused" aria-label="Play">
+            <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+          </button>
+          <input class="lab__slider" type="range" min="0" max="1000" value="0" step="1"
+                 data-lab-slider aria-label="Diffusion timestep t">
+          <div class="lab__seg" role="radiogroup" aria-label="Noise schedule">
+            <label><input type="radio" name="lab-schedule" value="cosine" checked><span>cosine</span></label>
+            <label><input type="radio" name="lab-schedule" value="linear"><span>linear</span></label>
+          </div>
+        </div>
+
+        <div class="lab__readout">
+          <div><span>timestep t</span><b data-out-t>0</b></div>
+          <div><span>ᾱ<sub>t</sub></span><b data-out-abar>1.0000</b></div>
+          <div><span>signal √ᾱ<sub>t</sub></span><b data-out-signal>1.000</b></div>
+          <div><span>noise √(1−ᾱ<sub>t</sub>)</span><b data-out-noise>0.000</b></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="lab__note" style="margin-top:.9rem;max-width:70ch">
+      Solid: ᾱ<sub>t</sub> for the selected schedule — how much of the original signal survives.
+      Dotted: √(1−ᾱ<sub>t</sub>), the weight on the noise. Dashed grey: ᾱ<sub>t</sub> for the other
+      schedule, for comparison. Switch to <em>linear</em> and watch the solid curve fall off a
+      cliff — by t&nbsp;≈&nbsp;600 there is nothing left to learn from, which is exactly the
+      observation that motivated the cosine schedule.
+    </p>
+  </div>
+</section>
+
+<!-- ============ WHAT / WHY ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>What this project is</h2>
+      <p>
+        Diffusion models were, at the end of 2023, the engine behind almost every image generator
+        people had actually heard of — and the papers describing them are dense with variational
+        inference machinery that most engineering write-ups skip past. This project does the
+        opposite: it takes the single hardest part, the derivation of the training objective, and
+        works through it in full, including the two appendix derivations that the original DDPM
+        paper leaves as exercises.
+      </p>
+      <p>
+        The deliverables were a 14-page report and a conference-style talk. The claim being
+        defended is not a new model — it is that the deceptively simple DDPM loss,
+        <code>‖ε − ε_θ(x_t, t)‖²</code>, is a consequence of maximum likelihood and nothing else,
+        and that every simplification along the way is earned rather than assumed.
+      </p>
+
+      <div class="callout">
+        <p>
+          <strong>Why this is on an engineering portfolio.</strong> There is no product here and
+          barely any code. What it demonstrates is the thing that is hardest to fake: the ability to
+          take a research paper apart, find the load-bearing step, and rebuild the argument so
+          someone else can follow it. The interactive figure above is the same skill pointed at a
+          different medium.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DERIVATION ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The derivation in eight steps</h2>
+      <p>
+        Each step below states its result. Where the algebra is the interesting part, the
+        full working from the report is one click away — skim the results, or read the whole thing.
+      </p>
+    </div>
+
+    <div class="deriv reveal">
+
+      <!-- 1 -->
+      <div class="deriv__step">
+        <p class="deriv__label">Corrupt the data on a fixed schedule</p>
+        <p class="deriv__gloss">
+          The forward process adds a little Gaussian noise at each of <em>T</em> steps. It has no
+          learned parameters at all — the variances β<sub>t</sub> are chosen in advance.
+        </p>
+        <p class="deriv__math">
+          $$q(\mathbf{x}_t \mid \mathbf{x}_{t-1}) = \mathcal{N}\!\left(\mathbf{x}_t;\ \sqrt{1-\beta_t}\,\mathbf{x}_{t-1},\ \beta_t \mathbf{I}\right)$$
+        </p>
+        <p class="deriv__gloss">
+          The <span style="white-space:nowrap">√(1−β<sub>t</sub>)</span> scaling on the mean is what
+          keeps the variance from exploding as steps compound. For large <em>T</em> and a sane
+          schedule, $\mathbf{x}_T \approx \mathcal{N}(\mathbf{0},\mathbf{I})$.
+        </p>
+      </div>
+
+      <!-- 2 -->
+      <div class="deriv__step">
+        <p class="deriv__label">Learn to walk it backwards</p>
+        <p class="deriv__gloss">
+          Generation is the reverse process. We can't compute it, so we approximate each reverse
+          step with a neural network.
+        </p>
+        <p class="deriv__math">
+          $$p_\theta(\mathbf{x}_{t-1}\mid\mathbf{x}_t) = \mathcal{N}\!\left(\mathbf{x}_{t-1};\ \boldsymbol{\mu}_\theta(\mathbf{x}_t,t),\ \boldsymbol{\Sigma}_\theta(\mathbf{x}_t,t)\right)$$
+        </p>
+      </div>
+
+      <!-- 3 -->
+      <div class="deriv__step">
+        <p class="deriv__label">Ask for maximum likelihood — and fail</p>
+        <p class="deriv__gloss">
+          The honest objective is to maximise the likelihood of the data. But
+          <em>p</em>(x<sub>0</sub>) requires marginalising every intermediate noised state, which is
+          intractable. So we maximise a lower bound instead.
+        </p>
+        <p class="deriv__math">
+          $$\log p(\mathbf{x}_0) \;\ge\; \mathbb{E}_{q(\mathbf{x}_{1:T}\mid\mathbf{x}_0)}\!\left[\log\frac{p(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T}\mid\mathbf{x}_0)}\right] \;=\; \text{ELBO}$$
+        </p>
+      </div>
+
+      <!-- 4 -->
+      <div class="deriv__step">
+        <p class="deriv__label">Split the bound into three interpretable terms</p>
+        <p class="deriv__gloss">
+          This is the pivot of the whole argument. The ELBO decomposes into a reconstruction term,
+          a prior-matching term with no parameters, and a sum of per-timestep denoising terms.
+        </p>
+        <p class="deriv__math">
+          $$\begin{aligned}
+            \text{ELBO} \;=\;
+            &\underbrace{\mathbb{E}_q\big[\log p_\theta(\mathbf{x}_0\mid\mathbf{x}_1)\big]}_{\text{reconstruction}}
+            \;-\;\underbrace{D_{\mathrm{KL}}\big(q(\mathbf{x}_T\mid\mathbf{x}_0)\,\|\,p(\mathbf{x}_T)\big)}_{\text{prior matching}} \\[6pt]
+            &-\;\sum_{t=2}^{T}\underbrace{\mathbb{E}_q\big[D_{\mathrm{KL}}\big(q(\mathbf{x}_{t-1}\mid\mathbf{x}_t,\mathbf{x}_0)\,\|\,p_\theta(\mathbf{x}_{t-1}\mid\mathbf{x}_t)\big)\big]}_{\text{denoising matching}}
+            \end{aligned}$$
+        </p>
+        <details>
+          <summary>Show the full ELBO derivation</summary>
+          <div>
+            <p>
+              Expand the joint as a product over the Markov chain, peel off the <em>t</em> = 1 factor,
+              and rewrite each remaining forward transition with Bayes' rule as
+              $q(\mathbf{x}_t\mid\mathbf{x}_{t-1}) = q(\mathbf{x}_t\mid\mathbf{x}_{t-1},\mathbf{x}_0)$
+              — legitimate because the chain is Markov and conditioning on x<sub>0</sub> adds nothing:
+            </p>
+            $$\log\frac{p(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T}\mid\mathbf{x}_0)}
+              = \log\frac{p(\mathbf{x}_T)p_\theta(\mathbf{x}_0\mid\mathbf{x}_1)}{q(\mathbf{x}_1\mid\mathbf{x}_0)}
+              + \log\prod_{t=2}^{T}\frac{p_\theta(\mathbf{x}_{t-1}\mid\mathbf{x}_t)}{q(\mathbf{x}_t\mid\mathbf{x}_{t-1},\mathbf{x}_0)}$$
+            <p>
+              Applying Bayes to the denominator turns the product into a telescoping series: all the
+              intermediate $q(\mathbf{x}_{t}\mid\mathbf{x}_0)$ factors cancel, leaving
+              $q(\mathbf{x}_1\mid\mathbf{x}_0)/q(\mathbf{x}_T\mid\mathbf{x}_0)$, which cancels the
+              stray first-step term. Grouping what survives by expectation gives the three terms above.
+            </p>
+            <p style="color:var(--text-faint);font-size:.85rem">
+              Full working: Appendix A of the report.
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <!-- 5 -->
+      <div class="deriv__step">
+        <p class="deriv__label">Jump to any timestep in closed form</p>
+        <p class="deriv__gloss">
+          Compounding <em>t</em> Gaussian steps would be ruinous during training. The
+          reparameterisation trick collapses all of them into one.
+        </p>
+        <p class="deriv__math">
+          $$\begin{aligned}
+            &\alpha_t = 1-\beta_t,\qquad \bar{\alpha}_t=\prod_{s=1}^{t}\alpha_s \\[6pt]
+            &q(\mathbf{x}_t\mid\mathbf{x}_0)=\mathcal{N}\!\left(\mathbf{x}_t;\ \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0,\ (1-\bar{\alpha}_t)\mathbf{I}\right)
+            \end{aligned}$$
+        </p>
+        <p class="deriv__gloss">
+          Equivalently
+          $\mathbf{x}_t=\sqrt{\bar{\alpha}_t}\,\mathbf{x}_0+\sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon}$.
+          This one line is what makes training cheap — and it is exactly what the interactive
+          figure at the top of this page evaluates.
+        </p>
+        <details>
+          <summary>Show why the steps collapse</summary>
+          <div>
+            <p>
+              Write $\mathbf{x}_t=\sqrt{\alpha_t}\mathbf{x}_{t-1}+\sqrt{1-\alpha_t}\,\boldsymbol{\epsilon}_{t-1}$
+              and substitute recursively. At each substitution two independent Gaussians are summed;
+              their variances add, so
+              $\sqrt{\alpha_t(1-\alpha_{t-1})}\,\boldsymbol{\epsilon}_{t-2}+\sqrt{1-\alpha_t}\,\boldsymbol{\epsilon}_{t-1}$
+              is a single Gaussian with variance $1-\alpha_t\alpha_{t-1}$. Repeating down to
+              x<sub>0</sub> leaves $\sqrt{\bar\alpha_t}\mathbf{x}_0+\sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}_0$.
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <!-- 6 -->
+      <div class="deriv__step">
+        <p class="deriv__label">Recover the true denoising step with Bayes</p>
+        <p class="deriv__gloss">
+          Conditioned on x<sub>0</sub>, the reverse step the network is chasing is available in
+          closed form — and it is Gaussian.
+        </p>
+        <p class="deriv__math">
+          $$q(\mathbf{x}_{t-1}\mid\mathbf{x}_t,\mathbf{x}_0)=\mathcal{N}\!\left(\mathbf{x}_{t-1};\
+            \frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})\mathbf{x}_t+\sqrt{\bar\alpha_{t-1}}(1-\alpha_t)\mathbf{x}_0}{1-\bar\alpha_t},\
+            \frac{(1-\alpha_t)(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}\mathbf{I}\right)$$
+        </p>
+        <p class="deriv__gloss">
+          Crucially the variance depends only on the fixed schedule — not on the data and not on
+          θ. That is what makes the next step collapse.
+        </p>
+        <details>
+          <summary>Show the Bayes derivation</summary>
+          <div>
+            <p>
+              $q(\mathbf{x}_{t-1}\mid\mathbf{x}_t,\mathbf{x}_0)=\dfrac{q(\mathbf{x}_t\mid\mathbf{x}_{t-1})\,q(\mathbf{x}_{t-1}\mid\mathbf{x}_0)}{q(\mathbf{x}_t\mid\mathbf{x}_0)}$,
+              where all three factors are known Gaussians from steps 1 and 5. Multiplying the
+              exponentials and collecting terms in x<sub>t−1</sub> gives a quadratic — so the result
+              is Gaussian, and completing the square reads off the mean and variance above.
+            </p>
+            <p style="color:var(--text-faint);font-size:.85rem">
+              Full working: Appendix B of the report.
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <!-- 7 -->
+      <div class="deriv__step">
+        <p class="deriv__label">Collapse the KL divergence to a distance between means</p>
+        <p class="deriv__gloss">
+          Give the learned reverse step the same (fixed) variance as the true one. The general KL
+          formula for two Gaussians then loses every term but one.
+        </p>
+        <p class="deriv__math">
+          $$\arg\min_\theta D_{\mathrm{KL}}\big(q\,\|\,p_\theta\big)
+            = \arg\min_\theta \frac{1}{2\sigma^2}\left\lVert\boldsymbol{\mu}_\theta-\boldsymbol{\mu}_q\right\rVert_2^2$$
+        </p>
+        <p class="deriv__gloss">
+          The log-determinant ratio becomes log&nbsp;1 = 0 and the trace term cancels against −<em>d</em>.
+          Training a diffusion model is now just mean regression.
+        </p>
+      </div>
+
+      <!-- 8 -->
+      <div class="deriv__step">
+        <p class="deriv__label">Re-express the means — and the model becomes a noise predictor</p>
+        <p class="deriv__gloss">
+          Substituting x<sub>0</sub> out of μ<sub>q</sub> using step 5, and giving μ<sub>θ</sub> the
+          same shape, makes every fixed quantity cancel.
+        </p>
+        <p class="deriv__math">
+          $$\begin{aligned}
+            \boldsymbol{\mu}_q      &=\frac{1}{\sqrt{\alpha_t}}\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{\alpha_t(1-\bar\alpha_t)}}\,\boldsymbol{\epsilon}_0 \\[6pt]
+            \boldsymbol{\mu}_\theta &=\frac{1}{\sqrt{\alpha_t}}\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{\alpha_t(1-\bar\alpha_t)}}\,\boldsymbol{\epsilon}_\theta(\mathbf{x}_t,t)
+            \end{aligned}$$
+        </p>
+        <p class="deriv__math" style="border-color:var(--accent);background:var(--accent-soft)">
+          $$\Longrightarrow\quad \mathcal{L}=\left\lVert\boldsymbol{\epsilon}-\boldsymbol{\epsilon}_\theta(\mathbf{x}_t,t)\right\rVert_2^2$$
+        </p>
+        <p class="deriv__gloss">
+          Nine steps of variational inference, and the network's entire job is to look at a noisy
+          input and guess which noise was added.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ ALGORITHM ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>What that means in code</h2>
+      <p>
+        The pseudocode in the report, written out as the training loop it describes. Every line
+        maps back to a numbered step above.
+      </p>
+      <pre><code>alphas_bar = torch.cumprod(1.0 - betas, dim=0)        # step 5
+
+for x0 in loader:
+    t   = torch.randint(0, T, (x0.size(0),))          # step 4: one term of the sum
+    eps = torch.randn_like(x0)                        # step 1: the noise we will hide
+
+    ab  = alphas_bar[t].view(-1, 1, 1, 1)
+    xt  = ab.sqrt() * x0 + (1 - ab).sqrt() * eps      # step 5: jump straight to time t
+
+    loss = F.mse_loss(model(xt, t), eps)              # step 8: guess the noise back
+
+    loss.backward(); opt.step(); opt.zero_grad()</code></pre>
+      <p>
+        Four lines of substance. The distance between that and the derivation above is the
+        whole point of the report.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCHEDULES ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>A note on schedules</h2>
+      <p>
+        β<sub>t</sub> is a free choice, and it matters more than it looks. Ho et al. used a linear
+        ramp from 1e−4 to 0.02. Nichol and Dhariwal later showed that this destroys information
+        too early: by roughly two-thirds of the way through the chain the sample is already
+        indistinguishable from noise, so the last third of the timesteps teach the model almost
+        nothing. Their cosine schedule spends far more of the budget in the regime where the
+        signal is actually being lost.
+      </p>
+      <p>
+        Toggle the two schedules in the figure at the top of this page and watch the image
+        panel — the difference is visible around <em>t</em>&nbsp;≈&nbsp;400.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDES ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose"><h2>The talk</h2>
+      <p>
+        Two decks: a conference-style introduction aimed at a general audience, and a
+        blackboard-style walk through the derivation. Both are readable right here —
+        or open the originals from the links under the viewer.
+      </p>
+    </div>
+
+    <div class="deck-tabs" role="tablist" aria-label="Choose a deck">
+      <button type="button" role="tab" class="deck-tab is-active" data-deck-tab="intro" aria-selected="true">
+        Introduction to DDPM <span>29 slides</span>
+      </button>
+      <button type="button" role="tab" class="deck-tab" data-deck-tab="derivation" aria-selected="false">
+        Derivation walkthrough <span>22 slides</span>
+      </button>
+    </div>
+
+    <div data-deck-panel="intro">
+      <div class="slides reveal"
+           data-slides="../assets/img/slides-intro/slide-"
+           data-slides-count="29" data-slides-pad="2" data-slides-ext="jpg">
+        <div class="slides__stage" data-slide-stage></div>
+        <div class="slides__bar">
+          <button type="button" data-slide-prev aria-label="Previous slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button type="button" data-slide-next aria-label="Next slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <span class="slides__label" data-slide-label>1 / 29</span>
+          <span class="slides__hint">arrow keys to navigate</span>
+        </div>
+        <div class="slides__rail" data-slide-rail></div>
+      </div>
+      <p class="deck-links">
+        <a href="../assets/files/ddpm-slides-intro.pdf" target="_blank" rel="noopener">Open as PDF ↗</a>
+        <a href="../assets/files/ddpm-slides-intro.pptx">Download the original .pptx</a>
+      </p>
+    </div>
+
+    <div data-deck-panel="derivation" hidden>
+      <div class="slides"
+           data-slides="../assets/img/slides-math/slide-"
+           data-slides-count="22" data-slides-pad="2" data-slides-ext="jpg">
+        <div class="slides__stage" data-slide-stage></div>
+        <div class="slides__bar">
+          <button type="button" data-slide-prev aria-label="Previous slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button type="button" data-slide-next aria-label="Next slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <span class="slides__label" data-slide-label>1 / 22</span>
+          <span class="slides__hint">arrow keys to navigate</span>
+        </div>
+        <div class="slides__rail" data-slide-rail></div>
+      </div>
+      <p class="deck-links">
+        <a href="../assets/files/ddpm-slides-derivation.pdf" target="_blank" rel="noopener">Open as PDF ↗</a>
+        <a href="../assets/files/ddpm-slides-derivation.pptx">Download the original .pptx</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The report</h2>
+      <p>
+        The full essay, inline. <a href="../assets/files/ddpm-report.pdf" target="_blank" rel="noopener">Open it
+        in its own tab ↗</a> if you'd rather read it full-screen.
+      </p>
+    </div>
+    <object class="pdf-embed" data="../assets/files/ddpm-report.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>Your browser can't display the PDF inline.</p>
+        <a class="btn btn--primary" href="../assets/files/ddpm-report.pdf" target="_blank" rel="noopener">Open the report (PDF, 14 pp.)</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Everything, in its original form</h2>
+      <p>PDFs open in a new tab; the PowerPoint and notebook download.</p>
+    </div>
+    <div class="artifacts">
+      <a class="artifact" href="../assets/files/ddpm-report.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>Research report ↗</strong><span>14 pages · PDF · full derivation + appendices</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/ddpm-slides-intro.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span><strong>Introduction to DDPM ↗</strong><span>29 slides · PDF</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/ddpm-slides-derivation.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span><strong>Derivation walkthrough ↗</strong><span>22 slides · PDF</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/ddpm-slides-intro.pptx">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span>
+        <span><strong>Introduction deck — source</strong><span>PowerPoint · .pptx · 20 MB</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/ddpm-slides-derivation.pptx">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span>
+        <span><strong>Derivation deck — source</strong><span>PowerPoint · .pptx · 1.1 MB</span></span>
+      </a>
+      <a class="artifact" href="../assets/files/noise-schedules.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>Noise-schedule notebook</strong><span>Jupyter · linear vs. cosine β</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>Credit where it's due</h2>
+      <div class="credits">
+        <h3>A three-person course project</h3>
+        <!-- TODO(Yiming): replace the sentence below with your actual division of work.
+             Admissions committees and interviewers do ask. Be specific and be accurate. -->
+        <p>
+          The report and both decks were produced jointly by Yiming Cao, Peihua Jin and
+          Shengnan Song in December 2023.
+        </p>
+        <p>
+          The interactive figure, the code sample and the write-up on this page were built
+          afterwards by Yiming Cao, and are not part of the original submission.
+        </p>
+        <div class="credits__people">
+          <span class="tag">Yiming Cao</span>
+          <span class="tag">Peihua Jin</span>
+          <span class="tag">Shengnan Song</span>
+        </div>
+      </div>
+
+      <h3>Sources the report builds on</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>J. Ho, A. Jain, P. Abbeel. <em>Denoising Diffusion Probabilistic Models.</em> NeurIPS 2020.</li>
+        <li>C. Luo. <em>Understanding Diffusion Models: A Unified Perspective.</em> arXiv:2208.11970, 2022.</li>
+        <li>A. Nichol, P. Dhariwal. <em>Improved Denoising Diffusion Probabilistic Models.</em> ICML 2021.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> Yiming Cao</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">Email</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+  window.addEventListener("load", function () {
+    if (window.renderMathInElement) {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  });
+</script>
+</body>
+</html>
