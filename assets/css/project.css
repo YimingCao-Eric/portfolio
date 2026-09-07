@@ -384,3 +384,35 @@
 .gmm-field input[type=range] { width: 100%; accent-color: var(--accent); }
 .gmm-legend { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; font-size: .78rem; color: var(--text-faint); margin-top: .8rem; }
 .gmm-legend b { font-weight: 500; color: var(--text-soft); }
+
+/* ---------- AIFR results explorer ---------- */
+.aifr-tabs { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-bottom: 1rem; }
+.aifr-tab {
+  padding: .42rem .85rem; border-radius: var(--r-sm); font-size: .86rem; font-weight: 520; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg-elev); color: var(--text-soft); transition: all .18s var(--ease);
+}
+.aifr-tab:hover { color: var(--text); border-color: var(--border-strong); }
+.aifr-tab.is-active { color: var(--text); border-color: var(--accent); box-shadow: inset 0 -2px 0 var(--accent); }
+.aifr-tabs label { margin-left: auto; font-size: .82rem; color: var(--text-soft); display: inline-flex; gap: .45rem; align-items: center; cursor: pointer; }
+.aifr-tabs label input { accent-color: var(--accent); }
+.aifr-list { display: grid; gap: .45rem; }
+.aifr-row { display: grid; grid-template-columns: minmax(150px, 15rem) 1fr 5.4rem; gap: .8rem; align-items: center; font-size: .85rem; }
+@media (max-width: 620px) { .aifr-row { grid-template-columns: 1fr; gap: .25rem; } .aifr-row__val { text-align: left !important; } }
+.aifr-row__label b { display: block; font-weight: 600; color: var(--text); }
+.aifr-row__label span { display: block; font-size: .74rem; color: var(--text-faint); line-height: 1.35; }
+.aifr-row__track { position: relative; height: 16px; background: var(--bg-sunken); border-radius: 4px; overflow: visible; }
+.aifr-row__fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; transition: width .35s var(--ease); }
+.aifr-row__ref { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); opacity: .55; transform: translateX(-1px); }
+.aifr-row__val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
+.aifr-row__val small { display: block; font-weight: 500; font-size: .74rem; color: var(--text-faint); }
+.aifr-row.is-best .aifr-row__val { color: var(--accent-text); }
+.aifr-legend { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; font-size: .78rem; color: var(--text-soft); margin-top: .9rem; }
+.aifr-legend i { display: inline-block; width: 12px; height: 8px; border-radius: 2px; vertical-align: middle; margin-right: .35rem; }
+.aifr-legend .aifr-legend__ref { width: 2px; height: 12px; background: var(--text); opacity: .55; }
+
+/* ---------- threshold demo ---------- */
+.thr-canvas { width: 100%; display: block; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--bg-sunken); }
+.thr-controls { display: grid; gap: 1rem 1.5rem; grid-template-columns: 1fr 1fr auto; align-items: end; margin-top: 1rem; }
+@media (max-width: 640px) { .thr-controls { grid-template-columns: 1fr; } }
+.thr-controls .gmm-field input[type=range] { width: 100%; accent-color: var(--accent); }
+.fig-white img { background: #fff; padding: .75rem; border: 1px solid var(--border); border-radius: var(--r-md); }
