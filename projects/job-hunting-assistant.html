@@ -142,7 +142,7 @@
       <div class="stat"><b>31</b><span>Alembic migrations, every schema change on record</span></div>
       <div class="stat"><b>~24k</b><span>lines: 10k Python, 6k extension JS, 7.5k frontend TypeScript</span></div>
       <div class="stat"><b>135</b><span>frontend unit tests on the trap-prone pure logic, plus four backend smoke tests</span></div>
-      <div class="stat"><b>11</b><span>specs across the two repositories, each with a plan, tasks and checklists</span></div>
+      <div class="stat"><b>11</b><span>specs across two repositories; the newest alone has 104 requirements, 6 checklists and 146 tasks</span></div>
     </div>
 
     <figure class="arch">
@@ -459,6 +459,41 @@ def _indeed_workplace_type(remote_location: Any) -> str | None:
         to the backend and fanned out over a WebSocket, so the console's scan page updates live
         without polling while a run is in flight.
       </p>
+
+      <h3>Long runs find the bugs short tests can't</h3>
+      <p>
+        The orchestrator's first ten-hour soak, in late April, was a catalogue. A
+        <code>config_change_pending</code> flag that nothing ever cleared aborted
+        <strong>254 of 255 cycles</strong>. Every HTTP 403 was classified as a CAPTCHA, so Indeed
+        was suspended for 191 consecutive probes over what was only rate-limiting — hence the
+        rule above that a bare 403 is patience, not a human. A thirty-second window between
+        "decide to start a cycle" and "record that a cycle started" let twelve cycles begin in
+        one hour, with three popups scraping LinkedIn at once; writing
+        <code>cycle_phase: scrape_running</code> as the very first line shrank the window to
+        about fifty milliseconds. And zombie popups from earlier cycles attributed 207 Indeed
+        jobs to a LinkedIn run log, which is why startup now closes any popup that looks like a
+        scrape. The five-hour validation run after the fixes completed eight of nine cycles with
+        984 LinkedIn and 65 Glassdoor jobs and zero attribution mismatches.
+      </p>
+      <p>
+        The one I'd tell in an interview is cycle 455. The dashboard reported zero of nine scans
+        succeeded — and 949 new LinkedIn rows. The cause was a five-minute "stale scan" cleanup
+        threshold firing on perfectly healthy 33-minute LinkedIn scans (39 pages, 915 jobs), then
+        a later status write flipping <code>failed</code> back to <code>completed</code> while
+        leaving the error message in place. It had been silently firing since May 4. The fix was
+        two lines; the lesson in the notes is one: <em>observability lies are worse than runtime
+        bugs</em>. Cycle 481, after the fix, ingested 1,306 jobs at nine of nine.
+      </p>
+      <p>
+        Two smaller ones shaped the code more than their size suggests. Ingest looked up
+        postings by description hash with <code>scalar_one_or_none()</code>, and because reposts
+        and ATS templates legitimately share a hash, six to ten percent of LinkedIn ingests were
+        returning HTTP 500; one method change took new jobs per scan from about a hundred to
+        about 240. And the extension's original <code>setInterval</code> poller simply died when
+        Chrome suspended the service worker after thirty idle seconds, so "Scan" did nothing
+        until you touched a tab — the reason everything is now driven by
+        <code>chrome.alarms</code>.
+      </p>
     </div>
   </div>
 </section>
@@ -504,16 +539,32 @@ def _indeed_workplace_type(remote_location: Any) -> str | None:
         <code>/extension/pending*</code> routes from the UI, because those routes are a trap
         that a future page would fall into.
       </p>
+      <p>
+        The working rules I hold the agent to are written into both constitutions, and they
+        came from being burned. <em>Read the clause, not the summary.</em> <em>Verify on real
+        data, not inference</em> — a code survey cannot see state; only a query can, and more
+        than once the agent reported "implementation complete" for a change that never made it
+        into the running container. <em>No vacuous green</em> — a skipped assertion is a
+        failure, because a checkmark that never ran ends the search for the bug. <em>Bound the
+        scope</em> — rot found in another repository gets flagged in the spec, not fixed on the
+        way past. And before any large change, ask. The plan for the matched-claim mechanism
+        went through six conflict scans against the live repository before implementation —
+        13 issues, then 8, 3, 2, 2, 0 — and every one of those 28 findings was cheaper to fix
+        in a document than in code.
+      </p>
       <div class="callout">
         <p>
           <strong>What the agent did and what I did.</strong> Claude Code wrote nearly all of
-          the code in this repository, the specs, and the summary I've drawn on for this page.
-          I set the direction, wrote and revised the constitution, made every design call the
-          specs record as a clarification, ran the live scans, read the warnings, and decided
-          what each one meant — PERMANENT is a token because I said it was a tenure axis, not
-          because a model did. The bugs on this page were found by me running the thing on my
-          own job search. I think that's the honest division of labour in 2026, and I'd rather
-          state it than have a reader guess.
+          the code in both repositories, the specs, and the notes I've drawn on for this page.
+          I set the direction, wrote and ratified the constitutions, and made every design call
+          the specs record as a clarification: I rejected the "purer" claim design for the
+          simpler column-on-the-table; I replaced an eighty-line failed-ingest replay buffer the
+          agent had built with a ten-line halt-and-report, because the cards are still on the
+          source page and tomorrow's scan picks them up; PERMANENT is a token because I said it
+          was a tenure axis. I ran the ten-hour and five-hour soaks, read the warnings from the
+          live scans, and force-stopped runaway cycles in SQL when I had to. The bugs on this
+          page were found by me running the thing on my own job search. I think that's the
+          honest division of labour in 2026, and I'd rather state it than have a reader guess.
         </p>
       </div>
     </div>
@@ -559,6 +610,30 @@ def _indeed_workplace_type(remote_location: Any) -> str | None:
 # wrong language. So a truncated posting reaching the language gate first would
 # be recorded as (field_gate, language_mismatch) with a fabricated verdict,
 # instead of (cpu_gate, incomplete_posting), which is what it actually is.</code></pre>
+      <p>
+        The cost discipline is a constitutional principle with seven numbered rules, and the
+        design is built around them: cheap gates before any model call; only the ambiguous band
+        ever spends judgment tokens; every job description is compressed to a 120–200-word
+        <code>standardized_jd</code> once, which cuts input tokens by roughly 70%; prompts are
+        ordered static-first so the provider's prefix cache discounts the repeated half; and
+        skills are extracted by a CPU alias vocabulary, never by the model. A fifteen-cell
+        outcome matrix in the spec governs every combination of coverage band, mode and AI
+        result — fourteen reachable, one proven structurally unreachable — and the shortlist
+        records which of four decision methods produced each entry, so that, in the spec's
+        words, a shortlist full of <code>cpu_tiebreak</code> is recognisable as an AI run that
+        silently lost its AI.
+      </p>
+      <p>
+        The spec is 104 requirements, 25 success criteria and 43 recorded clarifications, and
+        the live-data review it demanded earned its place. The vocabulary the spec assumed for
+        pay periods was <code>YEARLY</code>; the live table says <code>ANNUAL</code>, and 28% of
+        postings would have quietly become "salary uncomparable". Glassdoor writes skill lists
+        into its experience-level field, so a plausible experience gate would have excluded 56%
+        of the corpus. And the design's assumption that about half the backlog was claimable was
+        wrong in the other direction: all 113 live rows were. The constitution's fourth
+        principle — <em>a false keep shows one extra card; a false drop hides a real opening</em>
+        — is why every one of those became "keep and count", never "exclude".
+      </p>
       <p>
         Five migrations, 184 tests across five smoke suites with every AI path mocked, and 137
         of 146 tasks done. The nine that aren't are honest ones: three items are blocked on live
