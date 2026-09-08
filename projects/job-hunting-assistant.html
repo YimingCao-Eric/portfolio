@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Hunting Assistant — Yiming Cao</title>
+<meta name="description" content="A Chrome extension, a FastAPI backend and a React console that scrape LinkedIn, Indeed and Glassdoor into one canonical PostgreSQL table and run unattended — built spec-first with Claude Code. Live figures reimplement the projection and the orchestrator.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/project.css">
+<script defer src="../assets/js/site.js"></script>
+<script defer src="../assets/js/jha-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>Yiming Cao</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">Work</a>
+      <a href="../index.html#about">About</a>
+      <a href="mailto:caoyimingeric@gmail.com">Contact</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle colour theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      All work
+    </a>
+    <p class="eyebrow">Product · Chrome extension · FastAPI · React · PostgreSQL</p>
+    <h1>Three job boards, one table, no tabs</h1>
+    <p class="lede">
+      Looking for work means reading the same postings on LinkedIn, Indeed and Glassdoor, each
+      with its own search, its own filters and its own idea of what a "job" is. Job Hunting
+      Assistant is the tool I built for my own search: a Chrome extension that scrapes all three
+      through my logged-in session, a FastAPI backend that stores every posting twice — once as
+      the site shaped it, once in a single canonical shape — and a React console to search,
+      read and run the whole thing unattended. It's in active use and active development; the
+      figures on this page run the same code the backend and the extension run.
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="https://github.com/YimingCao-Eric/job-hunting-assistant" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        Code on GitHub
+      </a>
+      <a class="btn" href="#how">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+        How it's built
+      </a>
+      <a class="btn" href="#method">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        How it was made
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>Type</dt><dd>Personal product, in active development</dd></div>
+      <div><dt>Context</dt><dd>Self-directed; single user (me)</dd></div>
+      <div><dt>Date</dt><dd>March 2026 – present</dd></div>
+      <div><dt>Team</dt><dd>Solo, with Claude Code</dd></div>
+      <div><dt>Extension</dt><dd>Chrome Manifest V3 · service worker · content scripts</dd></div>
+      <div><dt>Backend</dt><dd>FastAPI · async SQLAlchemy · Alembic · PostgreSQL 16 · Redis 7 · Docker Compose</dd></div>
+      <div><dt>Frontend</dt><dd>React 19 · TypeScript · Vite · TanStack Query · Tailwind</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PROJECTION LAB ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-proj-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">Three sites, one row</h2>
+        <p class="lab__note">
+          <code>backend/core/scraped_job_projection.py</code> — the pure functions that turn a
+          per-site row into the canonical <code>scraped_jobs</code> row — ported to JavaScript
+          function for function, warnings included. Edit the site's fields; the right side is
+          what lands in the table and what the log would say.
+        </p>
+      </div>
+      <div class="proj-tabs" role="tablist">
+        <button type="button" class="aifr-tab is-active" role="tab" aria-selected="true" data-proj-site="linkedin">LinkedIn</button>
+        <button type="button" class="aifr-tab" role="tab" aria-selected="false" data-proj-site="indeed">Indeed</button>
+        <button type="button" class="aifr-tab" role="tab" aria-selected="false" data-proj-site="glassdoor">Glassdoor</button>
+      </div>
+      <div class="proj-grid">
+        <div class="proj-form" data-proj-form></div>
+        <div class="proj-out">
+          <h4>canonical scraped_jobs fields</h4>
+          <table class="proj-table"><tbody data-proj-out></tbody></table>
+          <h4 style="margin-top:1rem">what the module would log</h4>
+          <ul class="proj-warn" data-proj-warn></ul>
+        </div>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      Three things to try. On LinkedIn, set the workplace to <em>remote</em> while leaving
+      <code>work_remote_allowed</code> false — the site contradicts itself, the labels win, and
+      a differently-named warning records the contradiction rather than nulling the column. On
+      Indeed, type <code>Freelance</code> into <code>job_types</code>: it's neither mapped nor
+      the recognised no-op <code>OTHER</code>, so it warns — that warning is how the vocabulary
+      grew a <code>PERMANENT</code> token from real data in July. On Glassdoor, put
+      <code>OTHER</code> alone in the JSON-LD list: the field is present and answered, so the
+      header fallback never fires and the column is NULL with no warning at all.
+    </p>
+  </div>
+</section>
+
+<!-- ============ WHAT IT IS ============ -->
+<section class="section--tight" id="how">
+  <div class="wrap">
+    <div class="prose">
+      <h2>What it is</h2>
+      <p>
+        Three processes and a database. The <strong>extension</strong> does the scraping from
+        inside a real browser session: content scripts read each site's job list, fetch the full
+        description through whatever surface the site exposes, and hand each posting to a
+        service worker that posts it to the backend. The <strong>backend</strong> ingests it,
+        serves it back, streams scan progress over a WebSocket, and owns the state that lets the
+        extension run for days on its own. The <strong>console</strong> is four pages: what to
+        search for, the jobs, the scan logs with their debug traces, and the auto-scrape
+        dashboard. Everything runs locally under Docker Compose; there is no cloud and no account
+        but mine.
+      </p>
+    </div>
+
+    <div class="stats reveal">
+      <div class="stat"><b>737</b><span>jobs through the pipeline in one verification scan — LinkedIn 606, Indeed 63, Glassdoor 68</span></div>
+      <div class="stat"><b>31</b><span>Alembic migrations, every schema change on record</span></div>
+      <div class="stat"><b>~24k</b><span>lines: 10k Python, 6k extension JS, 7.5k frontend TypeScript</span></div>
+      <div class="stat"><b>135</b><span>frontend unit tests on the trap-prone pure logic, plus four backend smoke tests</span></div>
+      <div class="stat"><b>10</b><span>feature specs, each with a plan, tasks and a checklist</span></div>
+    </div>
+
+    <figure class="arch">
+      <svg viewBox="0 0 900 400" role="img" aria-label="Architecture: a Chrome extension with per-site content scripts and a service-worker orchestrator posts to a FastAPI backend, which dual-writes to per-source tables and a canonical scraped_jobs table in PostgreSQL, uses Redis to wake post-scrape work, and serves a React console over REST and a WebSocket">
+        <!-- extension -->
+        <rect class="box" x="10" y="30" width="250" height="340" rx="14"/>
+        <text class="t-head" x="28" y="58">Chrome extension (MV3)</text>
+        <text class="t-soft" x="28" y="78">runs in my logged-in browser</text>
+        <rect class="box--sunken box" x="28" y="94" width="214" height="30" rx="8"/>
+        <text class="t-mono" x="40" y="113">linkedin/ · Voyager REST</text>
+        <rect class="box--sunken box" x="28" y="132" width="214" height="30" rx="8"/>
+        <text class="t-mono" x="40" y="151">indeed/ · mosaic + GraphQL</text>
+        <rect class="box--sunken box" x="28" y="170" width="214" height="30" rx="8"/>
+        <text class="t-mono" x="40" y="189">glassdoor/ · NEXT_DATA · JSON-LD</text>
+        <rect class="box--accent box" x="28" y="222" width="214" height="52" rx="8"/>
+        <text class="t-mono t-accent" x="40" y="242">background/ service worker</text>
+        <text class="t-mono t-accent" x="40" y="260">auto_scrape · poll · ingest</text>
+        <rect class="box--sunken box" x="28" y="288" width="214" height="30" rx="8"/>
+        <text class="t-mono" x="40" y="307">popup/ — settings, Scan Now</text>
+        <text class="t-soft" x="28" y="350">probe → scan matrix → wake backend</text>
+
+        <!-- edges ext → api -->
+        <path class="edge" d="M260 150 H 320" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="290" y="140" text-anchor="middle">ingest</text>
+        <path class="edge" d="M260 248 H 320" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="290" y="238" text-anchor="middle">state</text>
+        <path class="edge" d="M320 300 H 260" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="290" y="316" text-anchor="middle">config</text>
+
+        <!-- backend -->
+        <rect class="box" x="320" y="30" width="300" height="340" rx="14"/>
+        <text class="t-head" x="338" y="58">FastAPI backend · :8000</text>
+        <text class="t-soft" x="338" y="78">async SQLAlchemy · Alembic · bearer auth</text>
+        <rect class="box--accent box" x="338" y="94" width="264" height="44" rx="8"/>
+        <text class="t-mono t-accent" x="350" y="112">routers/jobs — ingest: per-source row</text>
+        <text class="t-mono t-accent" x="350" y="128">+ canonical row, one transaction</text>
+        <rect class="box--sunken box" x="338" y="146" width="264" height="30" rx="8"/>
+        <text class="t-mono" x="350" y="165">routers/extension — state, run logs</text>
+        <rect class="box--sunken box" x="338" y="184" width="264" height="30" rx="8"/>
+        <text class="t-mono" x="350" y="203">routers/auto_scrape — cycles, probes</text>
+        <rect class="box--sunken box" x="338" y="222" width="264" height="30" rx="8"/>
+        <text class="t-mono" x="350" y="241">ws/run-log — live scan progress</text>
+        <rect class="box--sunken box" x="338" y="260" width="264" height="44" rx="8"/>
+        <text class="t-mono" x="350" y="278">auto_scrape/ — post-scrape:</text>
+        <text class="t-mono" x="350" y="294">expire both tables together</text>
+        <rect class="box--sunken box" x="338" y="312" width="264" height="30" rx="8"/>
+        <text class="t-mono" x="350" y="331">core/scraped_job_projection — pure</text>
+
+        <!-- edges api → stores -->
+        <path class="edge" d="M620 120 H 690" marker-end="url(#arr2)"/>
+        <path class="edge" d="M620 282 H 690" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="655" y="272" text-anchor="middle">wake</text>
+
+        <!-- postgres -->
+        <rect class="box" x="690" y="30" width="200" height="200" rx="14"/>
+        <text class="t-head" x="708" y="58">PostgreSQL 16</text>
+        <rect class="box--sunken box" x="708" y="72" width="164" height="30" rx="8"/>
+        <text class="t-mono" x="718" y="91">linkedin_jobs (39)</text>
+        <rect class="box--sunken box" x="708" y="108" width="164" height="30" rx="8"/>
+        <text class="t-mono" x="718" y="127">indeed_jobs (45)</text>
+        <rect class="box--sunken box" x="708" y="144" width="164" height="30" rx="8"/>
+        <text class="t-mono" x="718" y="163">glassdoor_jobs (48)</text>
+        <rect class="box--accent box" x="708" y="186" width="164" height="30" rx="8"/>
+        <text class="t-mono t-accent" x="718" y="205">scraped_jobs (27)</text>
+
+        <!-- redis -->
+        <rect class="box" x="690" y="250" width="200" height="60" rx="14"/>
+        <text class="t-head" x="708" y="276">Redis 7</text>
+        <text class="t-soft" x="708" y="296">wakes post-scrape promptly</text>
+
+        <!-- console -->
+        <rect class="box" x="690" y="326" width="200" height="60" rx="14"/>
+        <text class="t-head" x="708" y="352">React console · :5173</text>
+        <text class="t-soft" x="708" y="372">Config · Jobs · Logs · Auto-scrape</text>
+        <path class="edge" d="M690 356 H 620" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="655" y="346" text-anchor="middle">REST · WS</text>
+
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--text-faint)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>
+        The extension is the only part that touches a job board; the backend never makes an
+        outbound request to one. State that has to survive a service-worker restart lives in
+        Postgres, not in the extension.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ SCRAPERS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Three sites, three different surfaces</h2>
+      <p>
+        None of the three boards has a public API for this, and each one hides the full posting
+        somewhere different. The scraper for each is its own set of content scripts, and the
+        interesting work in every one was finding the surface that returns structured data
+        instead of parsing rendered HTML.
+      </p>
+      <p>
+        <strong>LinkedIn</strong> renders its job pages from an internal REST API called Voyager.
+        The page's own <code>JSESSIONID</code> cookie doubles as the CSRF token, so the content
+        script reads it from <code>document.cookie</code>, then requests
+        <code>/voyager/api/jobs/jobPostings/{id}</code> with the same <code>decorationId</code>
+        the site uses and gets the complete <code>WebFullJobPosting</code> entity back as JSON —
+        title, description, salary, workplace type as an enum URN, industries as resolved
+        entities. Two attempts, and a 429, 403 or LinkedIn's non-standard 999 gives up on the posting
+        rather than retrying into a ban.
+      </p>
+      <p>
+        <strong>Indeed</strong> ships the search results as a "mosaic" data blob embedded in the
+        page, which gives the job keys and the card-level fields; the description comes from a
+        GraphQL endpoint at <code>apis.indeed.com</code> that needs the page's API key in a
+        header. The query asks for exactly the fields the schema stores — attributes, location,
+        compensation with its unit of work, language — so the per-source row is the API's
+        answer, not a parse of it. The Indeed scripts went through six fetch strategies before
+        settling on this one; the file is still called <code>rate_strategy.js</code>.
+      </p>
+      <p>
+        <strong>Glassdoor</strong> is the messiest: the listing page sometimes carries a
+        <code>__NEXT_DATA__</code> block, sometimes only JSON-LD <code>JobPosting</code> schema,
+        and the two disagree about salary provenance. Every Glassdoor detail fetch was
+        failing — zero rows, every scan — and the diagnosis came from a DevTools log: the fetch went to a
+        locale subdomain (<code>fr.glassdoor.ca</code>) while the page sat on
+        <code>www.glassdoor.ca</code>, so the browser blocked it as cross-origin. Pinning the
+        request to the page's own origin was the whole fix.
+      </p>
+      <div class="callout">
+        <p>
+          <strong>On scraping.</strong> This is personal tooling, and it's built to stay that
+          way: it runs in my own browser under my own login, paced like a person scrolling — two
+          to four seconds between scrolls, thirty between scans — it probes each site's session before every
+          cycle and stops the moment a board answers with a challenge, and nothing it collects
+          leaves my machine. It exists so that I read each posting once instead of three times.
+          It isn't a product, it doesn't redistribute data, and I wouldn't run it as either.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DATA MODEL ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Store it twice: the site's shape and ours</h2>
+      <p>
+        The first version of the schema had one LinkedIn-shaped table and tried to fit Indeed
+        and Glassdoor into it. It didn't fit, and the console ended up reading an empty table
+        while real scans wrote elsewhere. The rebuild in July made the split explicit. Every
+        ingest writes <em>two</em> rows in one transaction: a per-source row in
+        <code>linkedin_jobs</code>, <code>indeed_jobs</code> or <code>glassdoor_jobs</code> —
+        append-only, unnormalised, faithful to what the site said, with the raw payload as JSONB
+        — and a canonical row in <code>scraped_jobs</code>, 27 columns in one shape that the
+        console and any future consumer read without a per-site join.
+      </p>
+      <p>
+        All normalisation lives in the projection, and it follows three rules that took a
+        real scan to get right. <strong>NULL means the site didn't say.</strong> Never "no",
+        never a default: Glassdoor has no remote boolean, so <code>remote</code> is
+        <code>true</code> when it lists remote work types and NULL otherwise — never
+        <code>false</code>. <strong>Closed vocabularies with precedence.</strong>
+        <code>employment_type</code> is one of seven tokens; a posting tagged both Full-time and
+        Part-time yields <code>FULL_TIME</code> and the other survives only on the per-source row.
+        <strong>Unknown values warn, recognised no-ops don't.</strong> A token the table has
+        never seen logs a warning, which is how the vocabulary corrects itself from live data; a
+        site saying <code>OTHER</code> is a correct answer that maps to nothing and stays quiet,
+        so it can't bury the warnings that matter.
+      </p>
+      <pre><code># The one place the projection knowingly asserts more than the site said.
+def _indeed_workplace_type(remote_location: Any) -> str | None:
+    """Not a tri-state pass-through: False becomes ONSITE, an assertion Indeed
+    did not quite make. Indeed cannot express hybrid, so a hybrid posting is
+    recorded ONSITE — accepted so on-site filters return Indeed results at all.
+    Read ONSITE here as "not remote", not as confirmed on-site."""
+    if not isinstance(remote_location, bool):
+        return None
+    return "REMOTE" if remote_location else "ONSITE"</code></pre>
+      <p>
+        Two of those tokens came from data, not design. The first scan after the filter columns
+        shipped logged <code>projection_unknown_employment_type</code> for Indeed's "Permanent"
+        and <code>projection_unknown_salary_source</code> for its "EXTRACTION". Permanent is a
+        tenure axis, not an hours axis — a permanent part-time job exists — so it became its own
+        token ranked below the hours tokens, and the common "Full-time, Permanent" still yields
+        <code>FULL_TIME</code>. EXTRACTION means Indeed parsed the pay out of the employer's own
+        description, so it counts as employer-disclosed. Both decisions are in the module's
+        comments with the date of the scan that forced them.
+      </p>
+      <div class="callout callout--warn">
+        <p>
+          <strong>The trap the process caught.</strong> Ingest uses <code>ON CONFLICT DO
+          NOTHING</code>, so a canonical row is never recomputed. After the LinkedIn workplace
+          fix, the dashboard showed "LinkedIn workplace = 0" and it looked like a regression.
+          Replaying the stored payloads through the projection gave REMOTE 180 / HYBRID 123 /
+          ONSITE 76 — the code was right, the old rows were stale, and they'd heal on their
+          own within one shelf-life. The recipe for telling those two cases apart — replay first,
+          scan never — is now in the feature's quickstart.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ORCHESTRATOR LAB ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-orc-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">Run the orchestrator, one cycle at a time</h2>
+        <p class="lab__note">
+          <code>probeSiteSession</code>, <code>preCycleCheck</code>, the auto-pause counter and
+          <code>scheduleNextCycle</code> from <code>extension/background/auto_scrape.js</code>,
+          ported as they are. Set what each board's probe would return, press run, and watch the
+          state row.
+        </p>
+      </div>
+      <div class="orc-grid">
+        <div class="orc-controls">
+          <div class="gmm-field">
+            <label for="orc-backend">Backend</label>
+            <select id="orc-backend" data-orc-backend>
+              <option value="up" selected>up — /health ok, /config loads</option>
+              <option value="noconfig">up, but /config fails</option>
+              <option value="down">down</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label for="orc-li">LinkedIn probe → <code>/feed/</code></label>
+            <select id="orc-li" data-orc-probe="linkedin">
+              <option value="live" selected>200, normal page</option>
+              <option value="challenge">302 → /checkpoint/challenge</option>
+              <option value="authwall">302 → /authwall</option>
+              <option value="body_captcha">200, but the body has g-recaptcha</option>
+              <option value="r503">503 Service Unavailable</option>
+              <option value="threw">fetch threw (offline)</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label for="orc-in">Indeed probe → <code>/notifications</code></label>
+            <select id="orc-in" data-orc-probe="indeed">
+              <option value="live" selected>200, normal page</option>
+              <option value="r429">429 Too Many Requests</option>
+              <option value="r403_bare">403, plain body</option>
+              <option value="r403_cf">403 with cf-challenge-running</option>
+              <option value="login">302 → /login</option>
+              <option value="r503">503 Service Unavailable</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label for="orc-gd">Glassdoor probe → <code>/Job/index.htm</code></label>
+            <select id="orc-gd" data-orc-probe="glassdoor">
+              <option value="live" selected>200, normal page</option>
+              <option value="r403_bare">403, plain body</option>
+              <option value="r403_cf">403 with cf-challenge-running</option>
+              <option value="body_captcha">200, but the body has g-recaptcha</option>
+              <option value="login">302 → /login</option>
+              <option value="threw">fetch threw (offline)</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label for="orc-kw">Keywords (comma-separated)</label>
+            <input id="orc-kw" type="text" value="software engineer, machine learning engineer" data-orc-keywords>
+          </div>
+          <div class="orc-actions">
+            <button class="btn btn--primary" type="button" data-orc-run>Run one cycle</button>
+            <button class="btn" type="button" data-orc-enable>Enable</button>
+            <button class="btn" type="button" data-orc-reset>Reset</button>
+          </div>
+          <div class="orc-state" data-orc-state></div>
+        </div>
+        <div class="trace" aria-live="polite">
+          <ol class="trace__steps trace--empty" data-orc-trace></ol>
+        </div>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      Two rules worth seeing. A bare 403 is treated as rate-limiting, not a CAPTCHA — only a
+      challenge URL or a recognisable challenge body earns that label, because a CAPTCHA
+      requires a human and a rate limit just requires patience. And a 5xx or a thrown fetch is
+      treated as <em>live</em>: a board being down isn't evidence that my session died, and
+      pausing on it would leave the orchestrator stuck every time a site had a bad minute. Set
+      the backend to "down" and run three times to see the auto-pause.
+    </p>
+  </div>
+</section>
+
+<!-- ============ UNATTENDED ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Keeping a service worker honest</h2>
+      <p>
+        A Manifest V3 service worker is killed whenever Chrome feels like it, so an orchestrator
+        that runs for days can't keep its state in memory. Every cycle starts by writing
+        <code>cycle_phase: scrape_running</code> to a state row on the backend and ends —
+        in a <code>finally</code> — by writing it back to <code>idle</code>. The worker also
+        polls that row every 30 seconds and only re-arms its own alarm when the phase isn't
+        running and no alarm exists, which is what stops a restarted worker from starting a
+        second cycle on top of the first. The state row carries a heartbeat with an instance id,
+        so the dashboard can warn when two copies of the extension are alive in the same five
+        minutes.
+      </p>
+      <p>
+        The smaller rules came from watching it fail. Repeated pre-check failures auto-pause the
+        orchestrator instead of retrying forever. A cycle that finishes in under thirty seconds
+        with nothing succeeded gets a five-minute cooldown, because "nothing worked, try again
+        immediately" is exactly the pattern a board would block. On graceful exit and on worker
+        startup, any popup window that looks like a job-board scrape gets closed, so a zombie
+        popup can't keep scraping or attach itself to the wrong run log. And progress is mirrored
+        to the backend and fanned out over a WebSocket, so the console's scan page updates live
+        without polling while a run is in flight.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="section--tight" id="method">
+  <div class="wrap">
+    <div class="prose">
+      <h2>How it was made: spec-first, with Claude Code</h2>
+      <p>
+        The first four months were built the ordinary way with an AI coding agent in the loop,
+        and by July the result had the shape that produces: a lot of working code, three styling
+        systems in the frontend, a matching pipeline whose state machine lived in nullable
+        columns, and a README that described a system that no longer existed. The rebuild that
+        followed was a deliberate exercise in <em>spec-driven development</em> using GitHub Spec
+        Kit with Claude Code as the implementer — starting from never having used it.
+      </p>
+      <p>
+        The loop for every change was the same: <strong>constitution → specify → clarify → plan
+        → tasks → analyze → implement</strong>. The constitution is a short document of the
+        project's actual rules — every schema change through Alembic, per-source tables
+        append-only, dual-writes atomic, background work in a fresh session, the smoke tests are
+        the behavioural contract, change surgically. Before changing anything, the agent wrote
+        <em>as-built</em> specifications of five modules as they actually behaved, each with a
+        verification pass against the source and an optimisation backlog. Then five feature
+        specs took the system from there to here: the search-only split, the Glassdoor fix, the
+        unified table, the frontend rebuild (94 tasks), and the filter columns (48 tasks).
+      </p>
+      <p>
+        What I'd say to someone sceptical of this way of working is that the specs are where the
+        engineering judgement lives, and that's where the work moved. The projection's
+        vocabularies were marked "reasoned, not observed" in the spec, with a required review of
+        the warnings from a live three-site scan before the feature could close — and that review
+        found that the LinkedIn fixture the agent had written assumed localised labels
+        ("Remote", "Hybrid") when the live payload sends bare enum URNs. The fixture was, in the
+        module's own words, fiction; the process was designed so that fiction couldn't ship.
+        The frontend rebuild put a real <code>tsc</code> and ESLint gate in front of every task,
+        including a custom lint rule that bans calling the consume-and-clear
+        <code>/extension/pending*</code> routes from the UI, because those routes are a trap
+        that a future page would fall into.
+      </p>
+      <div class="callout">
+        <p>
+          <strong>What the agent did and what I did.</strong> Claude Code wrote nearly all of
+          the code in this repository, the specs, and the summary I've drawn on for this page.
+          I set the direction, wrote and revised the constitution, made every design call the
+          specs record as a clarification, ran the live scans, read the warnings, and decided
+          what each one meant — PERMANENT is a token because I said it was a tenure axis, not
+          because a model did. The bugs on this page were found by me running the thing on my
+          own job search. I think that's the honest division of labour in 2026, and I'd rather
+          state it than have a reader guess.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MATCHING HALF ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The half that was removed</h2>
+      <p>
+        Until July, JHA also de-duplicated postings and matched them against my resume. The
+        dedup pipeline ran three passes over new rows — metadata filter gates, description
+        filter gates, then duplicate detection by exact content hash and TF-IDF cosine
+        similarity over a 10,000-feature corpus, with chain resolution so every removed row
+        pointed at a surviving one. The matching pipeline was four staged "buttons": CPU
+        extraction of the job description, hard gates (years of experience, salary floor,
+        degree and field, visa sponsorship), a CPU pre-score into strong / stretch / weak, and
+        an optional LLM re-score through <code>gpt-4o-mini</code> with a 150-second extraction
+        timeout that fell back to the CPU path. It ran as asyncio background tasks with a
+        status endpoint the console polled, and every run wrote a report with a debug trace.
+      </p>
+      <p>
+        It worked, and it was removed anyway. The as-built specs made the reasons concrete: the
+        stage machine was implicit in four nullable columns rather than a status, it ran only
+        against the legacy LinkedIn-shaped table so Indeed and Glassdoor never entered it, and
+        there wasn't a single test covering the eligibility predicates. Rather than carry that
+        onto the new canonical table, the search-only split deleted the <code>dedup/</code>,
+        <code>matching/</code> and <code>profile/</code> packages outright, and the canonical
+        table got a <code>matched</code> flag that nothing in JHA sets. The design for the
+        replacement — a separate service that reads <code>scraped_jobs</code> alone and writes
+        its own tables — is in the repository, and its prerequisites on the JHA side are
+        shipped. That's the next thing I'm building.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HONESTY ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Where it's thin</h2>
+      <div class="callout callout--warn">
+        <p>
+          <strong>The README is stale</strong> and says so in a warning block halfway down: it
+          still documents the dedup and matching routes and columns that migration 030 deleted.
+          The project summary and <code>docs/live-per-source-schemas.md</code> are current; the
+          README needs its own docs pass.
+        </p>
+        <p>
+          <strong>Glassdoor's <code>workplace_type</code> is always NULL</strong> because the
+          scraper doesn't yet capture <code>remoteWorkTypes</code>. The projection is right and
+          will populate the moment the extension supplies the field — but a consumer that filters
+          remote on <code>workplace_type</code> instead of <code>remote</code> silently drops the
+          whole Glassdoor corpus.
+        </p>
+        <p>
+          <strong>Testing is asymmetric.</strong> The frontend has 135 unit tests; the backend
+          has four smoke scripts that need a running Compose stack and one unit test on the
+          projection. The projection deserves a proper parametrised test suite, and so do the
+          ingest routes.
+        </p>
+        <p>
+          <strong>Single-user assumptions everywhere.</strong> Auth is one bearer token
+          (<code>dev-token</code>), config is a JSON file, the orchestrator state is a singleton
+          row. All correct for one person on one machine, all wrong for anything else — which is
+          fine as long as it stays one person on one machine.
+        </p>
+        <p>
+          <strong>Small things on the list.</strong> <code>GET /jobs</code> orders by
+          <code>scrape_time DESC</code> with no tiebreaker, so page boundaries can repeat a row;
+          the constitution still enumerates test filenames and drifts when one is added; and
+          two frontend checks (the 360-px layout and the unsaved-changes guard) still need a
+          human in a real browser.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose">
+      <h2>The code, and the documents that explain it</h2>
+      <p>
+        The repository is public. If you read one file, read the projection module — its
+        docstrings carry the reasoning this page summarises, with the dates of the scans that
+        decided each mapping.
+      </p>
+    </div>
+    <div class="artifacts">
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>job-hunting-assistant ↗</strong><span>extension · backend · frontend · specs · docs</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/backend/core/scraped_job_projection.py" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>scraped_job_projection.py ↗</strong><span>the projection, with its reasoning in the docstrings</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/extension/background/auto_scrape.js" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>auto_scrape.js ↗</strong><span>the orchestrator: probes, matrix, auto-pause, scheduling</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/PROJECT-SUMMARY.md" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>PROJECT-SUMMARY.md ↗</strong><span>the July work log: what changed, in what order, and why</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/.specify/memory/constitution.md" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>The constitution ↗</strong><span>seven principles every spec is checked against</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/tree/main/specs" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>specs/001–010 ↗</strong><span>as-built baselines and feature specs, with plans, tasks and checklists</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>Credits</h2>
+      <div class="credits">
+        <h3>A solo project, built with an agent</h3>
+        <p>
+          Designed, directed and operated by Yiming Cao, March 2026 onward, as tooling for his
+          own job search. Implemented with Claude Code, from July under GitHub Spec Kit's
+          spec-driven workflow; the division of labour is described above.
+        </p>
+        <p>
+          Built on FastAPI, SQLAlchemy, Alembic, PostgreSQL, Redis, React, Vite, TanStack Query,
+          Tailwind and DOMPurify. The figures on this page were written afterwards by Yiming
+          Cao from the final code.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> Yiming Cao</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">Email</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -10,6 +10,8 @@
 <script defer src="assets/js/site.js"></script>
 <script defer src="assets/js/diffusion-lab.js"></script>
 <script defer src="assets/js/proto-lab.js"></script>
+<script defer src="assets/js/ecom-lab.js"></script>
+<script defer src="assets/js/jha-lab.js"></script>
 </head>
 <body>
 
@@ -226,6 +228,57 @@
             <span class="tag">Image forensics</span>
             <span class="tag">Signal processing</span>
             <span class="tag">PyTorch</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- Job Hunting Assistant ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <canvas data-jha-strip aria-label="Three per-source job tables of 39, 45 and 48 columns converging into one canonical 27-column table"></canvas>
+        </div>
+        <div class="card__body">
+          <p class="card__meta">Personal product · Mar 2026 – present</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/job-hunting-assistant.html">Three job boards, one table, no tabs</a>
+          </h3>
+          <p class="card__desc">
+            A Chrome extension that scrapes LinkedIn, Indeed and Glassdoor through my own session,
+            a FastAPI backend that stores each posting as the site shaped it and in one canonical
+            shape, and an orchestrator that runs for days unattended. Built spec-first with Claude
+            Code — with the projection and the orchestrator running live on the page.
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">Interactive</span>
+            <span class="tag">Python · FastAPI</span>
+            <span class="tag">Chrome extension</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Spec-driven</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- E-commerce admin ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <canvas data-rbac-strip aria-label="A matrix of three roles against eight permissions, with granted cells filled in"></canvas>
+        </div>
+        <div class="card__body">
+          <p class="card__meta">Full-stack web app · Dec 2025</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/ecommerce-admin.html">A store's back office, in Go and React</a>
+          </h3>
+          <p class="card__desc">
+            Users, roles, products and orders behind a Go Fiber API and a React/TypeScript
+            dashboard — JWT in an HTTP-only cookie, permissions down to the route, and a live
+            simulator of the middleware chain. Ported to Fiber v3 and React 19, and reviewed
+            honestly.
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">Interactive</span>
+            <span class="tag">Go</span>
+            <span class="tag">React · TypeScript</span>
+            <span class="tag">MySQL</span>
           </div>
         </div>
       </article>
