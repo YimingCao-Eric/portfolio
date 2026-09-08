@@ -44,8 +44,10 @@
       Assistant is the tool I built for my own search: a Chrome extension that scrapes all three
       through my logged-in session, a FastAPI backend that stores every posting twice — once as
       the site shaped it, once in a single canonical shape — and a React console to search,
-      read and run the whole thing unattended. It's in active use and active development; the
-      figures on this page run the same code the backend and the extension run.
+      read and run the whole thing unattended. Since August a second repository,
+      <strong>filter-matcher</strong>, reads that table and turns it into a short list worth
+      applying to. Both are in active development; the figures on this page run the same code
+      the backend and the extension run.
     </p>
 
     <div class="btn-row" style="margin-top:2rem">
@@ -71,6 +73,7 @@
       <div><dt>Extension</dt><dd>Chrome Manifest V3 · service worker · content scripts</dd></div>
       <div><dt>Backend</dt><dd>FastAPI · async SQLAlchemy · Alembic · PostgreSQL 16 · Redis 7 · Docker Compose</dd></div>
       <div><dt>Frontend</dt><dd>React 19 · TypeScript · Vite · TanStack Query · Tailwind</dd></div>
+      <div><dt>Companion</dt><dd>filter-matcher — Python CLI service, Aug 2026</dd></div>
     </dl>
   </div>
 </section>
@@ -139,7 +142,7 @@
       <div class="stat"><b>31</b><span>Alembic migrations, every schema change on record</span></div>
       <div class="stat"><b>~24k</b><span>lines: 10k Python, 6k extension JS, 7.5k frontend TypeScript</span></div>
       <div class="stat"><b>135</b><span>frontend unit tests on the trap-prone pure logic, plus four backend smoke tests</span></div>
-      <div class="stat"><b>10</b><span>feature specs, each with a plan, tasks and a checklist</span></div>
+      <div class="stat"><b>11</b><span>specs across the two repositories, each with a plan, tasks and checklists</span></div>
     </div>
 
     <figure class="arch">
@@ -482,7 +485,11 @@ def _indeed_workplace_type(remote_location: Any) -> str | None:
         <em>as-built</em> specifications of five modules as they actually behaved, each with a
         verification pass against the source and an optimisation backlog. Then five feature
         specs took the system from there to here: the search-only split, the Glassdoor fix, the
-        unified table, the frontend rebuild (94 tasks), and the filter columns (48 tasks).
+        unified table, the frontend rebuild (94 tasks), and the filter columns (48 tasks). The
+        companion service was built the same way from a blank repository: its own constitution,
+        one 146-task spec, and six domain checklists — boundary, cost, dedup, fidelity,
+        integrity, requirements — whose resolutions are recorded as dated clarifications in the
+        spec itself.
       </p>
       <p>
         What I'd say to someone sceptical of this way of working is that the specs are where the
@@ -517,30 +524,51 @@ def _indeed_workplace_type(remote_location: Any) -> str | None:
 <section class="section--tight">
   <div class="wrap">
     <div class="prose">
-      <h2>The half that was removed</h2>
+      <h2>The half that left, and came back as its own service</h2>
       <p>
-        Until July, JHA also de-duplicated postings and matched them against my resume. The
-        dedup pipeline ran three passes over new rows — metadata filter gates, description
-        filter gates, then duplicate detection by exact content hash and TF-IDF cosine
-        similarity over a 10,000-feature corpus, with chain resolution so every removed row
-        pointed at a surviving one. The matching pipeline was four staged "buttons": CPU
-        extraction of the job description, hard gates (years of experience, salary floor,
-        degree and field, visa sponsorship), a CPU pre-score into strong / stretch / weak, and
-        an optional LLM re-score through <code>gpt-4o-mini</code> with a 150-second extraction
-        timeout that fell back to the CPU path. It ran as asyncio background tasks with a
-        status endpoint the console polled, and every run wrote a report with a debug trace.
+        Until July, JHA also de-duplicated postings and matched them against my resume: a
+        three-pass dedup (metadata gates, description gates, then exact-hash and TF-IDF cosine
+        duplicate detection) and a four-stage matching pipeline (CPU extraction, hard gates on
+        years, salary, degree and visa, a CPU pre-score, an optional <code>gpt-4o-mini</code>
+        re-score). It worked, and the as-built specs made the case for removing it anyway: its
+        state machine was implicit in nullable columns, it only ever ran against the old
+        LinkedIn-shaped table, and not one test covered its eligibility rules. The search-only
+        split deleted it outright, and the canonical table got a <code>matched</code> flag that
+        nothing in JHA sets.
       </p>
       <p>
-        It worked, and it was removed anyway. The as-built specs made the reasons concrete: the
-        stage machine was implicit in four nullable columns rather than a status, it ran only
-        against the legacy LinkedIn-shaped table so Indeed and Glassdoor never entered it, and
-        there wasn't a single test covering the eligibility predicates. Rather than carry that
-        onto the new canonical table, the search-only split deleted the <code>dedup/</code>,
-        <code>matching/</code> and <code>profile/</code> packages outright, and the canonical
-        table got a <code>matched</code> flag that nothing in JHA sets. The design for the
-        replacement — a separate service that reads <code>scraped_jobs</code> alone and writes
-        its own tables — is in the repository, and its prerequisites on the JHA side are
-        shipped. That's the next thing I'm building.
+        <strong>filter-matcher</strong> is where it came back, in August, as a separate
+        repository with its own constitution. It is an on-demand CLI —
+        <code>python -m filtermatch run [--limit N] [--cpu-only]</code> — that reads
+        <em>only</em> <code>scraped_jobs</code>, claims a batch with <code>WHERE matched =
+        FALSE</code> (flipping the canonical row and its per-source origin in one transaction,
+        the single write it ever makes to JHA's data), and pushes each posting through stages
+        ordered strictly cheapest-first: the five profile preferences, a completeness check,
+        the field gates, duplicate detection, CPU skill extraction and gates, and then
+        <em>coverage banding before any AI call</em>. Coverage below 0.50 is rejected without
+        spending a token; exactly 1.00 is shortlisted as <code>cpu_perfect</code>; only the
+        ambiguous band in between goes to the model. It writes to five stores of its own —
+        the shortlist, the exclusion audit, a blacklist re-entry ledger, a skill-candidate
+        table, and a run record — and every run ends by reconciling its counts: claimed must
+        equal shortlisted plus excluded plus anomalies, or the run is recorded as failed.
+      </p>
+      <pre><code># pipeline.py — why the completeness check runs before the language gate.
+# Measured, 2026-08-07: langdetect on two characters returns Hungarian at
+# confidence 0.999994; "Job posting." returns Tagalog at 0.999996. Short text
+# does NOT produce low confidence -- it produces spuriously HIGH confidence on a
+# wrong language. So a truncated posting reaching the language gate first would
+# be recorded as (field_gate, language_mismatch) with a fabricated verdict,
+# instead of (cpu_gate, incomplete_posting), which is what it actually is.</code></pre>
+      <p>
+        Five migrations, 184 tests across five smoke suites with every AI path mocked, and 137
+        of 146 tasks done. The nine that aren't are honest ones: three items are blocked on live
+        data — the service drained every claimable posting (113 of 113) during development, so a
+        real AI-mode run, a real <code>cpu_strong</code> shortlist and a real cross-post collapse
+        each wait for the next three-site scan. Building it also surfaced a trap worth
+        recording: its skill-candidate migration collided with a table JHA's own migration 017
+        had left behind — 7,976 frozen rows with no living code — and the fix was a rename plus
+        a new rule that every store name is asserted free at migration time, so the next
+        collision is a named abort rather than a puzzle.
       </p>
     </div>
   </div>
@@ -553,10 +581,11 @@ def _indeed_workplace_type(remote_location: Any) -> str | None:
       <h2>Where it's thin</h2>
       <div class="callout callout--warn">
         <p>
-          <strong>The README is stale</strong> and says so in a warning block halfway down: it
-          still documents the dedup and matching routes and columns that migration 030 deleted.
-          The project summary and <code>docs/live-per-source-schemas.md</code> are current; the
-          README needs its own docs pass.
+          <strong>The scrapers have been idle since July.</strong> The extension's last
+          heartbeat is from the day the search-only rebuild finished; everything since has been
+          the companion service, built against the July corpus. The README was stale for the
+          same reason and has been rewritten in the current working copy — that rewrite, and
+          the docs move into <code>docs/</code>, are not yet pushed.
         </p>
         <p>
           <strong>Glassdoor's <code>workplace_type</code> is always NULL</strong> because the
@@ -595,7 +624,7 @@ def _indeed_workplace_type(remote_location: Any) -> str | None:
     <div class="prose">
       <h2>The code, and the documents that explain it</h2>
       <p>
-        The repository is public. If you read one file, read the projection module — its
+        Both repositories are public. If you read one file, read the projection module — its
         docstrings carry the reasoning this page summarises, with the dates of the scans that
         decided each mapping.
       </p>
@@ -613,7 +642,11 @@ def _indeed_workplace_type(remote_location: Any) -> str | None:
         <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
         <span><strong>auto_scrape.js ↗</strong><span>the orchestrator: probes, matrix, auto-pause, scheduling</span></span>
       </a>
-      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/PROJECT-SUMMARY.md" target="_blank" rel="noopener">
+      <a class="artifact" href="https://github.com/YimingCao-Eric/filter-matcher" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>filter-matcher ↗</strong><span>the companion filter-and-match service · Python CLI · Aug 2026</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/docs/PROJECT-SUMMARY.md" target="_blank" rel="noopener">
         <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
         <span><strong>PROJECT-SUMMARY.md ↗</strong><span>the July work log: what changed, in what order, and why</span></span>
       </a>
