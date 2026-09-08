@@ -43,3 +43,23 @@
 .skill-list li { display: flex; flex-direction: column; gap: .15rem; }
 .skill-list span { font-size: .76rem; color: var(--text-faint); }
 .skill-list b { font-size: .89rem; font-weight: 550; }
+
+/* hero with about + contact */
+.hero__grid { display: grid; gap: clamp(2rem, 5vw, 4rem); grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr); align-items: start; }
+@media (max-width: 860px) { .hero__grid { grid-template-columns: 1fr; } }
+.hero__about { margin-top: 1.4rem; font-size: .97rem; color: var(--text-soft); max-width: 62ch; }
+.hero__about p { margin-bottom: .9em; }
+.hero__side { display: grid; gap: 1rem; margin-top: .5rem; }
+.side-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.3rem 1.4rem; }
+.side-card h3 { font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 .9rem; }
+.contact-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
+.contact-list li { display: flex; align-items: center; gap: .65rem; font-size: .88rem; min-width: 0; }
+.contact-list svg { width: 16px; height: 16px; flex: none; color: var(--text-faint); }
+.contact-list a { text-decoration: none; color: var(--text); overflow-wrap: anywhere; border-bottom: 1px solid var(--border-strong); }
+.contact-list a:hover { border-bottom-color: var(--accent); color: var(--accent-text); }
+.section--after { padding-top: 0; }
+.card__gh { position: relative; z-index: 1; color: var(--accent-text); text-decoration: none; border-bottom: 1px solid transparent; }
+.card__gh:hover { border-bottom-color: var(--accent); }
+
+/* compact nav on narrow screens */
+@media (max-width: 520px) { .nav { gap: 0; } .nav a { font-size: .82rem; padding: .4rem .45rem; } }

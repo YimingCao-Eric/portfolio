@@ -20,6 +20,7 @@
     <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"></span>Yiming Cao</a>
     <nav class="nav">
       <a href="#work">Work</a>
+      <a href="#research">Research</a>
       <a href="#about">About</a>
       <a href="mailto:caoyimingeric@gmail.com">Contact</a>
       <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle colour theme">
@@ -32,25 +33,72 @@
 
 <main>
 
-<section class="hero">
+<section class="hero" id="about">
   <div class="wrap">
-    <p class="eyebrow">Vancouver, BC</p>
-    <h1 class="hero__title">
-      I build software for problems that<br class="hide-sm">
-      <span class="hero__accent">start out badly defined.</span>
-    </h1>
-    <p class="lede hero__lede">
-      Software engineer working across geospatial infrastructure modelling, applied machine
-      learning, and the messy middle where a research paper has to become something that runs.
-      M.Eng., UBC. B.Sc. (Hons), University of Victoria.
-    </p>
-    <div class="btn-row hero__actions">
-      <a class="btn btn--primary" href="#work">
-        See the work
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-      <a class="btn" href="https://github.com/YimingCao-Eric">GitHub</a>
-      <a class="btn" href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+    <div class="hero__grid">
+      <div class="hero__main">
+        <p class="eyebrow">Vancouver, BC</p>
+        <h1 class="hero__title">
+          I build software for problems that<br class="hide-sm">
+          <span class="hero__accent">start out badly defined.</span>
+        </h1>
+        <p class="lede hero__lede">
+          Software engineer working across geospatial infrastructure modelling, applied machine
+          learning, and the messy middle where a research paper has to become something that runs.
+          M.Eng., UBC. B.Sc. (Hons), University of Victoria.
+        </p>
+        <div class="hero__about">
+          <p>
+            Most of my work sits between a domain problem and the code that has to model it —
+            currently geospatial modelling of critical infrastructure networks, and before that
+            retrieval-augmented language model systems. Lately that also means building my own
+            products with an AI coding agent under a spec-first workflow, and being honest on
+            each page here about which parts were mine.
+          </p>
+          <p>
+            I like the parts other people find tedious: reading the paper properly, finding the one
+            assumption everything rests on, and getting a system to the point where the hard thing
+            looks obvious. This site is mostly a record of that.
+          </p>
+        </div>
+        <div class="btn-row hero__actions">
+          <a class="btn btn--primary" href="#work">
+            See the work
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a class="btn" href="#research">Research projects</a>
+        </div>
+      </div>
+
+      <aside class="hero__side">
+        <div class="side-card">
+          <h3>Contact</h3>
+          <ul class="contact-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              <a href="mailto:caoyimingeric@gmail.com">caoyimingeric@gmail.com</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+              <a href="https://github.com/YimingCao-Eric" target="_blank" rel="noopener">github.com/YimingCao-Eric</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.4 2H3.6A1.6 1.6 0 0 0 2 3.6v16.8A1.6 1.6 0 0 0 3.6 22h16.8a1.6 1.6 0 0 0 1.6-1.6V3.6A1.6 1.6 0 0 0 20.4 2zM8 19H5V9h3zM6.5 7.7a1.7 1.7 0 1 1 0-3.4 1.7 1.7 0 0 1 0 3.4zM19 19h-3v-4.9c0-1.2 0-2.7-1.6-2.7s-1.9 1.3-1.9 2.6V19h-3V9h2.9v1.4a3.2 3.2 0 0 1 2.9-1.6c3.1 0 3.7 2 3.7 4.7z"/></svg>
+              <a href="https://linkedin.com/in/yiming-cao-a760841b0" target="_blank" rel="noopener">linkedin.com/in/yiming-cao-a760841b0</a>
+            </li>
+          </ul>
+        </div>
+        <div class="side-card">
+          <h3>Working with</h3>
+          <ul class="skill-list">
+            <li><span>Languages</span><b>Python, TypeScript / JavaScript, Go, SQL</b></li>
+            <li><span>Data</span><b>PostgreSQL / PostGIS, Redis, NetworkX</b></li>
+            <li><span>ML</span><b>PyTorch, RAG systems, LLM pipelines</b></li>
+            <li><span>Web</span><b>FastAPI, React, Chrome extensions</b></li>
+            <li><span>Practice</span><b>Spec-driven development with Claude Code</b></li>
+          </ul>
+        </div>
+      </aside>
     </div>
   </div>
 </section>
@@ -59,126 +107,97 @@
 <section class="section" id="work">
   <div class="wrap">
     <div class="section-head">
-      <h2>Selected work</h2>
-      <p class="lede">Each project below has a full write-up — the reasoning, not just the screenshot.</p>
+      <h2>Independent work</h2>
+      <p class="lede">Products and systems built on my own initiative — each with a full write-up and a live figure that runs the project's own logic.</p>
     </div>
 
     <div class="grid">
 
-      <!-- ---- DDPM ---- -->
+      <!-- ---- Job Hunting Assistant ---- -->
       <article class="card reveal">
         <div class="card__media">
-          <canvas data-diffusion-strip aria-label="An image progressively destroyed by Gaussian noise across five timesteps"></canvas>
+          <canvas data-jha-strip aria-label="Three per-source job tables of 39, 45 and 48 columns converging into one canonical 27-column table"></canvas>
         </div>
         <div class="card__body">
-          <p class="card__meta">Research report · Dec 2023</p>
+          <p class="card__meta">Independent product · Mar 2026 – present · <a class="card__gh" href="https://github.com/YimingCao-Eric/job-hunting-assistant" target="_blank" rel="noopener">GitHub ↗</a> · <a class="card__gh" href="https://github.com/YimingCao-Eric/filter-matcher" target="_blank" rel="noopener">filter-matcher ↗</a></p>
           <h3 class="card__title">
-            <a class="card__link" href="projects/ddpm-diffusion-models.html">Denoising Diffusion Probabilistic Models</a>
+            <a class="card__link" href="projects/job-hunting-assistant.html">Three job boards, one table, no tabs</a>
           </h3>
           <p class="card__desc">
-            A full derivation of the DDPM training objective, from maximum likelihood to the
-            one-line noise-prediction loss — rebuilt as an interactive page with a live
-            forward-process simulator.
+            A Chrome extension that scrapes LinkedIn, Indeed and Glassdoor through my own session,
+            a FastAPI backend that stores each posting as the site shaped it and in one canonical
+            shape, an orchestrator that runs for days unattended, and a companion service that
+            turns the table into a shortlist. Built spec-first with Claude Code — with the
+            projection and the orchestrator running live on the page.
           </p>
           <div class="tags">
             <span class="tag tag--accent">Interactive</span>
-            <span class="tag">Variational inference</span>
-            <span class="tag">Generative models</span>
-            <span class="tag">LaTeX</span>
+            <span class="tag">Python · FastAPI</span>
+            <span class="tag">Chrome extension</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Spec-driven</span>
           </div>
         </div>
       </article>
 
-      <!-- ---- MRI denoising ---- -->
+      <!-- ---- E-commerce admin ---- -->
       <article class="card reveal">
         <div class="card__media">
-          <img src="assets/img/mri/thumb.jpg" alt="Three axial MRI slices: original, DCT denoised, PCA denoised">
+          <canvas data-rbac-strip aria-label="A matrix of three roles against eight permissions, with granted cells filled in"></canvas>
         </div>
         <div class="card__body">
-          <p class="card__meta">Research paper · Dec 2022</p>
+          <p class="card__meta">Independent build · Nov – Dec 2025 · <a class="card__gh" href="https://github.com/YimingCao-Eric/go-admin" target="_blank" rel="noopener">go-admin ↗</a> · <a class="card__gh" href="https://github.com/YimingCao-Eric/react-admin" target="_blank" rel="noopener">react-admin ↗</a></p>
           <h3 class="card__title">
-            <a class="card__link" href="projects/mri-denoising.html">Denoising diffusion-weighted MRI</a>
+            <a class="card__link" href="projects/ecommerce-admin.html">A store's back office, in Go and React</a>
           </h3>
           <p class="card__desc">
-            DCT and PCA denoisers built from scratch and measured across three subjects and
-            four b-values. PCA wins by ~3.5 dB — but both hit the same wall, and the
-            trade-off curve is the real finding.
+            Users, roles, products and orders behind a Go Fiber API and a React/TypeScript
+            dashboard — JWT in an HTTP-only cookie, permissions down to the route, and a live
+            simulator of the middleware chain. Ported to Fiber v3 and React 19, and reviewed
+            honestly.
           </p>
           <div class="tags">
             <span class="tag tag--accent">Interactive</span>
+            <span class="tag">Go</span>
+            <span class="tag">React · TypeScript</span>
+            <span class="tag">MySQL</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESEARCH ============ -->
+<section class="section section--after" id="research">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Graduate research projects</h2>
+      <p class="lede">Applied machine learning and signal processing from the M.Eng. at UBC, 2022 – 2024 — the reasoning, not just the screenshot.</p>
+    </div>
+
+    <div class="grid">
+
+      <!-- ---- Bayer-pattern fake-image detection ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="assets/img/bayer/thumb.png" alt="A landscape photograph dissolving into the red, green and blue cells of a Bayer colour filter array">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">Research paper · Apr 2024</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/bayer-fake-image-detection.html">Catching AI images by their missing mosaic</a>
+          </h3>
+          <p class="card__desc">
+            A camera interpolates two of the three colours at every pixel; a generator never does.
+            Re-mosaic an image four ways and measure the disagreement: 97–100% detection across
+            46,000 generated images with no training — and a live version you can feed your own photo.
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">Interactive</span>
+            <span class="tag">Image forensics</span>
             <span class="tag">Signal processing</span>
-            <span class="tag">Medical imaging</span>
-            <span class="tag">NumPy</span>
-          </div>
-        </div>
-      </article>
-
-      <!-- ---- Few-shot learning ---- -->
-      <article class="card reveal">
-        <div class="card__media">
-          <canvas data-proto-strip aria-label="A prototypical-network decision map with three classes"></canvas>
-        </div>
-        <div class="card__body">
-          <p class="card__meta">Solo research project · Apr 2023</p>
-          <h3 class="card__title">
-            <a class="card__link" href="projects/few-shot-learning.html">Feature extractors for few-shot learning</a>
-          </h3>
-          <p class="card__desc">
-            ResNet, DenseNet and ConvNeXt trained from scratch as backbones for Prototypical
-            Networks on CUB — plus the two classifier improvements that didn't work, and why.
-          </p>
-          <div class="tags">
-            <span class="tag tag--accent">Interactive</span>
-            <span class="tag">PyTorch</span>
-            <span class="tag">Meta-learning</span>
-            <span class="tag">Ablation</span>
-          </div>
-        </div>
-      </article>
-
-      <!-- ---- Ensemble stacking ---- -->
-      <article class="card reveal">
-        <div class="card__media">
-          <img src="assets/img/stack/thumb.png" alt="Decision maps of four base learners and their stacked ensemble">
-        </div>
-        <div class="card__body">
-          <p class="card__meta">Research report · May 2023</p>
-          <h3 class="card__title">
-            <a class="card__link" href="projects/ensemble-stacking.html">The weakest model made the best ensemble</a>
-          </h3>
-          <p class="card__desc">
-            LeNet, AlexNet, VGG and ResNet stacked under a meta-network on CIFAR-10. The winning
-            trio included the 68% model — with a live stacking playground that shows why diversity
-            beats strength.
-          </p>
-          <div class="tags">
-            <span class="tag tag--accent">Interactive</span>
-            <span class="tag">Ensembles</span>
-            <span class="tag">PyTorch</span>
-            <span class="tag">CIFAR-10</span>
-          </div>
-        </div>
-      </article>
-
-      <!-- ---- MRI segmentation ---- -->
-      <article class="card reveal">
-        <div class="card__media">
-          <img src="assets/img/seg/thumb.png" alt="k-means and GMM cluster maps of synthetic tissue data">
-        </div>
-        <div class="card__body">
-          <p class="card__meta">Research paper · Dec 2022</p>
-          <h3 class="card__title">
-            <a class="card__link" href="projects/mri-segmentation.html">Finding a tumour with no labels</a>
-          </h3>
-          <p class="card__desc">
-            Unsupervised brain-tumour segmentation on BraTS 2018 — k-means against a GMM-EM
-            written from scratch in PyTorch and run on the GPU over nine million voxels. Dice 0.9
-            on most patients, and a precise account of the ones it missed.
-          </p>
-          <div class="tags">
-            <span class="tag tag--accent">Interactive</span>
-            <span class="tag">EM algorithm</span>
-            <span class="tag">Medical imaging</span>
             <span class="tag">PyTorch</span>
           </div>
         </div>
@@ -208,78 +227,121 @@
         </div>
       </article>
 
-      <!-- ---- Bayer-pattern fake-image detection ---- -->
+      <!-- ---- DDPM ---- -->
       <article class="card reveal">
         <div class="card__media">
-          <img src="assets/img/bayer/thumb.png" alt="A landscape photograph dissolving into the red, green and blue cells of a Bayer colour filter array">
+          <canvas data-diffusion-strip aria-label="An image progressively destroyed by Gaussian noise across five timesteps"></canvas>
         </div>
         <div class="card__body">
-          <p class="card__meta">Research paper · Apr 2024</p>
+          <p class="card__meta">Research report · Dec 2023</p>
           <h3 class="card__title">
-            <a class="card__link" href="projects/bayer-fake-image-detection.html">Catching AI images by their missing mosaic</a>
+            <a class="card__link" href="projects/ddpm-diffusion-models.html">Denoising Diffusion Probabilistic Models</a>
           </h3>
           <p class="card__desc">
-            A camera interpolates two of the three colours at every pixel; a generator never does.
-            Re-mosaic an image four ways and measure the disagreement: 97–100% detection across
-            46,000 generated images with no training — and a live version you can feed your own photo.
+            A full derivation of the DDPM training objective, from maximum likelihood to the
+            one-line noise-prediction loss — rebuilt as an interactive page with a live
+            forward-process simulator.
           </p>
           <div class="tags">
             <span class="tag tag--accent">Interactive</span>
-            <span class="tag">Image forensics</span>
-            <span class="tag">Signal processing</span>
+            <span class="tag">Variational inference</span>
+            <span class="tag">Generative models</span>
+            <span class="tag">LaTeX</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- Ensemble stacking ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="assets/img/stack/thumb.png" alt="Decision maps of four base learners and their stacked ensemble">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">Research report · May 2023</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/ensemble-stacking.html">The weakest model made the best ensemble</a>
+          </h3>
+          <p class="card__desc">
+            LeNet, AlexNet, VGG and ResNet stacked under a meta-network on CIFAR-10. The winning
+            trio included the 68% model — with a live stacking playground that shows why diversity
+            beats strength.
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">Interactive</span>
+            <span class="tag">Ensembles</span>
             <span class="tag">PyTorch</span>
+            <span class="tag">CIFAR-10</span>
           </div>
         </div>
       </article>
 
-      <!-- ---- Job Hunting Assistant ---- -->
+      <!-- ---- Few-shot learning ---- -->
       <article class="card reveal">
         <div class="card__media">
-          <canvas data-jha-strip aria-label="Three per-source job tables of 39, 45 and 48 columns converging into one canonical 27-column table"></canvas>
+          <canvas data-proto-strip aria-label="A prototypical-network decision map with three classes"></canvas>
         </div>
         <div class="card__body">
-          <p class="card__meta">Personal product · Mar 2026 – present</p>
+          <p class="card__meta">Solo research project · Apr 2023</p>
           <h3 class="card__title">
-            <a class="card__link" href="projects/job-hunting-assistant.html">Three job boards, one table, no tabs</a>
+            <a class="card__link" href="projects/few-shot-learning.html">Feature extractors for few-shot learning</a>
           </h3>
           <p class="card__desc">
-            A Chrome extension that scrapes LinkedIn, Indeed and Glassdoor through my own session,
-            a FastAPI backend that stores each posting as the site shaped it and in one canonical
-            shape, an orchestrator that runs for days unattended, and a companion service that
-            turns the table into a shortlist. Built spec-first with Claude Code — with the
-            projection and the orchestrator running live on the page.
+            ResNet, DenseNet and ConvNeXt trained from scratch as backbones for Prototypical
+            Networks on CUB — plus the two classifier improvements that didn't work, and why.
           </p>
           <div class="tags">
             <span class="tag tag--accent">Interactive</span>
-            <span class="tag">Python · FastAPI</span>
-            <span class="tag">Chrome extension</span>
-            <span class="tag">PostgreSQL</span>
-            <span class="tag">Spec-driven</span>
+            <span class="tag">PyTorch</span>
+            <span class="tag">Meta-learning</span>
+            <span class="tag">Ablation</span>
           </div>
         </div>
       </article>
 
-      <!-- ---- E-commerce admin ---- -->
+      <!-- ---- MRI denoising ---- -->
       <article class="card reveal">
         <div class="card__media">
-          <canvas data-rbac-strip aria-label="A matrix of three roles against eight permissions, with granted cells filled in"></canvas>
+          <img src="assets/img/mri/thumb.jpg" alt="Three axial MRI slices: original, DCT denoised, PCA denoised">
         </div>
         <div class="card__body">
-          <p class="card__meta">Full-stack web app · Dec 2025</p>
+          <p class="card__meta">Research paper · Dec 2022</p>
           <h3 class="card__title">
-            <a class="card__link" href="projects/ecommerce-admin.html">A store's back office, in Go and React</a>
+            <a class="card__link" href="projects/mri-denoising.html">Denoising diffusion-weighted MRI</a>
           </h3>
           <p class="card__desc">
-            Users, roles, products and orders behind a Go Fiber API and a React/TypeScript
-            dashboard — JWT in an HTTP-only cookie, permissions down to the route, and a live
-            simulator of the middleware chain. Ported to Fiber v3 and React 19, and reviewed
-            honestly.
+            DCT and PCA denoisers built from scratch and measured across three subjects and
+            four b-values. PCA wins by ~3.5 dB — but both hit the same wall, and the
+            trade-off curve is the real finding.
           </p>
           <div class="tags">
             <span class="tag tag--accent">Interactive</span>
-            <span class="tag">Go</span>
-            <span class="tag">React · TypeScript</span>
-            <span class="tag">MySQL</span>
+            <span class="tag">Signal processing</span>
+            <span class="tag">Medical imaging</span>
+            <span class="tag">NumPy</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- MRI segmentation ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="assets/img/seg/thumb.png" alt="k-means and GMM cluster maps of synthetic tissue data">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">Research paper · Dec 2022</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/mri-segmentation.html">Finding a tumour with no labels</a>
+          </h3>
+          <p class="card__desc">
+            Unsupervised brain-tumour segmentation on BraTS 2018 — k-means against a GMM-EM
+            written from scratch in PyTorch and run on the GPU over nine million voxels. Dice 0.9
+            on most patients, and a precise account of the ones it missed.
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">Interactive</span>
+            <span class="tag">EM algorithm</span>
+            <span class="tag">Medical imaging</span>
+            <span class="tag">PyTorch</span>
           </div>
         </div>
       </article>
@@ -291,45 +353,6 @@
         ============================================================
       -->
 
-    </div>
-  </div>
-</section>
-
-<!-- ============ ABOUT ============ -->
-<section class="section" id="about">
-  <div class="wrap">
-    <div class="about">
-      <div class="about__text prose">
-        <h2>About</h2>
-        <p>
-          I'm a software engineer based in the Vancouver area. Most of my work sits between
-          a domain problem and the code that has to model it — currently geospatial modelling of
-          critical infrastructure networks, and before that retrieval-augmented language model
-          systems.
-        </p>
-        <p>
-          I like the parts other people find tedious: reading the paper properly, finding the one
-          assumption everything rests on, and getting a system to the point where the hard thing
-          looks obvious. This site is mostly a record of that.
-        </p>
-        <p>
-          M.Eng. from the University of British Columbia, B.Sc. (Honours) from the University of
-          Victoria.
-        </p>
-        <div class="btn-row" style="margin-top:1.75rem">
-          <a class="btn btn--primary" href="mailto:caoyimingeric@gmail.com">Get in touch</a>
-          <a class="btn" href="https://github.com/YimingCao-Eric">GitHub</a>
-        </div>
-      </div>
-      <aside class="about__side">
-        <h3>Working with</h3>
-        <ul class="skill-list">
-          <li><span>Languages</span><b>Python, JavaScript, SQL</b></li>
-          <li><span>Data</span><b>PostgreSQL / PostGIS, NetworkX</b></li>
-          <li><span>ML</span><b>PyTorch, RAG systems, LLM tooling</b></li>
-          <li><span>Web</span><b>HTML/CSS/JS, static sites</b></li>
-        </ul>
-      </aside>
     </div>
   </div>
 </section>
