@@ -15,6 +15,11 @@
 (function () {
   "use strict";
 
+  // i18n: site.js defines window.I18N before DOMContentLoaded; fall back to English.
+  function t(en, zh) { return (window.I18N && window.I18N.t) ? window.I18N.t(en, zh) : en; }
+  function lbl(L) { return t(L.label, L.labelZh); }
+  function shortLbl(L) { return t(L.label.split(" ")[0], L.shortZh); }
+
   var PAL = { light: ["#2a78d6", "#eb6834"], dark: ["#3987e5", "#d95926"] };
   function isDark() {
     var t = document.documentElement.getAttribute("data-theme");
@@ -47,7 +52,7 @@
 
   /* ---------- base learners: each returns p(class 1) ---------- */
   var LEARNERS = [
-    { key: "linear", label: "Linear", bias: "a straight line",
+    { key: "linear", label: "Linear", labelZh: "线性", shortZh: "线性", bias: "a straight line", biasZh: "一条直线",
       fit: function (A) {
         var w = [0, 0, 0];
         for (var it = 0; it < 600; it++) {
@@ -57,7 +62,7 @@
         }
         return function (x, y) { return sigmoid(w[0] * x + w[1] * y + w[2]); };
       } },
-    { key: "stump", label: "Axis stump", bias: "one threshold on x or y",
+    { key: "stump", label: "Axis stump", labelZh: "decision stump", shortZh: "stump", bias: "one threshold on x or y", biasZh: "在 x 或 y 上取一个阈值",
       fit: function (A) {
         var best = { acc: -1 };
         ["x", "y"].forEach(function (ax) {
@@ -71,7 +76,7 @@
         });
         return function (x, y) { var v = (ax(x, y) - best.th) * best.sgn; return sigmoid(v * 6); function ax(x, y) { return best.ax === "x" ? x : y; } };
       } },
-    { key: "centroid", label: "Nearest centroid", bias: "distance to two class means",
+    { key: "centroid", label: "Nearest centroid", labelZh: "nearest centroid", shortZh: "centroid", bias: "distance to two class means", biasZh: "到两类均值的距离",
       fit: function (A) {
         var m = [[0, 0, 0], [0, 0, 0]];
         A.forEach(function (p) { m[p.c][0] += p.x; m[p.c][1] += p.y; m[p.c][2]++; });
@@ -81,7 +86,7 @@
           return sigmoid((d0 - d1) * 5);
         };
       } },
-    { key: "knn", label: "k-NN (k = 7)", bias: "vote of the 7 nearest training points",
+    { key: "knn", label: "k-NN (k = 7)", labelZh: "k-NN（k = 7）", shortZh: "k-NN", bias: "vote of the 7 nearest training points", biasZh: "最近 7 个训练点投票",
       fit: function (A) {
         return function (x, y) {
           var d = A.map(function (p) { return { d: (p.x - x) * (p.x - x) + (p.y - y) * (p.y - y), c: p.c }; });
@@ -165,21 +170,21 @@
       var inc = included(), meta = fitMeta(data.B, inc.map(function (f) { return f.model; })), macc = accuracy(meta, data.C);
       fitted.forEach(function (f, i) {
         var c = panels.children[i].querySelector("canvas"); if (!c) return;
-        drawMap(c, f.model, data.C, f.L.label, f.acc, false);
+        drawMap(c, f.model, data.C, lbl(f.L), f.acc, false);
         panels.children[i].classList.toggle("is-off", !(boxes[i] && boxes[i].checked));
       });
-      drawMap(stacked, meta, data.C, inc.length ? "Stacked (" + inc.length + " learner" + (inc.length > 1 ? "s" : "") + ")" : "Stacked (nothing selected)", macc, true);
+      drawMap(stacked, meta, data.C, inc.length ? t("Stacked (" + inc.length + " learner" + (inc.length > 1 ? "s" : "") + ")", "stacking（" + inc.length + " 个 base learner）") : t("Stacked (nothing selected)", "stacking（未选择任何 base learner）"), macc, true);
 
       var best = inc.length ? Math.max.apply(null, inc.map(function (f) { return f.acc; })) : 0;
       if (outAcc) outAcc.textContent = inc.length ? (macc * 100).toFixed(1) + "%" : "—";
       if (outBest) outBest.textContent = inc.length ? (best * 100).toFixed(1) + "%" : "—";
-      if (outGain) { var g = (macc - best) * 100; outGain.textContent = inc.length ? (g >= 0 ? "+" : "") + g.toFixed(1) + " pts" : "—"; }
+      if (outGain) { var g = (macc - best) * 100; outGain.textContent = inc.length ? (g >= 0 ? "+" : "") + g.toFixed(1) + t(" pts", " 个百分点") : "—"; }
 
       // pairwise disagreement on the test split
       if (matrix) {
-        var n = fitted.length, html = "<tr><th></th>" + fitted.map(function (f) { return "<th>" + f.L.label.split(" ")[0] + "</th>"; }).join("") + "</tr>";
+        var n = fitted.length, html = "<tr><th></th>" + fitted.map(function (f) { return "<th>" + shortLbl(f.L) + "</th>"; }).join("") + "</tr>";
         for (var i = 0; i < n; i++) {
-          html += "<tr><th>" + fitted[i].L.label.split(" ")[0] + "</th>";
+          html += "<tr><th>" + shortLbl(fitted[i].L) + "</th>";
           for (var j = 0; j < n; j++) {
             if (i === j) { html += "<td class='diag'>·</td>"; continue; }
             var dis = 0; data.C.forEach(function (p) { if ((fitted[i].model(p.x, p.y) > 0.5) !== (fitted[j].model(p.x, p.y) > 0.5)) dis++; });
@@ -204,7 +209,7 @@
     // build the four small panels
     LEARNERS.forEach(function (L, i) {
       var d = document.createElement("div"); d.className = "stack-panel";
-      d.innerHTML = '<canvas aria-label="' + L.label + ' decision map"></canvas><p class="stack-panel__bias">' + L.bias + "</p>";
+      d.innerHTML = '<canvas aria-label="' + t(L.label + " decision map", lbl(L) + "决策图") + '"></canvas><p class="stack-panel__bias">' + t(L.bias, L.biasZh) + "</p>";
       panels.appendChild(d);
     });
 

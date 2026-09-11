@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>凭“缺失的 Bayer 图案”识别 AI 生成图像 — 曹一明</title>
+<meta name="description" content="相机每个像素只采样一种颜色，其余两种靠插值补出；generative model 从不这样做。把一张图像按四种 Bayer 图案 re-mosaic 并测量四个结果的离散度，无需任何训练即可把相机照片与 AI 生成图像分开——直到压缩或缩放把证据抹掉为止。页面内置可在浏览器中运行的实时测试。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/bayer-fake-image-detection.html">
+<script defer src="../../assets/js/site.js"></script>
+<script defer src="../../assets/js/bayer-core.js"></script>
+<script defer src="../../assets/js/bayer-data.js"></script>
+<script defer src="../../assets/js/bayer-sample.js"></script>
+<script defer src="../../assets/js/bayer-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-toggle" data-lang-toggle="en" href="../../projects/bayer-fake-image-detection.html" lang="en" title="Switch to English">EN</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">图像取证 · 信号处理 · 无需训练</p>
+    <h1>相机在每个像素里都留下了指纹，generative model 却没有。</h1>
+    <p class="lede">
+      几乎所有相机传感器都透过 Bayer CFA 在每个像素只看到一种颜色，另外两种靠插值补出。
+      这一步插值会在成片中留下一种微弱而规则的结构。而一张来自 Stable Diffusion 或 Midjourney
+      的图像从未经过传感器，因此不存在这种结构。我们仅凭这一事实构建了一个检测器：把图像按四种可能的
+      Bayer 布局分别 re-mosaic（重新马赛克化），再做一次 demosaic（去马赛克），然后测量四个结果之间的分歧有多大。
+      相机照片会产生分歧，生成图像则不会。在 46,000 张生成图像上，这一离散度以 97–100% 的准确率区分了真假——
+      同一个测试也恰好说明了：一旦照片经过 JPEG 压缩或缩放，方法为何立刻失效。
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../../assets/files/bayer-paper.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        阅读论文
+      </a>
+      <a class="btn" href="../../assets/files/bayer-final-slides.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        结题汇报
+      </a>
+      <a class="btn" href="#artifacts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        全部文件
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>课程研究论文 + 两次汇报</dd></div>
+      <div><dt>背景</dt><dd>EECE 541，UBC（不列颠哥伦比亚大学）</dd></div>
+      <div><dt>时间</dt><dd>2024 年 1 月 – 4 月</dd></div>
+      <div><dt>团队</dt><dd>4 位作者</dd></div>
+      <div><dt>技术栈</dt><dd>Python、PyTorch、OpenCV、FFmpeg/VMAF、MATLAB</dd></div>
+      <div><dt>数据</dt><dd>RAISE-1k · DiffusionDB · GenImage（44k）· 1,000 张自行生成</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ LAB 1: REDEMOSAIC ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-bayer-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">在你的浏览器里运行这个测试</h2>
+        <p class="lab__note">
+          项目方法用 JavaScript 重新实现，并与团队的 PyTorch 代码逐像素核对过。初始图像是一张真实的
+          Stable Diffusion 输出。把它送进一台模拟相机，四种 Bayer 图案便不再一致；再对它压缩或缩小，
+          就能看着证据消失。你自己的照片不会离开这个页面。
+        </p>
+      </div>
+
+      <div class="bl-grid">
+        <div class="bl-main">
+          <div class="bl-panels">
+            <div class="lab__panel">
+              <h4>待测图像 <span class="bl-dim" data-bl-size></span></h4>
+              <canvas data-bl-image aria-label="正在测试的图像"></canvas>
+            </div>
+            <div class="lab__panel">
+              <h4>Re-demosaic 后的分歧位置 <span class="bl-dim">（|差值| × 30）</span></h4>
+              <canvas data-bl-diff aria-label="图像与其在所选图案下 re-demosaic 结果之间的绝对差值"></canvas>
+            </div>
+          </div>
+          <p class="bl-source"><span>来源：</span> <span data-bl-source>—</span></p>
+          <div class="bl-row">
+            <div>
+              <div class="bl-bars" data-bl-bars aria-label="图像与其 re-demosaic 结果之间的 PSNR，每种 Bayer 图案一根柱"></div>
+              <p class="bl-hint">点击某个图案可查看它的差值图和马赛克采样。刻度 20–60 dB；拟合最好的图案会被高亮。</p>
+            </div>
+            <div class="lab__panel">
+              <h4>传感器保留了什么</h4>
+              <canvas data-bl-zoom class="bl-zoom" aria-label="图像中 12 × 8 像素的窗口，显示在所选 Bayer 图案下每个像素保留的那一个颜色样本"></canvas>
+              <p class="bl-hint">取自图像中心的 12 × 8 个像素，在所选图案下每个像素只保留一种颜色。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bl-side">
+          <div class="gmm-field">
+            <label>测试前图像经历了什么</label>
+            <div class="bl-prov" role="radiogroup">
+              <label><input type="radio" name="bl-prov" value="asis" checked><span><b>什么都没有</b><small>原样生成——没有传感器，没有插值</small></span></label>
+              <label><input type="radio" name="bl-prov" value="cam"><span><b>经过一台模拟相机</b><small>光学低通 → Bayer 采样 + 传感器噪声 → Malvar demosaicing → 色度降噪、锐化</small></span></label>
+              <label><input type="radio" name="bl-prov" value="jpeg75"><span><b>相机，再以质量 75 存为 JPEG</b><small>典型的手机或网页导出</small></span></label>
+              <label><input type="radio" name="bl-prov" value="jpeg25"><span><b>相机，再以质量 25 存为 JPEG</b><small>被重度再压缩的图像</small></span></label>
+              <label><input type="radio" name="bl-prov" value="half"><span><b>相机，再缩小到 ½</b><small>bilinear 缩小，就像网站会做的那样</small></span></label>
+            </div>
+          </div>
+          <div class="gmm-field">
+            <label for="bl-true">模拟相机的真实布局</label>
+            <select id="bl-true" data-bl-true disabled>
+              <option value="rggb">RGGB</option>
+              <option value="bggr">BGGR</option>
+              <option value="grbg">GRBG</option>
+              <option value="gbrg">GBRG</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label>试试你自己的照片</label>
+            <input type="file" accept="image/*" data-bl-file class="bl-file">
+            <p class="bl-hint">在本地处理，绝不上传。按原生分辨率取 640 × 400 的中心裁剪——裁剪会保留图案，缩放则会破坏它。手机拍的 JPEG 很可能被判为“伪造”：这正是方法的局限，而且是真实存在的。</p>
+            <button type="button" class="btn" data-bl-reset style="justify-self:start">回到示例图像</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab__readout" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+        <div><span>四个 PSNR 的离散度（标准差）</span><b data-bl-std>—</b></div>
+        <div><span>拟合最好的图案</span><b data-bl-best>—</b></div>
+        <div><span>按 (5, 95) 阈值的判定</span><b data-bl-verdict>—</b></div>
+        <div><span>状态</span><b data-bl-status>加载中…</b></div>
+      </div>
+      <div class="bl-strip-wrap">
+        <canvas data-bl-strip class="bl-strip" aria-label="这张图像的离散度落在真实与生成分布中的位置"></canvas>
+        <p class="bl-hint">标记是当前这张图像。背景是项目结果中的 RAISE-1k 相机照片与 DiffusionDB 图像；虚线是真实集合的第 5 和第 95 百分位。</p>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      这台模拟相机很小——一个光学低通滤波器、带传感器噪声的 Bayer 采样、Malvar 插值，再加上每台相机都会做的
+      色度平滑、饱和度与锐化——而它落到的位置恰好与 RAISE 照片一致：离散度约 1.4 dB，且 RGGB 与 BGGR 的得分
+      一同高于 GRBG 与 GBRG，正是论文注意到的那种配对。若去掉色度处理，正确图案会被几乎完美地复现，离散度
+      膨胀到 7 dB；真实相机并不会这样。质量 75 的 JPEG 把离散度压到约 0.07 dB，与真实数据给出的数字相同。
+    </p>
+  </div>
+</section>
+
+<!-- ============ THE IDEA ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>核心思路</h2>
+      <p>
+        AI 生成图像的检测器通常是分类器：在真实图像和生成图像上训练一个网络，指望它学到能够迁移的东西。
+        多数时候它学不到——在某个生成器的输出上训练的模型，往往在下一个生成器上失效，因为它学到的只是
+        那个生成器的癖好。我们想要的是一个依赖于相机特性、而非生成器特性的测试，这样它才能适用于
+        一个谁都还没见过的生成器。
+      </p>
+      <p>
+        这个特性就是 CFA（colour filter array，滤色阵列）。单传感器相机无法在同一个感光点上同时测量红、绿、蓝，
+        所以它在传感器上铺一层滤色片马赛克——绝大多数是 Bayer 图案，每一个红和蓝对应两个绿——然后在每个像素
+        用邻域插值重建缺失的两种颜色。这一步就是 <em>demosaicing（去马赛克）</em>，它是每一张成片的源头。
+        插值出的值与其邻域之间的相关性，取决于传感器用的是四种 Bayer 布局中的哪一种：RGGB、BGGR、GRBG 或 GBRG。
+      </p>
+      <figure class="figure fig-white">
+        <img src="../../assets/img/bayer/framework.png" alt="流程图：一张 RGB 图像按某种 Bayer 图案 re-mosaic 为 CFA 图像，再 demosaicing 回 RGB，并与原图比较；对四种图案各做一次，取四个比较分数的标准差" loading="lazy">
+        <figcaption>论文图 2。一张图像进去，四份 re-demosaic 的副本出来，最终得到一个数：四个比较分数的离散度。</figcaption>
+      </figure>
+      <p>
+        于是测试是这样的：假装这张图像是传感器的原始读数。按照图案 <em>P</em> 在每个像素丢掉三种颜色中的两种，
+        用与相机同类的算法把它们插值回来，再把结果与原图比较。如果图像确实来自布局为 <em>P</em> 的传感器，
+        这次插值会在很大程度上复现相机当年做的事，差异很小；在其余三种错误布局下差异则更大。如果图像从未
+        经过传感器，四种布局同样地“错”，四个差异几乎完全相同。我们最终保留的统计量是四个 PSNR（峰值信噪比）值的
+        标准差：照片的值大，生成图像的值接近零。
+      </p>
+      <h3>在得到结果之前，我们先在数字里发现了什么</h3>
+      <p>
+        测试最直白的版本——选出得分最高的图案，看它是否以明显优势胜出——是我们最先尝试的，结果令人失望：
+        最佳图案与相机真实布局吻合的比例只有约 58%。逐张查看图像解释了原因。RGGB 与 BGGR 的分数总是彼此接近，
+        GRBG 与 GBRG 也是如此；真正的大差距出现在两组<em>之间</em>。组内谁胜出几乎是抛硬币，但组间差距却很稳健。
+        对全部四个值取标准差，就能在无需猜对赢家的情况下捕捉到这个差距，而这正是奏效的版本。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAB 2: DISTRIBUTIONS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-bayer-dist>
+      <div class="lab__head">
+        <h2 class="lab__title">四万七千张图像，一条轴</h2>
+        <p class="lab__note">
+          来自项目结果文件的、每张图像在四种图案间的 PSNR 离散度——999 张来自 RAISE 的相机 RAW、1,000 张来自
+          DiffusionDB 的 Stable Diffusion 图像、44,000 张来自 GenImage 八个生成器的图像，以及团队自己生成的
+          1,000 张照片级写实风景图。实心直方图是按原样测试的图像；轮廓线是同一批 RAISE 照片经 JPEG 压缩或
+          缩放之后的结果。采用对数轴，因为两个群体相距三十倍。
+        </p>
+      </div>
+      <canvas data-bd-canvas class="thr-canvas" aria-label="真实与生成图像集在对数轴上的 PSNR 离散度直方图，当前阈值窗口以阴影标出"></canvas>
+      <div class="bd-controls">
+        <div class="gmm-field">
+          <label for="bd-p">阈值：保留真实分布的中间部分 &nbsp;<span data-bd-out-p>(5, 95)</span> 百分位 → <span data-bd-out-thr>—</span></label>
+          <input id="bd-p" type="range" min="0" max="10" value="5" data-bd-p>
+        </div>
+        <div class="bd-toggles">
+          <label><input type="checkbox" data-bd-set="raise" checked disabled> RAISE-1k（真实）</label>
+          <label><input type="checkbox" data-bd-set="ddb" checked> DiffusionDB</label>
+          <label><input type="checkbox" data-bd-set="gen" checked> GenImage</label>
+          <label><input type="checkbox" data-bd-set="land"> Landscape PhotoReal</label>
+          <label><input type="checkbox" data-bd-set="jpeg75"> RAISE，JPEG q75</label>
+          <label><input type="checkbox" data-bd-set="jpeg25"> RAISE，JPEG q25</label>
+          <label><input type="checkbox" data-bd-set="half"> RAISE，缩放 ×0.5</label>
+        </div>
+      </div>
+      <div class="table-wrap" style="margin:1rem 0 0">
+        <table class="data-table bd-table">
+          <thead><tr><th>图像集</th><th>图像数</th><th>离散度中位数（dB）</th><th>在当前阈值下</th></tr></thead>
+          <tbody data-bd-rows></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      在 (0, 100)——接受真实图像完整范围内的一切——时，RAISE 中几十张几乎没有离散度的离群点把下阈值拖到
+      0.026 dB，让大多数伪造图像蒙混过关。从两端各裁掉 1%，DiffusionDB 的检出率就从 35% 升到 100%，
+      GenImage 从 25% 升到 96%，代价是 2% 的真实照片。这一权衡就是论文的表 I；其中 PSNR 一列在这里
+      由逐张原始结果重新计算，精确到每一位数字。
+    </p>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>数字说明了什么</h2>
+      <p>
+        <strong>分离是真实的，而且很大。</strong>相机照片的离散度中位数为 1.01 dB；DiffusionDB、GenImage
+        和团队自己生成的风景图分别为 0.032、0.043 和 0.024 dB。以真实集合的第 5 和第 95 百分位为阈值，
+        DiffusionDB 的 100%、风景图的 100% 和 GenImage 的 97.3% 被标记为伪造，同时 90% 的真实照片被保留——
+        这是构造使然。GenImage 是最诚实的数字：八个生成器，包括 GAN 和 Midjourney，没有任何一个被用来调参。
+        在尝试过的指标中 PSNR 最有效；SSIM 和 CIEDE2000 色差紧随其后，而团队同样计算过的视频指标 VMAF
+        则无法区分两个集合（DiffusionDB 检出率 0%）。
+      </p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption>论文表 I：当真实范围裁剪到给定百分位时，被标记为伪造的生成图像比例。PSNR 一列为本页面由逐张结果文件重新计算，与论文完全一致。</caption>
+          <thead><tr><th>百分位范围</th><th>DiffusionDB<br>PSNR · SSIM · ΔE</th><th>GenImage<br>PSNR · SSIM · ΔE</th><th>Landscape PhotoReal<br>PSNR · SSIM · ΔE</th><th>真实保留率</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">(0, 100)</th><td>0.35 · 0.16 · 0.06</td><td>0.25 · 0.27 · 0.06</td><td>0.57 · 0.15 · 0.01</td><td>100%</td></tr>
+            <tr><th scope="row">(1, 99)</th><td class="delta--big">1.00 · 0.97 · 0.92</td><td class="delta">0.96 · 0.89 · 0.79</td><td class="delta--big">1.00 · 0.98 · 1.00</td><td>98%</td></tr>
+            <tr><th scope="row">(2, 98)</th><td>1.00 · 0.99 · 0.98</td><td>0.96 · 0.93 · 0.90</td><td>1.00 · 0.99 · 1.00</td><td>96%</td></tr>
+            <tr><th scope="row">(3, 97)</th><td>1.00 · 0.99 · 0.98</td><td>0.97 · 0.94 · 0.92</td><td>1.00 · 1.00 · 1.00</td><td>94%</td></tr>
+            <tr><th scope="row">(5, 95)</th><td>1.00 · 0.99 · 0.99</td><td>0.97 · 0.95 · 0.94</td><td>1.00 · 1.00 · 1.00</td><td>90%</td></tr>
+            <tr><th scope="row">(10, 90)</th><td>1.00 · 1.00 · 0.99</td><td class="delta">0.98 · 0.97 · 0.96</td><td>1.00 · 1.00 · 1.00</td><td>80%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>它恰好在论文所说的地方失效。</strong>这枚指纹存在于像素与其紧邻像素的关系之中，任何改写这种关系的操作
+        都会抹掉它。质量 75 的 JPEG——一次普通的导出——把真实照片的离散度中位数从 1.01 dB 降到 0.056 dB，
+        深深落入生成图像的范围；在 (5, 95) 阈值下只有 3.6% 仍被判为真实。质量 25 以及缩小到二分之一或四分之一，
+        则把这个数字降到 0%。由于网络上几乎每一张图像都至少被压缩或缩放过一次，方法就目前而言是针对
+        相机原生文件的测试，而不是针对社交媒体截图的。结题汇报在图案识别率上报告了同样的效应：
+        原始文件为 58%，压缩后为 25–43%。
+      </p>
+      <p>
+        <strong>re-demosaic 所用的算法比预想的更重要。</strong>我们不知道某台相机具体用了什么专有插值，
+        所以团队用 Malvar–He–Cutler 之外的三种替代算法重复了实验。普通 bilinear 插值和 OpenCV 的边缘感知方法
+        仍能分开两个集合，但差距小得多——真实集合的中位数为 0.22 和 0.16 dB，DiffusionDB 为 0.016。
+        可变梯度数（variable number of gradients）demosaicing 对两者都给出 0.009 dB，只检出 3% 的伪造图像：
+        它对每种布局的处理几乎完全相同，因此没有离散度可测。Malvar 滤波器是线性且与图案绑定的，
+        这正是错误图案会“吃亏”的原因。
+      </p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption>re-demosaic 算法与分离程度，由项目结果文件计算。检出率指在对应 RAISE 分布的 (5, 95) 阈值下被标记的 DiffusionDB 比例。</caption>
+          <thead><tr><th>demosaicing 算法</th><th>RAISE-1k 离散度中位数</th><th>DiffusionDB 离散度中位数</th><th>DiffusionDB 检出率</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Malvar–He–Cutler（2004）</th><td>1.009 dB</td><td>0.032 dB</td><td class="delta--big">100%</td></tr>
+            <tr><th scope="row">边缘感知（OpenCV）</th><td>0.163 dB</td><td>0.016 dB</td><td>98%</td></tr>
+            <tr><th scope="row">Bilinear</th><td>0.218 dB</td><td>0.016 dB</td><td>97%</td></tr>
+            <tr><th scope="row">可变梯度数（VNG）</th><td>0.009 dB</td><td>0.008 dB</td><td>3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <p>
+          <strong>希望读者权衡的两点。</strong>第一，这里的“真实”指的是来自三台 Nikon 机身的单一数据集，
+          由数据集方以从 RAW 显影得到的 TIFF 提供；1 dB 的离散度是否能推广到其他厂商的处理流程并未经过测试，
+          结题汇报中也如实说明。第二，阈值是同一真实集合的百分位，所以“真实保留率”一列是设计选择，而非测量结果。
+          真正测得的量是每种选择下的伪造检出率，而提供证据的是伪造集合——来自三个数据集、八个不同生成器的
+          46,000 张图像。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WAS BUILT ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>开发方法</h2>
+      <p>
+        流程最初是一个 MATLAB 原型——<code>rgb2cfa</code>、MATLAB 自带的 <code>demosaic</code>，
+        在一张 RAISE 图像上算 PSNR 和 SSIM——用来确认这个想法能否产生任何信号；随后为了规模化用 Python
+        重建。Malvar–He–Cutler 插值是四个 5×5 线性滤波器（其中一个转置使用）；团队把开源的
+        <em>colour-demosaicing</em> 实现改造成带反射填充的批量 PyTorch 卷积，使一张图像的四种图案、
+        以及大量图像可以在 GPU 上同时运行，并调到与 MATLAB 输出一致。PSNR、SSIM 和 CIEDE2000 以同样方式
+        从 scikit-image 移植；VMAF 通过 FFmpeg 运行。结果按图像逐张写成 JSON——每个指标的四个分数、
+        最佳图案、离散度——分析 notebook、百分位阈值以及六个训练好的分类器（logistic regression、SVM、random forest、
+        k-NN、AdaBoost、GMM）都从这些文件读取。一个直接在“真实 vs 伪造”上训练的 ResNet-50 作为传统基线。
+      </p>
+      <p>
+        本页面的 JavaScript 从零重新实现了 re-mosaic、Malvar 滤波器和 PSNR；发布前我按项目的约定
+        （镜像填充、四舍五入取整）做了核对，它能逐像素复现 Python 的输出。本页面的直方图和每一个阈值下的
+        准确率都是由随附的结果文件重新计算的，而非从论文中抄录。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DECKS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>两次汇报</h2>
+      <p>2 月的中期汇报从基本原理讲起，介绍 CFA 与 Malvar 滤波器；4 月的结题汇报给出结果。</p>
+    </div>
+
+    <div class="deck-tabs" role="tablist" aria-label="选择幻灯片">
+      <button type="button" role="tab" class="deck-tab is-active" data-deck-tab="final" aria-selected="true">结题汇报 <span>34 页</span></button>
+      <button type="button" role="tab" class="deck-tab" data-deck-tab="milestone" aria-selected="false">中期汇报 1 <span>30 页</span></button>
+    </div>
+
+    <div data-deck-panel="final">
+      <div class="slides reveal" data-slides="../../assets/img/bayer/final/slide-" data-slides-count="34" data-slides-pad="2" data-slides-ext="jpg">
+        <div class="slides__stage" data-slide-stage></div>
+        <div class="slides__bar">
+          <button type="button" data-slide-prev aria-label="上一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button type="button" data-slide-next aria-label="下一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+          <span class="slides__label" data-slide-label>1 / 34</span>
+          <span class="slides__hint">使用方向键切换</span>
+        </div>
+        <div class="slides__rail" data-slide-rail></div>
+      </div>
+      <p class="deck-links">
+        <a href="../../assets/files/bayer-final-slides.pdf" target="_blank" rel="noopener">以 PDF 打开 ↗</a>
+        <a href="../../assets/files/bayer-final-slides.pptx">下载原始 .pptx</a>
+      </p>
+    </div>
+
+    <div data-deck-panel="milestone" hidden>
+      <div class="slides" data-slides="../../assets/img/bayer/m1/slide-" data-slides-count="30" data-slides-pad="2" data-slides-ext="jpg">
+        <div class="slides__stage" data-slide-stage></div>
+        <div class="slides__bar">
+          <button type="button" data-slide-prev aria-label="上一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button type="button" data-slide-next aria-label="下一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+          <span class="slides__label" data-slide-label>1 / 30</span>
+          <span class="slides__hint">使用方向键切换</span>
+        </div>
+        <div class="slides__rail" data-slide-rail></div>
+      </div>
+      <p class="deck-links">
+        <a href="../../assets/files/bayer-milestone-slides.pdf" target="_blank" rel="noopener">以 PDF 打开 ↗</a>
+        <a href="../../assets/files/bayer-milestone-slides.pptx">下载原始 .pptx</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>论文</h2>
+      <p>
+        六页，IEEE 格式。
+        <a href="../../assets/files/bayer-paper.pdf" target="_blank" rel="noopener">在新标签页中打开 ↗</a>
+      </p>
+    </div>
+    <object class="pdf-embed" data="../../assets/files/bayer-paper.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>你的浏览器无法内嵌显示 PDF。</p>
+        <a class="btn btn--primary" href="../../assets/files/bayer-paper.pdf" target="_blank" rel="noopener">打开论文（PDF，6 页）</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose">
+      <h2>全部原始文件</h2>
+      <p>
+        项目代码打包在下方：MATLAB 原型、PyTorch re-demosaic 与指标实现、批处理流程、分析 notebook 和测试，
+        以及团队的 README。未包含的是 100 MB 的逐张结果 JSON（本页面的数字来自它们）和 README 中提到的
+        ChatGPT 对话记录。
+      </p>
+    </div>
+    <div class="artifacts">
+      <a class="artifact" href="../../assets/files/bayer-paper.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>最终论文 ↗</strong><span>6 页 · PDF · IEEE 格式</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/bayer-code.zip">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>项目代码</strong><span>Python / PyTorch 流程、notebook、测试、MATLAB 原型 · .zip · 4 MB</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/bayer-final-slides.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span><strong>结题汇报 ↗</strong><span>34 页 · PDF · 2024 年 4 月</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/bayer-final-slides.pptx">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span>
+        <span><strong>结题汇报 — 源文件</strong><span>PowerPoint · .pptx · 14 MB</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/bayer-milestone-slides.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span><strong>中期汇报 1 ↗</strong><span>30 页 · PDF · 2024 年 2 月</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/bayer-milestone-slides.pptx">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span>
+        <span><strong>中期汇报 1 — 源文件</strong><span>PowerPoint · .pptx · 13 MB</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>致谢与分工</h2>
+      <div class="credits">
+        <h3>四人课程项目</h3>
+        <p>
+          与三位团队成员于 2024 年 1 月至 4 月共同完成，四人平均分担工作。曹一明为论文第三作者。
+        </p>
+        <p>
+          demosaicing 与指标代码将开源的 <em>colour-demosaicing</em> 和 scikit-image 实现改造为批量 PyTorch 版本，
+          仓库中已注明出处。本页面的浏览器内测试、分布图和重新计算的表格由曹一明事后构建。
+          示例图像是来自 DiffusionDB 的一张 Stable Diffusion 输出（CC0）。
+        </p>
+      </div>
+
+      <h3>参考文献</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>H. S. Malvar, L.-W. He, R. Cutler. <em>High-Quality Linear Interpolation for Demosaicing of Bayer-Patterned Color Images.</em> ICASSP 2004.</li>
+        <li>B. Bayer. <em>Color Imaging Array.</em> US Patent 3,971,065, 1976.</li>
+        <li>D.-T. Dang-Nguyen et al. <em>RAISE: A Raw Images Dataset for Digital Image Forensics.</em> MMSys 2015.</li>
+        <li>Z. J. Wang et al. <em>DiffusionDB.</em> 2023; M. Zhu et al. <em>GenImage: A Million-Scale Benchmark for Detecting AI-Generated Image.</em> 2023.</li>
+        <li>Z. Wang, A. Bovik, H. Sheikh, E. Simoncelli. <em>Image Quality Assessment: From Error Visibility to Structural Similarity.</em> IEEE TIP 2004.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

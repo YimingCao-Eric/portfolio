@@ -14,6 +14,11 @@
 (function () {
   "use strict";
 
+  function t(en, zh) { return (window.I18N && window.I18N.t) ? window.I18N.t(en, zh) : en; }
+  /* Chinese labels for the data sets in bayer-data.js (keyed by set id); English labels come from the data file */
+  var SET_ZH = { raise: "RAISE-1k（真实）", ddb: "DiffusionDB", gen: "GenImage", land: "Landscape PhotoReal", jpeg75: "RAISE，JPEG q75", jpeg25: "RAISE，JPEG q25", half: "RAISE，缩放 ×0.5" };
+  function setLabel(k, m) { return t(m.label, SET_ZH[k] || m.label); }
+
   var PAL = { light: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"], dark: ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181"] };
   function isDark() { var t = document.documentElement.getAttribute("data-theme"); return t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches; }
   function pal() { return isDark() ? PAL.dark : PAL.light; }
@@ -53,14 +58,14 @@
     }
     function loadSample() {
       var im = new Image();
-      im.onload = function () { base = planesFromImage(im, 512, 256); sourceName = "sample"; if (srcLabel) srcLabel.textContent = "Stable Diffusion sample (DiffusionDB)"; schedule(); };
+      im.onload = function () { base = planesFromImage(im, 512, 256); sourceName = "sample"; if (srcLabel) srcLabel.textContent = t("Stable Diffusion sample (DiffusionDB)", "Stable Diffusion 示例图像（DiffusionDB）"); schedule(); };
       im.src = window.BAYER_SAMPLE || "../assets/img/bayer/sample.png";
     }
     if (fileIn) fileIn.addEventListener("change", function () {
       var f = fileIn.files && fileIn.files[0]; if (!f) return;
       var url = URL.createObjectURL(f), im = new Image();
-      im.onload = function () { URL.revokeObjectURL(url); base = planesFromImage(im, 640, 400); sourceName = "own"; if (srcLabel) srcLabel.textContent = f.name + " — centre crop, native pixels, processed locally"; schedule(); };
-      im.onerror = function () { setStatus("Couldn't decode that file."); };
+      im.onload = function () { URL.revokeObjectURL(url); base = planesFromImage(im, 640, 400); sourceName = "own"; if (srcLabel) srcLabel.textContent = f.name + t(" — centre crop, native pixels, processed locally", " — 中心裁剪，原生像素，本地处理"); schedule(); };
+      im.onerror = function () { setStatus(t("Couldn't decode that file.", "无法解码该文件。")); };
       im.src = url;
     });
     if (resetBtn) resetBtn.addEventListener("click", function () { if (fileIn) fileIn.value = ""; loadSample(); });
@@ -98,7 +103,7 @@
     function schedule() { if (busy) { pending = true; return; } run(); }
     function run() {
       if (!base) return;
-      busy = true; setStatus("computing…"); root.classList.add("is-busy");
+      busy = true; setStatus(t("computing…", "计算中…")); root.classList.add("is-busy");
       setTimeout(function () {
         buildTest(function (t) {
           test = t;
@@ -183,7 +188,7 @@
       var v = Math.max(1e-3, Math.min(Math.pow(10, hi), stats.std)), x = xOf(Math.log10(v));
       ctx.strokeStyle = css("--text", "#1a1a18"); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, padT - 4); ctx.lineTo(x, padT + ih); ctx.stroke();
       ctx.fillStyle = css("--text", "#1a1a18"); ctx.beginPath(); ctx.moveTo(x - 5, padT - 10); ctx.lineTo(x + 5, padT - 10); ctx.lineTo(x, padT - 4); ctx.closePath(); ctx.fill();
-      var lbl = "this image: " + stats.std.toFixed(3) + " dB", right = x > w / 2; ctx.font = "600 10px " + css("--font-sans", "sans-serif");
+      var lbl = t("this image: ", "当前图像：") + stats.std.toFixed(3) + " dB", right = x > w / 2; ctx.font = "600 10px " + css("--font-sans", "sans-serif");
       var tw = ctx.measureText(lbl).width + 10, bx = right ? x - 8 - tw : x + 8, by = padT + ih / 2 - 8;
       ctx.fillStyle = css("--bg-elev", "#fff"); ctx.strokeStyle = css("--border-strong", "#ccc"); ctx.lineWidth = 1; ctx.beginPath(); ctx.rect(bx, by, tw, 16); ctx.fill(); ctx.stroke();
       ctx.fillStyle = css("--text", "#1a1a18"); ctx.textBaseline = "middle"; ctx.textAlign = "left"; ctx.fillText(lbl, bx + 5, by + 8);
@@ -191,8 +196,8 @@
       [0.001, 0.01, 0.1, 1].forEach(function (t) { ctx.fillText(String(t), xOf(Math.log10(t)), h - 12); });
       ctx.textBaseline = "bottom"; ctx.font = "600 10px " + css("--font-sans", "sans-serif");
       var narrow = w < 520;
-      ctx.textAlign = "right"; ctx.fillStyle = P[0]; ctx.fillText(narrow ? "RAISE-1k (real)" : "RAISE-1k (real photographs)", w - padR, padT - 3);
-      ctx.textAlign = "left"; ctx.fillStyle = P[1]; ctx.fillText(narrow ? "DiffusionDB (fake)" : "DiffusionDB (generated)", padL, padT - 3);
+      ctx.textAlign = "right"; ctx.fillStyle = P[0]; ctx.fillText(narrow ? t("RAISE-1k (real)", "RAISE-1k（真实）") : t("RAISE-1k (real photographs)", "RAISE-1k（真实照片）"), w - padR, padT - 3);
+      ctx.textAlign = "left"; ctx.fillStyle = P[1]; ctx.fillText(narrow ? t("DiffusionDB (fake)", "DiffusionDB（伪造）") : t("DiffusionDB (generated)", "DiffusionDB（生成）"), padL, padT - 3);
     }
     function render() {
       drawImage(); drawBars(); drawDiff(); drawZoom(); drawStrip();
@@ -202,7 +207,7 @@
       if (outBest) outBest.textContent = stats.best.toUpperCase();
       if (outVerdict) {
         var real = std >= THR5.lo && std <= THR5.hi;
-        outVerdict.textContent = real ? "real (camera-like)" : std < THR5.lo ? "fake (no pattern found)" : "beyond any RAISE photo";
+        outVerdict.textContent = real ? t("real (camera-like)", "真实（类相机）") : std < THR5.lo ? t("fake (no pattern found)", "伪造（未发现图案）") : t("beyond any RAISE photo", "超出所有 RAISE 照片");
         outVerdict.style.color = real ? pal()[2] : pal()[1];
       }
     }
@@ -262,16 +267,16 @@
       // axes text
       ctx.fillStyle = faint; ctx.font = (10.5 * S) + "px " + css("--font-mono", "monospace"); ctx.textAlign = "center"; ctx.textBaseline = "top";
       [0.001, 0.01, 0.1, 1].forEach(function (t) { ctx.fillText(String(t), xOf(Math.log10(t)), padT + ih + 6 * S); });
-      ctx.fillText("std of PSNR across the four Bayer patterns (dB, log scale)", padL + iw / 2, padT + ih + 19 * S);
-      ctx.save(); ctx.translate(12 * S, padT + ih / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("share of images", 0, 0); ctx.restore();
+      ctx.fillText(t("std of PSNR across the four Bayer patterns (dB, log scale)", "四种 Bayer 图案间 PSNR 的标准差（dB，对数刻度）"), padL + iw / 2, padT + ih + 19 * S);
+      ctx.save(); ctx.translate(12 * S, padT + ih / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(t("share of images", "图像占比"), 0, 0); ctx.restore();
       ctx.font = "600 " + (10.5 * S) + "px " + css("--font-sans", "sans-serif"); ctx.fillStyle = ink; ctx.textAlign = "left";
-      ctx.fillText("predicted real", xa + 5 * S, padT + 2 * S); ctx.textAlign = "right"; ctx.fillText("fake ←", xa - 5 * S, padT + 2 * S);
+      ctx.fillText(t("predicted real", "判为真实"), xa + 5 * S, padT + 2 * S); ctx.textAlign = "right"; ctx.fillText(t("fake ←", "伪造 ←"), xa - 5 * S, padT + 2 * S);
       // direct labels at each set's mode
       ctx.font = "600 " + (10.5 * S) + "px " + css("--font-sans", "sans-serif"); ctx.textBaseline = "bottom";
       var used = [];
       keys.forEach(function (k) {
         var Hh = DATA.hist[k], N = DATA.meta[k].n, mi = 0; for (var i = 1; i < n; i++) if (Hh[i] > Hh[mi]) mi = i;
-        var x = xOf(lo + (hi - lo) * (mi + .5) / n), y = yOf(Hh[mi] / N) - 4 * S, label = DATA.meta[k].label.replace(/ \(.*\)$/, "");
+        var x = xOf(lo + (hi - lo) * (mi + .5) / n), y = yOf(Hh[mi] / N) - 4 * S, label = setLabel(k, DATA.meta[k]).replace(/ \(.*\)$|（.*）$/, "");
         while (used.some(function (u) { return Math.abs(u.x - x) < 90 * S && Math.abs(u.y - y) < 13 * S; })) y -= 13 * S;
         used.push({ x: x, y: y });
         ctx.fillStyle = colour(k); ctx.textAlign = x > padL + iw * .7 ? "right" : "left"; ctx.fillText(label, x, y);
@@ -280,9 +285,9 @@
       if (outThr) outThr.textContent = row.lo.toFixed(3) + " – " + row.hi.toFixed(3) + " dB";
       if (rows) rows.innerHTML = Object.keys(SETS).map(function (k) {
         var v = row[k], m = DATA.meta[k], real = k === "raise";
-        return '<tr' + (on(k) ? "" : ' class="is-off"') + '><th scope="row"><i style="' + (SETS[k].fill ? "background:" + colour(k) : "border-top:2px " + (SETS[k].dash.length ? "dashed" : "solid") + " " + colour(k)) + '"></i>' + m.label + '</th>' +
+        return '<tr' + (on(k) ? "" : ' class="is-off"') + '><th scope="row"><i style="' + (SETS[k].fill ? "background:" + colour(k) : "border-top:2px " + (SETS[k].dash.length ? "dashed" : "solid") + " " + colour(k)) + '"></i>' + setLabel(k, m) + '</th>' +
           '<td>' + m.n.toLocaleString() + '</td><td>' + m.median.toFixed(3) + '</td>' +
-          '<td>' + (real ? (v * 100).toFixed(1) + "% kept as real" : (v * 100).toFixed(1) + "% flagged fake") + '</td></tr>';
+          '<td>' + (real ? (v * 100).toFixed(1) + t("% kept as real", "% 保留为真实") : (v * 100).toFixed(1) + t("% flagged fake", "% 标记为伪造")) + '</td></tr>';
       }).join("");
     }
     function resize() { var dpr = Math.min(window.devicePixelRatio || 1, 2), w = canvas.clientWidth || 600, h = Math.round(Math.max(220, Math.min(340, w * 0.46))); canvas.style.height = h + "px"; canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); S = dpr; render(); }

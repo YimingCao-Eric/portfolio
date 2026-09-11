@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>曹一明 — 软件工程师</title>
+<meta name="description" content="Yiming (Eric) Cao 的个人作品集 — 软件工程、地理空间基础设施建模与应用机器学习。">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/home.css">
+<link rel="alternate" hreflang="en" href="../index.html">
+<script defer src="../assets/js/site.js"></script>
+<script defer src="../assets/js/diffusion-lab.js"></script>
+<script defer src="../assets/js/proto-lab.js"></script>
+<script defer src="../assets/js/ecom-lab.js"></script>
+<script defer src="../assets/js/jha-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="#work">作品</a>
+      <a href="#research">研究项目</a>
+      <a href="#about">关于</a>
+      <a href="#resume" class="nav__resume">简历</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-toggle" data-lang-toggle="en" href="../index.html" lang="en" title="Switch to English">EN</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="about">
+  <div class="wrap">
+    <div class="hero__grid">
+      <div class="hero__main">
+        <p class="eyebrow">加拿大温哥华 · 软件工程师</p>
+        <h1 class="hero__title">
+          构建 LLM pipeline 与 agent 的<br class="hide-sm">
+          <span class="hero__accent">软件工程师。</span>
+        </h1>
+        <p class="lede hero__lede">
+          机器学习研究背景（UBC 工程硕士），现为软件工程师，从事地理空间基础设施建模与基于 LLM 的系统开发 —
+          从数据 pipeline、API，到借助 AI 编程工具以 spec-driven 方式构建的无人值守 agent。
+        </p>
+        <div class="hero__about">
+          <p>
+            研究生阶段的工作涵盖 generative model、few-shot learning、knowledge distillation 和医学影像信号处理；此后的工程工作则是用
+            Python 和 TypeScript 构建系统，把这些研究转化为能够稳定运行的软件。当前及未来的重点：LLM
+            pipeline、agent orchestration，以及让它们值得信赖的评估方法。下面的每个项目都配有完整的案例写作和一个可交互图示，
+            图示运行的正是该项目自己的代码。
+          </p>
+        </div>
+        <div class="btn-row hero__actions">
+          <a class="btn btn--primary" href="#work">
+            查看作品
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a class="btn" href="#research">研究项目</a>
+        </div>
+      </div>
+
+      <aside class="hero__side">
+        <div class="side-card">
+          <h3>联系方式</h3>
+          <ul class="contact-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              <a href="mailto:caoyimingeric@gmail.com">caoyimingeric@gmail.com</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+              <a href="https://github.com/YimingCao-Eric" target="_blank" rel="noopener">github.com/YimingCao-Eric</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.4 2H3.6A1.6 1.6 0 0 0 2 3.6v16.8A1.6 1.6 0 0 0 3.6 22h16.8a1.6 1.6 0 0 0 1.6-1.6V3.6A1.6 1.6 0 0 0 20.4 2zM8 19H5V9h3zM6.5 7.7a1.7 1.7 0 1 1 0-3.4 1.7 1.7 0 0 1 0 3.4zM19 19h-3v-4.9c0-1.2 0-2.7-1.6-2.7s-1.9 1.3-1.9 2.6V19h-3V9h2.9v1.4a3.2 3.2 0 0 1 2.9-1.6c3.1 0 3.7 2 3.7 4.7z"/></svg>
+              <a href="https://linkedin.com/in/yiming-cao-a760841b0" target="_blank" rel="noopener">linkedin.com/in/yiming-cao-a760841b0</a>
+            </li>
+          </ul>
+        </div>
+        <div class="side-card">
+          <h3>技能</h3>
+          <ul class="skill-list">
+            <li><span>编程语言</span><b>Python, TypeScript / JavaScript, Go, SQL</b></li>
+            <li><span>LLM 与 agent</span><b>OpenAI / Anthropic API, RAG, prompt 与成本设计, agent orchestration, Claude Code, GitHub Spec Kit</b></li>
+            <li><span>机器学习</span><b>PyTorch, scikit-learn, NumPy; CNN, diffusion model, few-shot learning, knowledge distillation</b></li>
+            <li><span>后端</span><b>FastAPI, async SQLAlchemy, Alembic, Go Fiber / GORM, REST 与 WebSocket API</b></li>
+            <li><span>数据</span><b>PostgreSQL / PostGIS, MySQL, Redis, NetworkX, pandas</b></li>
+            <li><span>前端</span><b>React 19, Vite, TanStack Query, Tailwind, Chrome extension (MV3)</b></li>
+            <li><span>工具链</span><b>Docker Compose, Git, Linux / WSL, SLURM (Compute Canada), pytest / Vitest</b></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORK ============ -->
+<section class="section" id="work">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>独立项目</h2>
+      <p class="lede">出于个人主动构建的产品与系统 — 每个都配有完整的案例写作和一个可交互图示，图示运行的正是该项目自己的逻辑。</p>
+    </div>
+
+    <div class="grid">
+
+      <!-- ---- Job Hunting Assistant ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <canvas data-jha-strip aria-label="三张分别为 39、45、48 列的分站点职位表汇聚成一张 27 列的 canonical table"></canvas>
+        </div>
+        <div class="card__body">
+          <p class="card__meta">独立产品 · 2026 年 3 月至今 · <a class="card__gh" href="https://github.com/YimingCao-Eric/job-hunting-assistant" target="_blank" rel="noopener">GitHub ↗</a> · <a class="card__gh" href="https://github.com/YimingCao-Eric/filter-matcher" target="_blank" rel="noopener">filter-matcher ↗</a></p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/job-hunting-assistant.html">Job Hunting Assistant：多站点职位抓取器与 LLM 匹配 pipeline</a>
+          </h3>
+          <p class="card__desc">
+            一个通过我本人登录会话抓取 LinkedIn、Indeed 和 Glassdoor 的 Chrome extension，一个把每条职位同时以站点原始形态和统一的 canonical shape 存储的
+            FastAPI 后端，一个可连续数天无人值守运行的 orchestrator，以及一个把整张表筛成候选清单的配套服务。
+            以 spec-driven 方式用 Claude Code 构建 — projection 层和 orchestrator 都在页面上实时运行。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">Python · FastAPI</span>
+            <span class="tag">Chrome extension</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">spec-driven</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- E-commerce admin ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <canvas data-rbac-strip aria-label="三个角色对八项权限的矩阵，已授权的单元格被填充"></canvas>
+        </div>
+        <div class="card__body">
+          <p class="card__meta">独立构建 · 2025 年 11 月 – 12 月 · <a class="card__gh" href="https://github.com/YimingCao-Eric/go-admin" target="_blank" rel="noopener">go-admin ↗</a> · <a class="card__gh" href="https://github.com/YimingCao-Eric/react-admin" target="_blank" rel="noopener">react-admin ↗</a></p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/ecommerce-admin.html">用 Go 和 React 打造的商城后台</a>
+          </h3>
+          <p class="card__desc">
+            用户、角色、商品和订单，由 Go Fiber API 与 React/TypeScript 仪表盘承载 — JWT 存放在 HTTP-only
+            Cookie 中，权限细化到每条路由，并附有 middleware 链的实时模拟器。已迁移到 Fiber v3 和 React 19，并做了坦诚的回顾。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">Go</span>
+            <span class="tag">React · TypeScript</span>
+            <span class="tag">MySQL</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESEARCH ============ -->
+<section class="section section--after" id="research">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>研究生科研项目</h2>
+      <p class="lede">2022 – 2024 年 UBC 工程硕士期间的应用机器学习与信号处理 — 讲的是推理过程，而不只是截图。</p>
+    </div>
+
+    <div class="grid">
+
+      <!-- ---- Bayer-pattern fake-image detection ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="../assets/img/bayer/thumb.png" alt="一张风景照片逐渐溶解为 Bayer 彩色滤光阵列的红、绿、蓝单元">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">研究论文 · 2024 年 4 月</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/bayer-fake-image-detection.html">凭缺失的马赛克抓出 AI 生成图像</a>
+          </h3>
+          <p class="card__desc">
+            相机在每个像素上要插值三种颜色中的两种；生成器从不这样做。把图像按四种方式 re-mosaic 并测量差异：
+            在 46,000 张生成图像上达到 97–100% 的检出率，且无需训练 — 还有一个可以喂入你自己照片的实时版本。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">图像取证</span>
+            <span class="tag">信号处理</span>
+            <span class="tag">PyTorch</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- Age-invariant face recognition ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="../assets/img/aifr/thumb.png" alt="蒸馏模型与独立模型在人脸 verification accuracy 上的柱状图">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">研究论文 · 2024 年 4 月</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/age-invariant-face-recognition.html">跨年龄差距的人脸识别 knowledge distillation</a>
+          </h3>
+          <p class="card__desc">
+            把 ResNet-100 教师模型蒸馏为年龄不变的学生模型，以 SLURM 作业形式在 Compute Canada 上训练。
+            蒸馏带来了 19 个百分点的提升 — 但仍然输给了专用模型。两个结果都在，以及背后的原因。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">knowledge distillation</span>
+            <span class="tag">HPC / SLURM</span>
+            <span class="tag">PyTorch</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- DDPM ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <canvas data-diffusion-strip aria-label="一张图像在五个时间步中被高斯噪声逐步破坏"></canvas>
+        </div>
+        <div class="card__body">
+          <p class="card__meta">研究报告 · 2023 年 12 月</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/ddpm-diffusion-models.html">DDPM（去噪扩散概率模型）</a>
+          </h3>
+          <p class="card__desc">
+            DDPM 训练目标的完整推导，从最大似然到一行式的噪声预测损失 — 重建为一个可交互页面，附带实时的 forward process 模拟器。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">variational inference</span>
+            <span class="tag">generative model</span>
+            <span class="tag">LaTeX</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- Ensemble stacking ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="../assets/img/stack/thumb.png" alt="四个 base learner 及其 stacking 集成的决策图">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">研究报告 · 2023 年 5 月</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/ensemble-stacking.html">最弱的模型组成了最强的集成</a>
+          </h3>
+          <p class="card__desc">
+            LeNet、AlexNet、VGG 和 ResNet 在 CIFAR-10 上由一个 meta-network stack 起来。胜出的三模型组合包含了那个只有
+            68% 准确率的模型 — 并附有一个实时 stacking 演练场，展示为什么多样性胜过单体强度。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">ensemble learning</span>
+            <span class="tag">PyTorch</span>
+            <span class="tag">CIFAR-10</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- Few-shot learning ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <canvas data-proto-strip aria-label="一个三类别的 Prototypical Networks 决策图"></canvas>
+        </div>
+        <div class="card__body">
+          <p class="card__meta">独立研究项目 · 2023 年 4 月</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/few-shot-learning.html">面向 few-shot learning 的 feature extractor</a>
+          </h3>
+          <p class="card__desc">
+            从零训练 ResNet、DenseNet 和 ConvNeXt，作为 Prototypical Networks（原型网络）在 CUB 数据集上的 backbone —
+            外加两项没有奏效的分类器改进，以及原因分析。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">PyTorch</span>
+            <span class="tag">meta-learning</span>
+            <span class="tag">ablation</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- MRI denoising ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="../assets/img/mri/thumb.jpg" alt="三张轴位 MRI 切片：原图、DCT denoising、PCA denoising">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">研究论文 · 2022 年 12 月</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/mri-denoising.html">DWI MRI denoising</a>
+          </h3>
+          <p class="card__desc">
+            从零实现的 DCT 与 PCA denoiser，在三名受试者和四个 b 值上进行评测。PCA 以约 3.5 dB 胜出 —
+            但两者撞上了同一堵墙，真正的发现是那条权衡曲线。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">信号处理</span>
+            <span class="tag">医学影像</span>
+            <span class="tag">NumPy</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ---- MRI segmentation ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <img src="../assets/img/seg/thumb.png" alt="合成组织数据的 k-means 与 GMM 聚类图">
+        </div>
+        <div class="card__body">
+          <p class="card__meta">研究论文 · 2022 年 12 月</p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/mri-segmentation.html">无标签找出肿瘤</a>
+          </h3>
+          <p class="card__desc">
+            在 BraTS 2018 上做无监督脑肿瘤分割 — k-means 对阵用 PyTorch 从零写出、在 GPU 上处理九百万体素的
+            GMM-EM。多数患者 Dice 达到 0.9，并对漏检病例给出了精确的分析。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">EM 算法</span>
+            <span class="tag">医学影像</span>
+            <span class="tag">PyTorch</span>
+          </div>
+        </div>
+      </article>
+
+      <!--
+        ============================================================
+        TO ADD A PROJECT: copy one <article class="card"> block above
+        and change the media, text and tags. Nothing else to update.
+        ============================================================
+      -->
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ RÉSUMÉ ============ -->
+<section class="section section--after" id="resume">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>简历</h2>
+      <p class="lede">完整版本，持续更新。可下载 PDF，或直接在此阅读。</p>
+      <div class="btn-row" style="margin-top:1.25rem">
+        <a class="btn btn--primary" href="../assets/files/YimingCao_Resume.pdf" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          简历 (PDF)
+        </a>
+        <a class="btn" href="../assets/files/YimingCao_Resume.md" download>Markdown 源文件</a>
+      </div>
+    </div>
+    <article class="resume prose">
+<h3>概述</h3>
+<p>软件工程师，端到端构建 LLM 驱动的应用与生产级数据 pipeline，覆盖后端、前端与云端 — RAG 系统、agentic 与成本门控的 LLM pipeline、地理空间数据平台，以及以 Claude Code 为交付流程核心的 spec-driven development。UBC 工程硕士（电气与计算机工程）、UVic 荣誉理学学士（计算机科学与数学），研究方向包括 diffusion model、医学影像 denoising 与分割、few-shot learning、集成方法、knowledge distillation 和 AI 生成图像检测。</p>
+<h3>技术技能</h3>
+<table>
+
+<tbody>
+<tr>
+<td><strong>编程语言</strong></td>
+<td>Python, Java, Go, TypeScript / JavaScript, SQL</td>
+</tr>
+<tr>
+<td><strong>LLM 与生成式 AI 工程</strong></td>
+<td>OpenAI API, RAG, 向量检索, prompt engineering 与 prefix caching, 成本门控 LLM pipeline, LLM 评估, HuggingFace, Claude Code, spec-driven development (GitHub Spec Kit)</td>
+</tr>
+<tr>
+<td><strong>深度学习与计算机视觉</strong></td>
+<td>PyTorch, NumPy, SciPy, CNN backbone, diffusion model, knowledge distillation, few-shot learning, 集成方法, 无监督分割 (GMM-EM, k-means), 图像 denoising (DCT / PCA), 图像取证与质量度量, 强化学习, 推荐系统</td>
+</tr>
+<tr>
+<td><strong>后端与 API</strong></td>
+<td>FastAPI, Spring Boot, Go Fiber, GORM, REST API 设计, async SQLAlchemy, Alembic, Pydantic, 认证与 RBAC (JWT, bcrypt), 服务层架构</td>
+</tr>
+<tr>
+<td><strong>数据库与数据建模</strong></td>
+<td>PostgreSQL / PostGIS, MySQL, MongoDB Atlas, Redis, 数据库模式与 ERD 设计, 数据契约, schema migration, 地理空间数据 (GeoPandas, Shapely, CRS 重投影), 图建模 (NetworkX)</td>
+</tr>
+<tr>
+<td><strong>前端与浏览器</strong></td>
+<td>React, TypeScript, TanStack Query, Redux, React Router, Tailwind CSS, Bootstrap, Chrome extension (Manifest V3), 流式聊天界面</td>
+</tr>
+<tr>
+<td><strong>云、DevOps 与 HPC</strong></td>
+<td>AWS (Elastic Beanstalk, EC2, CloudWatch), Docker Compose, Git / GitHub PR 工作流, Slurm (Compute Canada), LaTeX</td>
+</tr>
+<tr>
+<td><strong>测试与质量</strong></td>
+<td>Pytest, JUnit, Mockito, Postman, ESLint / tsc 门禁, 模拟与集成测试, soak test, 数据校验框架, 安全审查</td>
+</tr>
+</tbody>
+</table>
+<h3>工作经历</h3>
+<h4>软件工程师 — Tomkulak Consortium（志愿者，兼职）| 2026 年 1 月至今</h4>
+<p><em>覆盖 BC 省、育空地区和阿尔伯塔省 21 个行业的关键基础设施系统建模平台；异步敏捷团队，采用基于 PR 的代码评审。</em></p>
+<ul>
+<li>设计并实现了配置驱动的 Python 数据接入模板，被全部 21 条行业 pipeline 采用 — 将单行业接入时间从数天缩短到数小时 — 支持可插拔读取器（GDB、Shapefile、GPKG、ArcGIS），并通过 GeoPandas 和 Shapely 统一 CRS 重投影，标准化加载到 PostgreSQL + PostGIS。</li>
+<li>交付了基于 Pydantic 和 SQLAlchemy 的自动化校验框架（几何有效性、必填字段、唯一性、引用完整性），配有面向双受众的失败报告器，区分代码侧问题与上游 GIS 侧问题，并以 Pytest 单元测试和集成测试作为支撑。</li>
+<li>主导了 Stage 2 核心数据模型与 ERD 的系统设计 — 九个建模实体，外加带版本的 Stage 1 → Stage 2 数据契约，使数据接入、建模和可视化团队能够独立开发。</li>
+<li>构建了依赖与情景分析框架：八种关系类型建模为 NetworkX 图中的带类型边，支撑并排的"假设分析"运行，并为前端输出 Pydantic 类型化的 JSON。</li>
+<li>为多贡献者的 Windows/PowerShell 仓库建立团队 Git 工作流，解决了修改/删除冲突和无关历史合并冲突。</li>
+</ul>
+<h4>软件工程师 — NextTier（美国加州 Covina）| 2024 年 9 月 – 2025 年 9 月</h4>
+<p><em>为客户从零设计并构建了一个以音乐为主题的 RAG 聊天机器人，从后端与检索层到 UI 和 AWS 部署。</em></p>
+<ul>
+<li>构建 Java Spring Boot 后端，暴露用于消息流、聊天历史、会话状态和上下文感知语气调整的 REST API，在 MongoDB 之上采用服务层模式。</li>
+<li>实现 RAG 检索层 — 以 OpenAI text-embedding-3 查询配合 MongoDB Atlas Vector Search 的 k-NN 向量检索 — 通过有针对性的 prompt engineering，将 GPT-4o 的回答锚定在客户经过核实的歌词与音乐语料（热门艺人、流派、新发行作品）上。</li>
+<li>用 Python 接入 HuggingFace 数据集以丰富聊天机器人的上下文知识库，实现跨多个数据源的最新音乐内容检索和语义相似度搜索。</li>
+<li>交付 React + Tailwind CSS 聊天界面，支持端到端 token 流式传输（OpenAI → Spring Boot → React）、输入节流和对话上下文保持，并根据客户对 UI/UX 的反馈迭代了 4 个月。</li>
+<li>通过 JUnit 与 Mockito 对 OpenAI 和 MongoDB 进行模拟，达到 100% 测试覆盖率；在 Postman 中发布完整的 API 测试结果用于客户演示。</li>
+<li>部署到 AWS Elastic Beanstalk (EC2)，搭配 MongoDB Atlas、自动扩缩容，以及对延迟和错误率的 CloudWatch 监控。</li>
+</ul>
+<h4>研究实习生 — 西安邮电大学（中国西安）| 2023 年 5 月 – 2023 年 8 月</h4>
+<ul>
+<li>研究利用 denoising diffusion model 生成有向无环图作为深度神经网络的架构（神经架构搜索），与 Chen Wei 博士合作制定研究方案。</li>
+<li>开展文献综述，综合多来源的研究成果，并参与代码实现。</li>
+<li>撰写研究成果报告并进行汇报；参加研究例会和研讨会。</li>
+</ul>
+<h4>研究实习生 — Path Academics（远程）| 2020 年 7 月 – 2020 年 8 月</h4>
+<p><em>研究课题：基于强化学习的遮挡处理目标跟踪。导师：Pietro Liò</em></p>
+<ul>
+<li>对跟踪问题建立数学模型，用 Python 实现深度强化学习模型，在真实场景下进行分析，汇报结果并撰写项目报告。</li>
+</ul>
+<h4>研究实习生 — 中国科学院自动化研究所（中国北京 / 远程）| 2020 年 5 月 – 2020 年 8 月</h4>
+<p><em>研究课题：推荐系统中的协同过滤算法。导师：Yiqiang Sheng</em></p>
+<ul>
+<li>对协同过滤方法建立数学模型，用 Python 实现，在真实数据上评估，汇报发现并撰写项目报告。</li>
+</ul>
+<h3>独立项目</h3>
+<h4><a href="projects/job-hunting-assistant.html">Job Hunting Assistant</a> — 多站点职位抓取器与 LLM 匹配 pipeline | 2026 年 3 月至今</h4>
+<p><em>独立完成 · Python, FastAPI, async SQLAlchemy, Alembic, PostgreSQL, Redis, Chrome extension (MV3), React 19, TypeScript, OpenAI API, Docker Compose</em>
+代码：<a href="https://github.com/YimingCao-Eric/job-hunting-assistant" target="_blank" rel="noopener">github.com/YimingCao-Eric/job-hunting-assistant</a> · <a href="https://github.com/YimingCao-Eric/filter-matcher" target="_blank" rel="noopener">github.com/YimingCao-Eric/filter-matcher</a></p>
+<ul>
+<li>设计并构建了端到端的求职平台：一个抓取 LinkedIn、Indeed 和 Glassdoor 的 Chrome extension、一个 FastAPI/PostgreSQL 后端、一个 React 控制台，以及一个独立的 LLM 筛选与匹配服务 — 单个无人值守周期接入 1,306 条职位，单次经核实的三站点扫描接入 737 条。</li>
+<li>逆向分析了三个抓取面（LinkedIn Voyager REST 及由 Cookie 派生的 CSRF、Indeed mosaic + GraphQL、Glassdoor <code>__NEXT_DATA__</code>/JSON-LD），并修复了一个导致所有 Glassdoor 详情抓取归零的同源 CORS 缺陷。</li>
+<li>设计了 dual-write 数据模型 — 分站点的只追加表加上一张原子写入的 27 列 canonical table — 由纯函数 projection 层强制执行封闭词表、优先级规则和 NULL 即未知的语义；通过 31 次 Alembic migration 演进数据库模式。</li>
+<li>在 Manifest V3 service worker 内构建了无人值守的抓取 orchestrator，借助后端持久化状态和 <code>chrome.alarms</code> 在 Chrome 挂起 worker 后仍能存活，并具备分站点会话探测（CAPTCHA 与限流分类）、连续失败自动暂停、单周期保证和多实例检测。</li>
+<li>运行 10 小时和 5 小时的 soak test，并根据运行日志修复了暴露出的故障 — 一个从未清除的中止标志（254/255 个周期被中止）、被误判为 CAPTCHA 的 403、一个导致并行周期的 30 秒 race condition，以及一个把健康的 33 分钟扫描误标记的陈旧扫描清理逻辑 — 最终达到 8/9 周期成功且零归因错误。</li>
+<li>构建了 filter-matcher，一个按需运行的 Python 服务：通过 one-way claim（单向原子标志翻转）认领职位，按成本从低到高过滤（偏好 → 完整性 → 字段门禁 → dedup → CPU 提取 → coverage banding），只把模糊的 0.50–1.00 覆盖率区间发送给 gpt-4o-mini；每次运行要么满足 <code>claimed = shortlisted + excluded + anomalies</code> 的对账，要么被记录为失败 — 5 次 migration、184 个模拟测试、137/146 项规格任务完成。</li>
+<li>从设计上降低 LLM 成本：通过一次性的 120–200 词 JD 标准化减少约 70% 输入 token，静态优先的 prompt 以利用供应商 prefix caching，纯 CPU 的技能提取，以及对被低成本门禁拒绝的职位零模型调用。</li>
+<li>用 React 19 + TypeScript + TanStack Query 重建前端，配有 <code>tsc</code>/ESLint 门禁、一条守护"消费即清除"API 路由的自定义 lint 规则、经 DOMPurify 净化的描述和 135 个单元测试。</li>
+<li>使用 GitHub Spec Kit 和 Claude Code 实践 spec-driven development，涵盖 11 份功能规格和两份 constitution；最新的规格包含 104 项需求、25 项成功标准和 43 项已记录的设计决策，其真实数据验证门禁在发布前捕获了三处词表不匹配（例如 <code>YEARLY</code> 与线上的 <code>ANNUAL</code>，影响 28% 的年薪职位）。</li>
+<li>诊断了一个接入缺陷：共享描述哈希的重复发布职位在 6–10% 的 LinkedIn 接入中返回 HTTP 500；修复后每次扫描捕获的新职位从约 100 条提升到约 240 条。</li>
+</ul>
+<h4><a href="projects/ecommerce-admin.html">电商管理平台</a> — Go REST API 与 React 仪表盘 | 2025 年 11 月 – 2025 年 12 月</h4>
+<p><em>独立完成，跟随并扩展一门 Udemy 课程 · Go 1.25, Fiber v3, GORM, MySQL, JWT, bcrypt, React 19, TypeScript, Redux, React Router 7, Bootstrap, c3.js</em>
+代码：<a href="https://github.com/YimingCao-Eric/go-admin" target="_blank" rel="noopener">github.com/YimingCao-Eric/go-admin</a> · <a href="https://github.com/YimingCao-Eric/react-admin" target="_blank" rel="noopener">github.com/YimingCao-Eric/react-admin</a></p>
+<ul>
+<li>为在线商店构建了全栈管理系统 — 一个 28 路由的 Go REST API（Fiber v3 + GORM/MySQL）和一个 14 路由的 React/TypeScript 仪表盘 — 覆盖用户、角色、商品和订单管理、图片上传、CSV 导出和日销售分析图表。</li>
+<li>实现基于 Cookie 的认证：HS256 JWT 存放于 HTTP-only Cookie，bcrypt（cost 14）密码哈希，以及基于多对多角色–权限模型的 RBAC，按 HTTP 方法检查 <code>view_*</code>/<code>edit_*</code> 权限。</li>
+<li>通过用户、商品和订单共用的 Go <code>Entity</code> 接口编写了通用分页层，预加载订单项并计算合计以避免 N+1 查询。</li>
+<li>将课程代码库迁移到当前主版本 — Fiber v2→v3、React Router 5→7、React 19、Redux 5 — 依据各库的迁移说明逐一解决破坏性变更。</li>
+<li>为每个处理器和组件编写文档，从零撰写两份 README，并完成一份书面安全审查，指出硬编码密钥、授权覆盖不完整、未净化的上传文件名和浮点表示金额是接下来要修复的问题。</li>
+</ul>
+<h3>研究项目 — 不列颠哥伦比亚大学（UBC）</h3>
+<h4><a href="projects/bayer-fake-image-detection.html">凭缺失的 Bayer 模式检测 AI 生成图像</a> — EECE 541 | 2024 年 4 月</h4>
+<p><em>研究论文 + 两次报告 · 4 位作者 · 第三作者 · 工作均分</em></p>
+<ul>
+<li>合著（四位作者均分）一种无需训练的 AI 生成图像检测方法：将图像按四种 Bayer 布局分别 re-mosaic，再次 demosaic，用四个 PSNR 的离散程度作为检验统计量 — 相机照片在不同布局间存在差异，生成图像则没有。</li>
+<li>在 999 张 RAISE 相机 RAW 与 46,000 张生成图像（DiffusionDB、GenImage 的八种生成器、1,000 张自生成的逼真风景图）上评估：97–100% 的检出率，同时保留 90% 的真实照片。</li>
+<li>将 Malvar–He–Cutler demosaicing 算法和 PSNR/SSIM/CIEDE2000 指标移植为批处理 PyTorch 以获得 GPU 吞吐量；对比了四种 demosaicing 算法和六种分类器与 ResNet-50 基线。</li>
+<li>准确指出了方法失效的位置 — JPEG 压缩或缩放会抹去该模式 — 并为作品集构建了浏览器内版本的检测，与团队的 PyTorch 代码做到像素级一致的验证。</li>
+</ul>
+<h4><a href="projects/age-invariant-face-recognition.html">基于 knowledge distillation 的年龄不变人脸识别</a> — EECE 571L | 2024 年 4 月</h4>
+<p><em>研究论文 + 两次报告 · 3 位作者 · 第一作者 · 负责代码与评估</em></p>
+<ul>
+<li>三人论文的第一作者，主题为年龄不变人脸识别；负责代码与评估。</li>
+<li>将 ResNet-100 ElasticFace 教师模型（在一千万张 MS1M 图像上训练）蒸馏为带年龄标签的 B3FD 数据集上的 ElasticFace 与 MTLFace 学生模型，在课程提供的框架上实现蒸馏损失和实验脚本。</li>
+<li>以 48 小时 SLURM 作业形式在 Compute Canada V100 GPU 上训练，并在 B3FD、AgeDB 和 CASIA-WebFace 上评估九种配置。</li>
+<li>蒸馏使弱学生模型在 AgeDB 上提升 19.5 个百分点（57.0% → 76.5%）；最佳学生模型（79.7%）并未明显超过专门构建的 MTLFace 基线（77.4%） — 两个结果均在论文中报告并做了诊断。</li>
+</ul>
+<h4><a href="projects/ddpm-diffusion-models.html">DDPM</a> — EECE 501 | 2023 年 12 月</h4>
+<p><em>研究报告 + 两次报告 · 3 位作者 · 第一作者 · 发起项目、选定课题、完成推导与实验</em></p>
+<ul>
+<li>发起并主导了一个三人的 DDPM 研究项目；14 页 LaTeX 报告的第一作者，并配有两次报告。</li>
+<li>端到端推导了 DDPM 训练目标 — 从最大似然下界，经 KL 分解，到闭式的噪声预测损失 — 并撰写了报告的数学核心部分。</li>
+<li>在 PyTorch/Colab notebook 中运行前向与反向扩散实验，包括 noise schedule 的对比。</li>
+<li>将该工作重建为可交互网页，配有实时的 forward process 模拟器，并用 KaTeX 渲染完整推导。</li>
+</ul>
+<h4><a href="projects/ensemble-stacking.html">CIFAR-10 上的 ensemble stacking</a> — EECE 571T | 2023 年 5 月</h4>
+<p><em>研究报告 + 汇报 · 2 位作者 · 第一作者 · 发起项目、选定课题、完成实现、运行实验</em></p>
+<ul>
+<li>发起并主导了一个两人的 CNN stacking 集成项目；第一作者，负责实现与实验。</li>
+<li>在 CIFAR-10 上训练 LeNet、AlexNet、VGG 和 ResNet-18 作为 base learner，以及一个学习组合其预测的 meta-network，评估了基模型的每一个子集。</li>
+<li>发现最佳的三模型 stacking（88.7%）超过了最佳单模型（85.6%），且包含了最弱的 base learner（68%） — 证明驱动 stacking 增益的是多样性而非单体强度。</li>
+<li>为作品集构建了可交互的 stacking 演练场，在合成数据上复现该效应。</li>
+</ul>
+<h4><a href="projects/few-shot-learning.html">面向 few-shot learning 的 feature extractor</a> — EECE 570 | 2023 年 4 月</h4>
+<p><em>独立研究项目 · 报告 + 带解说的视频演示</em></p>
+<ul>
+<li>独立项目，比较卷积 backbone 作为 Prototypical Networks（原型网络）在 CUB-200 细粒度鸟类数据集上的 feature extractor。</li>
+<li>用 PyTorch 从零训练 ResNet-18、DenseNet-121 和 ConvNeXt-T，并在相同的 episodic few-shot 协议下评估：DenseNet 83.8% &gt; ResNet 81.8% &gt; ConvNeXt 78.6%。</li>
+<li>设计了两项针对原型分类头的分类器侧改进并做了 ablation；两者均未能提升准确率，报告解释了原因。</li>
+<li>以书面报告加一段 4:45 的带解说视频交付，演示代码与结果。</li>
+</ul>
+<h4><a href="projects/mri-denoising.html">DWI MRI denoising</a> — EECE 523 | 2022 年 12 月</h4>
+<p><em>研究论文 + 汇报 · 5 位作者 · 第一作者 · 主要负责代码</em></p>
+<ul>
+<li>五人研究论文的第一作者，主题为 DWI 脑部 MRI denoising；主要负责实现。</li>
+<li>用 NumPy 从零构建两个 denoiser — 8×8 分块 DCT 阈值化与基于 PCA 的去噪 — 以及覆盖三名受试者和四个 b 值的完整评估 pipeline。</li>
+<li>测得 PCA 约 5 dB 的 SNR 增益，DCT 约 1.7 dB，并刻画了限制两种方法的共同的噪声–细节权衡。</li>
+<li>后来为作品集用 JavaScript 重新实现了 DCT denoiser，与 SciPy 验证到小数点后四位一致，在真实 DWI 切片上实时运行。</li>
+</ul>
+<h4><a href="projects/mri-segmentation.html">无监督脑肿瘤分割</a> — EECE 562 | 2022 年 12 月</h4>
+<p><em>研究论文 · 2 位作者 · 第二作者 · 工作均分</em></p>
+<ul>
+<li>合著一篇两人论文，主题为 BraTS 2018 上的无监督脑肿瘤分割，工作由两位作者均分。</li>
+<li>用 PyTorch 从零实现 GMM-EM，在 GPU 上对每个研究对象约九百万体素运行，并与 k-means 基线对比。</li>
+<li>在十名患者中的六名上无需任何标签达到 Dice ≈ 0.9，并分析了肿瘤与健康组织强度重叠的失败案例。</li>
+<li>为作品集构建了可交互的 k-means 对比 GMM 图示，在合成组织数据上实时运行两种算法。</li>
+</ul>
+<h3>教育经历</h3>
+<h4>不列颠哥伦比亚大学（UBC）— 工程硕士，电气与计算机工程 | 2022 年 9 月 – 2024 年 5 月</h4>
+<p><em>加拿大温哥华 · GPA：87%</em></p>
+<ul>
+<li>方向：深度学习、计算机视觉、generative model、医学图像分析。</li>
+</ul>
+<h4>维多利亚大学（UVic）— 荣誉理学学士，计算机科学与数学 | 2017 年 9 月 – 2021 年 5 月</h4>
+<p><em>加拿大维多利亚 · 优异毕业 · GPA：7.53/9</em></p>
+<ul>
+<li>荣誉论文主题为离策略强化学习（导师：Nishant Mehta）。</li>
+<li>理学院院长嘉许名单（2020 年 10 月）；国际学生奖学金（2017 年）。</li>
+</ul>
+    </article>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="../assets/files/YimingCao_Resume.pdf">简历</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

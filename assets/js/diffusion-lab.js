@@ -14,6 +14,9 @@
 (function () {
   "use strict";
 
+  /* i18n: site.js defines window.I18N before this script runs (defer order). */
+  function tr(en, zh) { return (window.I18N && window.I18N.t) ? window.I18N.t(en, zh) : en; }
+
   var T = 1000;
 
   /* ---------- schedules ---------- */
@@ -339,7 +342,7 @@
       playBtn.addEventListener("click", function () {
         state.playing = !state.playing;
         playBtn.dataset.state = state.playing ? "playing" : "paused";
-        playBtn.setAttribute("aria-label", state.playing ? "Pause" : "Play");
+        playBtn.setAttribute("aria-label", state.playing ? tr("Pause", "暂停") : tr("Play", "播放"));
         if (state.playing) loop();
       });
     }

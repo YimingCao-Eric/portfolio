@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>基于 knowledge distillation 的年龄不变人脸识别 — 曹一明</title>
+<meta name="description" content="通过 knowledge distillation 把通用人脸识别教师模型的知识传递给年龄不变的学生模型，在 Compute Canada 上训练——蒸馏把 19 个百分点的提升传递给了一个弱学生模型，而与专用模型相比则打成平手。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/age-invariant-face-recognition.html">
+<script defer src="../../assets/js/site.js"></script>
+<script defer src="../../assets/js/aifr-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-toggle" data-lang-toggle="en" href="../../projects/age-invariant-face-recognition.html" lang="en" title="Switch to English">EN</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">深度学习 · 人脸识别 · 集群训练</p>
+    <h1>一个从未见过"变老"的教师模型，能教会学生模型应对年龄变化吗？</h1>
+    <p class="lede">
+      人的面容会随着几十年的时光而改变，而在同龄照片上训练的通用人脸识别模型，一旦被要求跨越
+      二十年去匹配同一个人，性能便会急剧下降。我们把一个强大的通用模型——在一千万张 MS1M 图像上
+      训练的 ElasticFace（ResNet-100）——蒸馏到在带年龄标注的 B3FD 数据集上训练的学生模型中，
+      训练在 Compute Canada 的 V100 上以 48 小时作业完成。蒸馏把 AgeDB 上 19 个百分点的提升传递
+      给了一个弱学生模型；而与无教师训练的专用模型相比，结果大致打平。两项发现都在本页呈现。
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../../assets/files/aifr-report.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        阅读论文
+      </a>
+      <a class="btn" href="../../assets/files/aifr-final-slides.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        结题汇报
+      </a>
+      <a class="btn" href="#artifacts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        全部文件
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>课程研究论文 + 两次汇报</dd></div>
+      <div><dt>背景</dt><dd>EECE 571L，UBC</dd></div>
+      <div><dt>时间</dt><dd>2024 年 1 月 – 4 月</dd></div>
+      <div><dt>团队</dt><dd>3 位作者</dd></div>
+      <div><dt>技术栈</dt><dd>PyTorch、Compute Canada 上的 SLURM、V100 GPU</dd></div>
+      <div><dt>数据</dt><dd>MS1MV2 · B3FD · AgeDB · CASIA-WebFace</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ RESULTS EXPLORER ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-aifr-results>
+      <div class="lab__head">
+        <h2 class="lab__title">每一种配置，在每一个测试集上</h2>
+        <p class="lab__note">
+          人脸 verification accuracy，取自论文表 I–IV。每根柱上的竖线标记是最弱的独立模型——仅在 B3FD 上
+          训练的 ElasticFace——Δ 即相对于它的差值。
+        </p>
+      </div>
+      <div class="aifr-tabs" role="tablist">
+        <button type="button" class="aifr-tab" role="tab" data-aifr-set="b3fd">B3FD 测试集</button>
+        <button type="button" class="aifr-tab" role="tab" data-aifr-set="agedb">AgeDB</button>
+        <button type="button" class="aifr-tab" role="tab" data-aifr-set="casia">CASIA-WebFace</button>
+        <label><input type="checkbox" data-aifr-sort checked> 按准确率排序</label>
+      </div>
+      <div class="aifr-list" data-aifr-list></div>
+      <div class="aifr-legend" data-aifr-legend></div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      先看 AgeDB——它是年龄不变性的基准测试。在 MS1M 上训练的原版 ElasticFace 达到 98.3%，
+      无人能及。同一架构仅在 B3FD 上训练只有 57.0%。把 MS1M 模型蒸馏进去，它升到 76.5%；把
+      MTLFace 蒸馏进去，则达到 79.7%。而专为此任务设计的 MTLFace 本身，在没有任何教师的情况下
+      就能拿到 77.4%。
+    </p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>问题与数据集</h2>
+      <p>
+        人脸识别模型为每张图像生成一个特征向量；两张图像的向量足够接近，便判定为同一人。在
+        MS1M 上训练的模型——一千万张爬取的图像，涵盖十万人，且每人大多只有一个年龄段——学到的
+        特征极擅长区分不同的人，却难以认出二十年后的同一个人。而在失踪人口案件和边境管控中真正
+        重要的照片，往往正是那些旧照片。
+      </p>
+      <p>
+        四个数据集各司其职。<strong>MS1MV2</strong> 是教师模型知识的来源。<strong>B3FD</strong>
+        ——375,592 张图像、53,759 人，从 IMDB-WIKI 和 CACD 中经生物特征筛选而来，并带有 0 到 100
+        岁的年龄标注——是所有学生模型的训练集。<strong>AgeDB</strong>（16,488 张图像，人工核验的
+        年龄标注）和 <strong>CASIA-WebFace</strong>（494,414 张图像）则完全留出，仅用于测试模型
+        对从未见过的人的泛化能力。
+      </p>
+      <div class="callout callout--warn">
+        <p>
+          <strong>关于应用场景。</strong>年龄不变的人脸识别可用于寻找失踪儿童和核验身份证件，
+          也同样可用于未经同意的监控。论文在引言中已经说明了这一点，而我更愿意把它放在这里醒目
+          呈现，而不是埋没在文中：这是一项双刃的能力，构建它的同时也有义务把这一点说清楚。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>OursKD：蒸馏方法</h2>
+      <p>
+        教师模型是 ResNet-100 backbone 上的 ElasticFace，由 Boutros 等人在 MS1MV2 上预训练——一个
+        261 MB 的 checkpoint，权重始终不更新。学生模型是另一个 ElasticFace，或者是 Huang 等人提出的
+        多任务年龄不变模型 MTLFace，均在 B3FD 上训练。每张图像同时经过教师和学生；损失函数把
+        学生拉向教师。
+      </p>
+      <figure class="figure fig-white">
+        <img src="../../assets/img/aifr/ourskd-architecture.png" alt="示意图：输入图像同时送入教师和学生 backbone；L2 损失比较二者的特征图；学生分类器的输出通过 cross-entropy 与真实标签比较">
+        <figcaption>论文图 1。教师模型冻结；只有学生模型的权重在更新。</figcaption>
+      </figure>
+
+      <h3>实际训练所用的损失函数</h3>
+      <p>
+        四项损失以相等权重相加。这是训练脚本中 <code>AdaTransLearn_ElasticTriL2</code> 配置所用的
+        原始判据：
+      </p>
+      <pre><code>def criterion(out, labels, ages):
+    s_features, t_features = out[0], out[1]     # 学生 / 教师特征图
+    s_logits,   t_logits   = out[2], out[3]
+
+    l2_loss  = mse(s_features, t_features)                                  # 匹配教师的特征
+    kd_loss  = kd(s_logits / T, softmax(t_logits / T, dim=1))               # 软目标，T = 40
+    ce_loss  = ce(s_logits / T2, labels)                                    # 仍要学习真实标签
+    tri_loss = triplet(s_features, labels, miner(s_features, labels))       # 拉近同一身份
+
+    return l2_loss + kd_loss + ce_loss + tri_loss</code></pre>
+      <p>
+        L2 项是论文的核心思想——"教师对问题 <em>x</em> 的回答就是特征图，我们希望学生的回答与之
+        尽可能相似。"cross-entropy 项是一道防线，防止学生只是照搬一个特征未必适合本任务的教师。soft target 项
+        和 triplet 项则是标准的蒸馏与 metric learning 补充。
+      </p>
+
+      <h3>大规模训练</h3>
+      <p>
+        这些都无法在笔记本电脑上运行。每种配置都是 Compute Canada 上的一个 SLURM 作业：一块
+        V100、32 GB 内存、48 小时的墙钟时限，B3FD 在作业启动时解压到节点本地的 scratch 空间。
+        仓库中的 <code>cc_*.sh</code> 脚本把每个实验编码为可复现的作业——模型类、损失名称、
+        学习率 2e-4、批大小 64、温度 40——结果文档则把上方表格中的每一行都追溯到其中某个脚本。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VERIFICATION METRIC ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>"verification accuracy"衡量的是什么</h2>
+      <p>
+        在训练身份上的分类准确率，对识别陌生人几乎说明不了什么。因此模型是按<em>图像对</em>来
+        评分的：两张图像，一个真实标签——是否为同一人——判定则通过对二者特征图之间的欧氏距离设
+        阈值得到。阈值取使准确率最大的值，因为把它设为零毫无意义：同一个人 20 岁和 45 岁的照片
+        永远不会产生完全相同的特征。
+      </p>
+      <figure class="figure fig-white">
+        <img src="../../assets/img/aifr/verification.png" alt="示意图：两张图像经过学生 backbone，计算特征图间的欧氏距离，设阈值判定，再与真实标签比较">
+        <figcaption>论文图 2：验证流程。</figcaption>
+      </figure>
+    </div>
+
+    <div class="lab reveal" data-thr-lab style="margin-top:1.5rem">
+      <div class="lab__head">
+        <h2 class="lab__title">为什么年龄差让这件事变难</h2>
+        <p class="lab__note">
+          这里是合成的距离分布，并非实测——形状仅作示意。拉大年龄差，观察"同一人"的分布如何滑入
+          "不同的人"的分布之中。
+        </p>
+      </div>
+      <canvas class="thr-canvas" data-thr-canvas aria-label="两条相互重叠的特征距离分布曲线，以及一条可移动的判定阈值线"></canvas>
+      <div class="thr-controls">
+        <div class="gmm-field">
+          <label for="thr-gap">图像对之间的年龄差 &nbsp;<span data-out-gap>较小</span></label>
+          <input id="thr-gap" type="range" min="0" max="100" value="30" data-thr-gap>
+        </div>
+        <div class="gmm-field">
+          <label for="thr-t">判定阈值</label>
+          <input id="thr-t" type="range" min="20" max="330" value="140" data-thr-t>
+        </div>
+        <button class="btn" type="button" data-thr-snap>跳到最佳阈值</button>
+      </div>
+      <div class="lab__readout" style="grid-template-columns:repeat(4,1fr)">
+        <div><span>准确率</span><b data-out-acc>—</b></div>
+        <div><span>false accept（FAR）</span><b data-out-far>—</b></div>
+        <div><span>false reject（FRR）</span><b data-out-frr>—</b></div>
+        <div><span>最佳阈值</span><b data-out-best>—</b></div>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      没有年龄差时，两条分布几乎不相触，最佳阈值几乎能把所有对判断正确。当年龄差达到数十年时，
+      没有哪个阈值是好的：向右移，陌生人会被接受；向左移，同一个人会被拒绝。这片重叠区域正是
+      年龄不变模型试图缩小的量——也正是 AgeDB 那一列所衡量的东西。
+    </p>
+  </div>
+</section>
+
+<!-- ============ FINDINGS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>数字说明了什么</h2>
+      <p>
+        两件事，而且方向相反。
+      </p>
+      <p>
+        <strong>蒸馏传递了泛化能力。</strong>仅在 B3FD 上训练的 ElasticFace 在 AgeDB 上达到
+        57.0%，在 CASIA 上达到 68.0%。同一架构配上 MS1M 教师后分别达到 76.5% 和 82.1%——在从未
+        训练过的数据集上提升了 19.5 和 14.1 个百分点。而改用在 B3FD（而非 MS1M）上预训练的教师，
+        提升则小得多（64.7% / 71.8%），这就分离出了原因：被传递的是教师数据的多样性，而不是教师
+        的架构。论文的另一项观察也指向同一方向——当学生与教师在结构或预训练上差异越大时，提升
+        越大。
+      </p>
+      <p>
+        <strong>蒸馏并没有明显胜过专用模型。</strong>在 B3FD 上无教师训练的 MTLFace，在三个测试
+        集上分别取得 96.3% / 77.4% / 82.2%。最好的蒸馏学生——以 MTLFace 为教师的 ElasticFace——
+        取得 94.3% / 79.7% / 82.9%：AgeDB 上领先 2.3 个百分点，CASIA 上领先 0.7，B3FD 测试划分上
+        落后 2.0。这些都是没有误差棒的单次训练结果，所以论文称之为"无显著提升"，这是正确的判断。
+        再考虑其代价——每一步都要额外通过一个 100 层的教师做一次前向传播——作为一种压缩策略，
+        蒸馏在这里并不划算。论文直言不讳："这是我们 KD 模型整体失败的一个标志。"
+      </p>
+      <div class="callout">
+        <p>
+          <strong>诊断，才是真正有用的部分。</strong>四项损失等权相加是一个猜测，而不是设计。
+          论文点明了这一点：L2、soft target、cross-entropy 和 triplet loss 的权重从未调过，而当 MTLFace 作为
+          学生时——它自带多任务损失——这些项之间可能在相互拉扯。基线 ElasticFace-on-B3FD 同样
+          从未调优，因此最大的那个"提升"部分来自于弱基线。两者都不神秘；都是预算所限。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DECKS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>两次汇报</h2>
+      <p>二月的开题汇报，以及四月的结题汇报。</p>
+    </div>
+
+    <div class="deck-tabs" role="tablist" aria-label="选择幻灯片">
+      <button type="button" role="tab" class="deck-tab is-active" data-deck-tab="final" aria-selected="true">结题汇报 <span>18 页</span></button>
+      <button type="button" role="tab" class="deck-tab" data-deck-tab="proposal" aria-selected="false">开题汇报 <span>24 页</span></button>
+    </div>
+
+    <div data-deck-panel="final">
+      <div class="slides reveal" data-slides="../../assets/img/slides-aifr/slide-" data-slides-count="18" data-slides-pad="2" data-slides-ext="jpg">
+        <div class="slides__stage" data-slide-stage></div>
+        <div class="slides__bar">
+          <button type="button" data-slide-prev aria-label="上一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button type="button" data-slide-next aria-label="下一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+          <span class="slides__label" data-slide-label>1 / 18</span>
+          <span class="slides__hint">使用方向键切换</span>
+        </div>
+        <div class="slides__rail" data-slide-rail></div>
+      </div>
+      <p class="deck-links">
+        <a href="../../assets/files/aifr-final-slides.pdf" target="_blank" rel="noopener">以 PDF 打开 ↗</a>
+        <a href="../../assets/files/aifr-final-slides.pptx">下载原始 .pptx</a>
+      </p>
+    </div>
+
+    <div data-deck-panel="proposal" hidden>
+      <div class="slides" data-slides="../../assets/img/slides-aifr-proposal/slide-" data-slides-count="24" data-slides-pad="2" data-slides-ext="jpg">
+        <div class="slides__stage" data-slide-stage></div>
+        <div class="slides__bar">
+          <button type="button" data-slide-prev aria-label="上一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button type="button" data-slide-next aria-label="下一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+          <span class="slides__label" data-slide-label>1 / 24</span>
+          <span class="slides__hint">使用方向键切换</span>
+        </div>
+        <div class="slides__rail" data-slide-rail></div>
+      </div>
+      <p class="deck-links">
+        <a href="../../assets/files/aifr-proposal-slides.pdf" target="_blank" rel="noopener">以 PDF 打开 ↗</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>论文</h2>
+      <p>
+        五页，IEEE 格式。
+        <a href="../../assets/files/aifr-report.pdf" target="_blank" rel="noopener">在新标签页中打开 ↗</a>
+      </p>
+    </div>
+    <object class="pdf-embed" data="../../assets/files/aifr-report.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>您的浏览器无法内嵌显示该 PDF。</p>
+        <a class="btn btn--primary" href="../../assets/files/aifr-report.pdf" target="_blank" rel="noopener">打开论文（PDF，5 页）</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose">
+      <h2>全部原始材料</h2>
+      <p>
+        训练代码依赖一个 261 MB 的教师 checkpoint 以及各自带有许可协议的数据集，因此未在此打包提供。
+        论文第 III 节以及上方的损失函数忠实地反映了代码内容。
+      </p>
+    </div>
+    <div class="artifacts">
+      <a class="artifact" href="../../assets/files/aifr-report.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>最终论文 ↗</strong><span>5 页 · PDF · IEEE 格式</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/aifr-method-note.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>方法说明 ↗</strong><span>PDF · 单独撰写的损失函数与评价指标说明</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/aifr-final-slides.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span><strong>结题汇报 ↗</strong><span>18 页 · PDF</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/aifr-final-slides.pptx">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span>
+        <span><strong>结题汇报 — 源文件</strong><span>PowerPoint · .pptx · 5 MB</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/aifr-proposal-slides.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span><strong>开题汇报 ↗</strong><span>24 页 · PDF · 2024 年 2 月</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>致谢与分工</h2>
+      <div class="credits">
+        <h3>三人课程项目</h3>
+        <p>
+          与两位团队成员共同完成，2024 年 1 月至 4 月。曹一明负责代码与评估，并为第一作者。
+        </p>
+        <p>
+          训练框架由课程提供，并由团队扩展：OursKD 模型类、上文所述的损失配置以及实验脚本均为
+          团队的工作；ElasticFace 与 MTLFace 的实现来自其原作者，ResNet backbone 来自 InsightFace。
+          本页的结果浏览器与阈值图由曹一明于项目结束后构建。
+        </p>
+      </div>
+
+      <h3>参考文献</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>G. Hinton, O. Vinyals, J. Dean. <em>Distilling the Knowledge in a Neural Network.</em> 2015.</li>
+        <li>Z. Huang, J. Zhang, H. Shan. <em>When Age-Invariant Face Recognition Meets Face Age Synthesis: A Multi-Task Learning Framework.</em> CVPR 2021 — MTLFace.</li>
+        <li>F. Boutros et al. <em>ElasticFace: Elastic Margin Loss for Deep Face Recognition.</em> CVPRW 2022.</li>
+        <li>Bešenić et al. <em>B3FD: Biometrically Filtered Famous Figure Dataset.</em> 2022; Moschoglou et al., <em>AgeDB</em>, CVPRW 2017; Yi et al., <em>CASIA-WebFace</em>, 2014; Guo et al., <em>MS-Celeb-1M</em>, ECCV 2016.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -63,3 +63,15 @@ any config changes.
   remembers the choice in `localStorage`.
 - KaTeX is vendored rather than loaded from a CDN so the maths still renders
   offline and the site has no external dependencies.
+
+## Chinese mirror (中文版)
+
+Every page has a Simplified-Chinese twin under `zh/` with the same file name
+(`zh/index.html`, `zh/projects/<slug>.html`). The **中文 / EN** button in the header links
+between the two; `assets/js/site.js` remembers the last choice in `localStorage`
+(`yc-lang`) and, on a page that declares a `<link rel="alternate" hreflang=…>`, hops to the
+remembered language automatically. Default (no choice yet) is English.
+
+The interactive figures are shared between both versions: their user-visible strings go
+through `I18N.t("English", "中文")` (defined in `site.js`), which picks by `<html lang>`.
+When you add a project, create both pages and keep the `hreflang` links pointing at each other.

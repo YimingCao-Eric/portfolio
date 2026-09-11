@@ -8,6 +8,9 @@
 (function () {
   "use strict";
 
+  // i18n: site.js defines window.I18N before DOMContentLoaded; fall back to English.
+  function t(en, zh) { return (window.I18N && window.I18N.t) ? window.I18N.t(en, zh) : en; }
+
   /* ============================================================
      1. Projection — ported from scraped_job_projection.py
      ============================================================ */
@@ -189,40 +192,40 @@
   /* ---- the lab UI ---- */
   // Field definitions per site: [key, label, kind, default, hint]
   // kind: "list" (comma-separated tokens), "text", "num", "bool3" (true/false/absent), "urn"
-  var SITE_FIELDS = {
+  function siteFields() { return {
     linkedin: [
       ["company_name", "company_name", "text", "Hootsuite"],
-      ["formatted_employment_status", "formatted_employment_status", "list", "Full-time", "comma-separated; try “Full-time, Part-time”, “Other”, “Freelance”"],
-      ["workplace_types_labels", "workplace_types_labels", "urn", "urn:li:fs_workplaceType:3", "the live payload is a URN map — pick the enum"],
+      ["formatted_employment_status", "formatted_employment_status", "list", "Full-time", t("comma-separated; try “Full-time, Part-time”, “Other”, “Freelance”", "逗号分隔；试试 “Full-time, Part-time”、“Other”、“Freelance”")],
+      ["workplace_types_labels", "workplace_types_labels", "urn", "urn:li:fs_workplaceType:3", t("the live payload is a URN map — pick the enum", "线上载荷是一个 URN 映射——请选择枚举值")],
       ["work_remote_allowed", "work_remote_allowed", "bool3", "false"],
       ["formatted_industries", "formatted_industries", "list", "Software Development, IT Services"],
-      ["salary_period", "salary_period", "text", "YEARLY", "try “per year”, “fortnightly”"],
+      ["salary_period", "salary_period", "text", "YEARLY", t("try “per year”, “fortnightly”", "试试 “per year”、“fortnightly”")],
       ["salary_provided_by_employer", "salary_provided_by_employer", "bool3", "true"],
-      ["listed_at", "listed_at (epoch ms)", "text", "1784160000000", "try 1784160000 (seconds) or “yesterday”"]
+      ["listed_at", t("listed_at (epoch ms)", "listed_at（毫秒时间戳）"), "text", "1784160000000", t("try 1784160000 (seconds) or “yesterday”", "试试 1784160000（秒）或 “yesterday”")]
     ],
     indeed: [
-      ["company", "company (mosaic)", "text", "", "blank = mosaic didn't carry one → graphql fallback"],
-      ["employer_name", "employer_name (graphql)", "text", "Shopify"],
-      ["job_types", "job_types", "list", "Full-time, Permanent", "the combo that created the PERMANENT token"],
-      ["remote_location", "remote_location", "bool3", "false", "false becomes ONSITE — the one place the projection over-claims"],
-      ["language", "language", "text", "en-CA", "try “fr_CA”, “english”"],
+      ["company", t("company (mosaic)", "company（mosaic）"), "text", "", t("blank = mosaic didn't carry one → graphql fallback", "留空 = mosaic 未携带 → 回退到 graphql")],
+      ["employer_name", t("employer_name (graphql)", "employer_name（graphql）"), "text", "Shopify"],
+      ["job_types", "job_types", "list", "Full-time, Permanent", t("the combo that created the PERMANENT token", "正是这个组合催生了 PERMANENT token")],
+      ["remote_location", "remote_location", "bool3", "false", t("false becomes ONSITE — the one place the projection over-claims", "false 会变成 ONSITE——projection 中唯一一处“说得比网站多”的地方")],
+      ["language", "language", "text", "en-CA", t("try “fr_CA”, “english”", "试试 “fr_CA”、“english”")],
       ["salary_period", "salary_period", "text", "HOURLY"],
-      ["salary_snippet_source", "salary_snippet_source", "text", "EXTRACTION", "try INDEED_ESTIMATE, EMPLOYER, or something new"],
-      ["pub_date", "pub_date (epoch ms)", "text", "1784073600000"]
+      ["salary_snippet_source", "salary_snippet_source", "text", "EXTRACTION", t("try INDEED_ESTIMATE, EMPLOYER, or something new", "试试 INDEED_ESTIMATE、EMPLOYER，或任意新值")],
+      ["pub_date", t("pub_date (epoch ms)", "pub_date（毫秒时间戳）"), "text", "1784073600000"]
     ],
     glassdoor: [
       ["employer_name", "employer_name", "text", "Clio"],
       ["industry", "industry", "text", "Legal software"],
-      ["employment_type", "employment_type (JSON-LD list)", "list", "", "blank = absent → falls back to job_type; “OTHER” = present, no fallback"],
-      ["job_type", "job_type (header)", "text", "Contract"],
-      ["remote_work_types", "remote_work_types", "list", "", "the scraper currently sends this empty — see the page"],
+      ["employment_type", t("employment_type (JSON-LD list)", "employment_type（JSON-LD 列表）"), "list", "", t("blank = absent → falls back to job_type; “OTHER” = present, no fallback", "留空 = 缺失 → 回退到 job_type；“OTHER” = 字段存在，不回退")],
+      ["job_type", t("job_type (header)", "job_type（页头）"), "text", "Contract"],
+      ["remote_work_types", "remote_work_types", "list", "", t("the scraper currently sends this empty — see the page", "抓取器目前发送的是空值——见正文")],
       ["education_labels", "education_labels", "list", "Bachelor's degree, Master's degree"],
       ["experience_requirements_description", "experience_requirements_description", "text", "3+ years in a SaaS product team"],
-      ["salary_period", "salary_period (payPeriod)", "text", "ANNUAL"],
+      ["salary_period", t("salary_period (payPeriod)", "salary_period（payPeriod）"), "text", "ANNUAL"],
       ["salary_source", "salary_source", "text", "GLASSDOOR_ESTIMATE"],
-      ["date_posted", "date_posted (ISO date)", "text", "2026-07-15", "try 15/07/2026"]
+      ["date_posted", t("date_posted (ISO date)", "date_posted（ISO 日期）"), "text", "2026-07-15", t("try 15/07/2026", "试试 15/07/2026")]
     ]
-  };
+  }; }
   var CANON_ORDER = ["company", "industry", "employment_type", "workplace_type", "remote", "salary_period", "salary_disclosed", "language", "education_requirements", "posted_at"];
 
   function parseList(s) {
@@ -239,7 +242,7 @@
 
     function buildForm() {
       form.innerHTML = "";
-      SITE_FIELDS[site].forEach(function (f) {
+      siteFields()[site].forEach(function (f) {
         var wrap = document.createElement("div");
         wrap.className = "gmm-field proj-field";
         var lab = document.createElement("label");
@@ -248,20 +251,20 @@
         var input;
         if (f[2] === "bool3") {
           input = document.createElement("select");
-          [["true", "true"], ["false", "false"], ["", "absent (null)"]].forEach(function (o) {
+          [["true", "true"], ["false", "false"], ["", t("absent (null)", "缺失（null）")]].forEach(function (o) {
             var op = document.createElement("option"); op.value = o[0]; op.textContent = o[1]; input.appendChild(op);
           });
           input.value = f[3];
         } else if (f[2] === "urn") {
           input = document.createElement("select");
-          [["urn:li:fs_workplaceType:1", "urn:li:fs_workplaceType:1 (on-site)"], ["urn:li:fs_workplaceType:2", "urn:li:fs_workplaceType:2 (remote)"], ["urn:li:fs_workplaceType:3", "urn:li:fs_workplaceType:3 (hybrid)"], ["Remote", "“Remote” — the label the fixture assumed"], ["", "absent"]].forEach(function (o) {
+          [["urn:li:fs_workplaceType:1", t("urn:li:fs_workplaceType:1 (on-site)", "urn:li:fs_workplaceType:1（现场）")], ["urn:li:fs_workplaceType:2", t("urn:li:fs_workplaceType:2 (remote)", "urn:li:fs_workplaceType:2（远程）")], ["urn:li:fs_workplaceType:3", t("urn:li:fs_workplaceType:3 (hybrid)", "urn:li:fs_workplaceType:3（混合）")], ["Remote", t("“Remote” — the label the fixture assumed", "“Remote”——fixture 假设的标签")], ["", t("absent", "缺失")]].forEach(function (o) {
             var op = document.createElement("option"); op.value = o[0]; op.textContent = o[1]; input.appendChild(op);
           });
           input.value = f[3];
         } else {
           input = document.createElement("input");
           input.type = "text"; input.value = f[3];
-          if (f[2] === "list") input.placeholder = "empty = absent";
+          if (f[2] === "list") input.placeholder = t("empty = absent", "留空 = 缺失");
         }
         input.setAttribute("data-key", f[0]); input.setAttribute("data-kind", f[2]);
         input.addEventListener("input", run); input.addEventListener("change", run);
@@ -305,7 +308,7 @@
       });
       warn.innerHTML = "";
       if (!log.events.length) {
-        var ok = document.createElement("li"); ok.className = "proj-warn__none"; ok.textContent = "no warnings — every value mapped or was absent"; warn.appendChild(ok);
+        var ok = document.createElement("li"); ok.className = "proj-warn__none"; ok.textContent = t("no warnings — every value mapped or was absent", "无警告——每个值都已映射或缺失"); warn.appendChild(ok);
       }
       log.events.forEach(function (e) {
         var li = document.createElement("li");
@@ -316,10 +319,10 @@
       });
     }
 
-    tabs.forEach(function (t) {
-      t.addEventListener("click", function () {
-        site = t.getAttribute("data-proj-site");
-        tabs.forEach(function (x) { x.classList.toggle("is-active", x === t); x.setAttribute("aria-selected", x === t ? "true" : "false"); });
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        site = tab.getAttribute("data-proj-site");
+        tabs.forEach(function (x) { x.classList.toggle("is-active", x === tab); x.setAttribute("aria-selected", x === tab ? "true" : "false"); });
         buildForm(); run();
       });
     });
@@ -386,7 +389,7 @@
 
     function renderState() {
       stateOut.innerHTML = "";
-      [["enabled", state.enabled], ["consecutive_precheck_failures", state.consecutive_precheck_failures + " / " + PRECHECK_THRESHOLD], ["cycles run", state.cycles], ["next cycle in", state.next_cycle_in === null ? "—" : fmtMs(state.next_cycle_in)], ["last cycle", state.last_result]].forEach(function (kv) {
+      [["enabled", state.enabled], ["consecutive_precheck_failures", state.consecutive_precheck_failures + " / " + PRECHECK_THRESHOLD], [t("cycles run", "已运行周期数"), state.cycles], [t("next cycle in", "下一周期倒计时"), state.next_cycle_in === null ? "—" : fmtMs(state.next_cycle_in)], [t("last cycle", "上一周期"), state.last_result]].forEach(function (kv) {
         var d = document.createElement("div");
         d.innerHTML = "<span></span><b></b>";
         d.querySelector("span").textContent = kv[0];
@@ -394,11 +397,11 @@
         stateOut.appendChild(d);
       });
       runBtn.disabled = !state.enabled;
-      runBtn.textContent = state.enabled ? "Run one cycle" : "Auto-paused — press Enable";
+      runBtn.textContent = state.enabled ? t("Run one cycle", "运行一个周期") : t("Auto-paused — press Enable", "已自动暂停——请按“启用”");
     }
     function fmtMs(ms) {
-      if (ms >= 60000) return (ms / 60000).toFixed(ms % 60000 ? 1 : 0) + " min";
-      return (ms / 1000) + " s";
+      if (ms >= 60000) return (ms / 60000).toFixed(ms % 60000 ? 1 : 0) + t(" min", " 分钟");
+      return (ms / 1000) + t(" s", " 秒");
     }
     function step(kind, title, detail) {
       var li = document.createElement("li");
@@ -415,21 +418,21 @@
       state.cycles++;
       var keywords = parseList(kwInput.value);
       if (!keywords.length) keywords = ["software engineer", "machine learning engineer"]; // compiled-in defaults
-      step("ok", "PUT /admin/auto-scrape/state", "cycle_phase: scrape_running — blocks the self-bootstrap alarm");
+      step("ok", "PUT /admin/auto-scrape/state", t("cycle_phase: scrape_running — blocks the self-bootstrap alarm", "cycle_phase: scrape_running——阻止自举闹钟重复启动"));
 
       // pre-check
       var pre;
       if (backendSel.value === "down") pre = { reason: "backend_down" };
       else if (backendSel.value === "noconfig") pre = { reason: "config_unavailable" };
       else {
-        step("ok", "GET /health · GET /config", "backend reachable, config loadable");
+        step("ok", "GET /health · GET /config", t("backend reachable, config loadable", "后端可达，配置可加载"));
         var live = [];
         SITES.forEach(function (s) {
           var r = probeSiteSession(PROBE_CASES[probeSels[s].value]);
           var isLive = r.status === "live" || r.status === "unknown_treat_as_live";
           if (isLive) live.push(s);
           step(isLive ? "ok" : (r.status === "captcha" ? "fail" : "skip"), "probeSiteSession(\"" + s + "\")",
-            r.status + " (" + r.reason + ")" + (r.status === "captcha" ? " → Chrome notification, site skipped until you resolve it" : r.status === "unknown_treat_as_live" ? " → treated as live: a server error isn't evidence the session died" : isLive ? "" : " → skipped this cycle"));
+            r.status + " (" + r.reason + ")" + (r.status === "captcha" ? t(" → Chrome notification, site skipped until you resolve it", " → 发出 Chrome 通知，该站点跳过，直到你手动处理") : r.status === "unknown_treat_as_live" ? t(" → treated as live: a server error isn't evidence the session died", " → 视为在线：服务器错误不能证明会话已失效") : isLive ? "" : t(" → skipped this cycle", " → 本周期跳过")));
         });
         pre = live.length ? { reason: "ok", live: live } : { reason: "all_sessions_dead" };
       }
@@ -440,30 +443,30 @@
         step("fail", "preCycleCheck", pre.reason + " → consecutive_precheck_failures = " + state.consecutive_precheck_failures);
         if (state.consecutive_precheck_failures >= PRECHECK_THRESHOLD) {
           state.enabled = false;
-          step("fail", "auto-pause", "threshold " + PRECHECK_THRESHOLD + " reached → PUT { enabled: false }. Nothing runs until a human presses Enable.");
+          step("fail", t("auto-pause", "自动暂停"), t("threshold " + PRECHECK_THRESHOLD + " reached → PUT { enabled: false }. Nothing runs until a human presses Enable.", "达到阈值 " + PRECHECK_THRESHOLD + " → PUT { enabled: false }。在有人按下“启用”之前不再运行任何周期。"));
         }
         elapsed = 2000;
-        state.last_result = "pre-check failed: " + pre.reason;
+        state.last_result = t("pre-check failed: ", "pre-check 失败：") + pre.reason;
       } else {
-        if (state.consecutive_precheck_failures) step("ok", "preCycleCheck", "ok → consecutive_precheck_failures reset to 0");
+        if (state.consecutive_precheck_failures) step("ok", "preCycleCheck", t("ok → consecutive_precheck_failures reset to 0", "ok → consecutive_precheck_failures 重置为 0"));
         state.consecutive_precheck_failures = 0;
         var n = pre.live.length * keywords.length;
-        step("ok", "runScrapeMatrix", pre.live.length + " live site" + (pre.live.length > 1 ? "s" : "") + " × " + keywords.length + " keyword" + (keywords.length > 1 ? "s" : "") + " = " + n + " scans, 30 s apart, each with a 30-min timeout");
+        step("ok", "runScrapeMatrix", t(pre.live.length + " live site" + (pre.live.length > 1 ? "s" : "") + " × " + keywords.length + " keyword" + (keywords.length > 1 ? "s" : "") + " = " + n + " scans, 30 s apart, each with a 30-min timeout", pre.live.length + " 个在线站点 × " + keywords.length + " 个关键词 = " + n + " 次扫描，间隔 30 秒，每次超时 30 分钟"));
         succeeded = n;
         elapsed = n * (INTER_SCAN_DELAY_MS + 4 * 60 * 1000); // ~4 min per scan is a typical full-page scan
-        step("ok", "POST /admin/auto-scrape/wake-orchestrator", "Redis publish → backend runs auto-expiration on both tables, finalises the cycle row");
-        state.last_result = n + " scans, all succeeded";
+        step("ok", "POST /admin/auto-scrape/wake-orchestrator", t("Redis publish → backend runs auto-expiration on both tables, finalises the cycle row", "Redis 发布 → 后端对两张表执行自动过期，并收尾周期记录行"));
+        state.last_result = t(n + " scans, all succeeded", n + " 次扫描，全部成功");
       }
 
       // scheduleNextCycle
       var sleep = Math.max(0, MIN_CYCLE_INTERVAL_MS - elapsed);
-      var note = "min_cycle_interval 60 s − elapsed " + fmtMs(elapsed) + " → sleep " + fmtMs(sleep);
+      var note = t("min_cycle_interval 60 s − elapsed ", "min_cycle_interval 60 秒 − 已用时 ") + fmtMs(elapsed) + t(" → sleep ", " → 休眠 ") + fmtMs(sleep);
       if (succeeded === 0 && elapsed < 30000 && sleep < TRIVIAL_COOLDOWN_MS) {
         sleep = TRIVIAL_COOLDOWN_MS;
-        note += " — but 0 succeeded in under 30 s, so SC-4 extends it to 5 min rather than hammer the boards";
+        note += t(" — but 0 succeeded in under 30 s, so SC-4 extends it to 5 min rather than hammer the boards", "——但 30 秒内 0 次成功，因此 SC-4 将其延长到 5 分钟，而不是反复冲击招聘站");
       }
       state.next_cycle_in = state.enabled ? sleep : null;
-      step(state.enabled ? "ok" : "skip", "scheduleNextCycle", state.enabled ? "chrome.alarms.create(\"auto_scrape_next_cycle\") — " + note : "not scheduled: orchestrator is paused");
+      step(state.enabled ? "ok" : "skip", "scheduleNextCycle", state.enabled ? "chrome.alarms.create(\"auto_scrape_next_cycle\") — " + note : t("not scheduled: orchestrator is paused", "未调度：orchestrator 已暂停"));
       step("ok", "finally", "cycle_phase: idle");
       renderState();
     }
@@ -475,7 +478,7 @@
     });
     root.querySelector("[data-orc-enable]").addEventListener("click", function () {
       state.enabled = true; state.consecutive_precheck_failures = 0;
-      trace.innerHTML = ""; step("ok", "POST /admin/auto-scrape/enable", "enabled: true, pre-check counter cleared, config_change_pending cleared");
+      trace.innerHTML = ""; step("ok", "POST /admin/auto-scrape/enable", t("enabled: true, pre-check counter cleared, config_change_pending cleared", "enabled: true，pre-check 计数器已清零，config_change_pending 已清除"));
       renderState();
     });
     renderState();
@@ -505,7 +508,7 @@
       ctx.fillStyle = text; ctx.font = "600 14px ui-sans-serif, system-ui, sans-serif"; ctx.textAlign = "left";
       ctx.fillText(s[0], x0, y);
       ctx.fillStyle = faint; ctx.font = "500 11px ui-monospace, Menlo, monospace";
-      ctx.fillText(s[1] + " cols · source-shaped", x0 + 130, y);
+      ctx.fillText(t(s[1] + " cols · source-shaped", s[1] + " 列 · 站点原始形态"), x0 + 130, y);
       for (var c = 0; c < s[1]; c++) {
         ctx.fillStyle = c % 7 === 0 ? border : elev;
         ctx.strokeStyle = border; ctx.lineWidth = 1;
@@ -521,7 +524,7 @@
     ctx.fillStyle = text; ctx.font = "600 14px ui-sans-serif, system-ui, sans-serif"; ctx.textAlign = "left";
     ctx.fillText("scraped_jobs", cx, cy - 22);
     ctx.fillStyle = faint; ctx.font = "500 11px ui-monospace, Menlo, monospace";
-    ctx.fillText("27 cols · one shape · NULL = “site didn't say”", cx + 112, cy - 22);
+    ctx.fillText(t("27 cols · one shape · NULL = “site didn't say”", "27 列 · 统一形态 · NULL = “网站未说明”"), cx + 112, cy - 22);
     for (var k = 0; k < cn; k++) {
       ctx.fillStyle = k >= 19 ? accent : elev;
       ctx.strokeStyle = k >= 19 ? accent : border;

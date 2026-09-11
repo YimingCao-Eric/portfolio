@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Hunting Assistant：多站点职位抓取与 LLM 匹配 pipeline — 曹一明</title>
+<meta name="description" content="一个 Chrome extension、一个 FastAPI 后端和一个 React 控制台，把 LinkedIn、Indeed 和 Glassdoor 的职位抓取进同一张 canonical PostgreSQL 表，并可无人值守运行——用 Claude Code 以 spec-first 的方式构建。页面上的可交互图示重新实现了 projection 模块与 orchestrator。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/job-hunting-assistant.html">
+<script defer src="../../assets/js/site.js"></script>
+<script defer src="../../assets/js/jha-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-toggle" data-lang-toggle="en" href="../../projects/job-hunting-assistant.html" lang="en" title="Switch to English">EN</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">产品 · Chrome extension · FastAPI · React · PostgreSQL</p>
+    <h1>Job Hunting Assistant：多站点职位抓取与 LLM 匹配 pipeline</h1>
+    <p class="lede">
+      找工作意味着要在 LinkedIn、Indeed 和 Glassdoor 上反复阅读同样的职位，而每个站点都有自己的搜索、
+      自己的筛选器，以及对"一个职位"是什么的不同理解。Job Hunting Assistant 是我为自己的求职搭建的工具：
+      一个 Chrome extension，通过我已登录的会话抓取这三个站点；一个 FastAPI 后端，把每条职位存两次——一次按
+      站点原本的形态，一次按单一的 canonical shape；以及一个 React 控制台，用来搜索、阅读，并让整套系统无人值守地
+      运行。自八月起，第二个仓库 <strong>filter-matcher</strong> 读取这张表，把它变成一份值得投递的短名单。
+      两者都在持续开发中；本页的可交互图示运行的正是后端和 extension 所运行的同一份代码。
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="https://github.com/YimingCao-Eric/job-hunting-assistant" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        查看 GitHub 代码
+      </a>
+      <a class="btn" href="#how">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+        如何构建
+      </a>
+      <a class="btn" href="#method">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        开发方法
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>个人产品，持续开发中</dd></div>
+      <div><dt>背景</dt><dd>自主发起；单一用户（我自己）</dd></div>
+      <div><dt>时间</dt><dd>2026 年 3 月至今</dd></div>
+      <div><dt>团队</dt><dd>独立完成，与 Claude Code 协作</dd></div>
+      <div><dt>Extension</dt><dd>Chrome Manifest V3 · service worker · content script</dd></div>
+      <div><dt>后端</dt><dd>FastAPI · 异步 SQLAlchemy · Alembic · PostgreSQL 16 · Redis 7 · Docker Compose</dd></div>
+      <div><dt>前端</dt><dd>React 19 · TypeScript · Vite · TanStack Query · Tailwind</dd></div>
+      <div><dt>配套服务</dt><dd>filter-matcher——Python CLI 服务，2026 年 8 月</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PROJECTION LAB ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-proj-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">三个站点，一行数据</h2>
+        <p class="lab__note">
+          <code>backend/core/scraped_job_projection.py</code>——把各站点的行转换为 canonical
+          <code>scraped_jobs</code> 行的纯函数——被逐函数移植成了 JavaScript，连警告也一并移植。
+          编辑该站点的字段；右侧就是最终落入表中的内容，以及日志里会写下的内容。
+        </p>
+      </div>
+      <div class="proj-tabs" role="tablist">
+        <button type="button" class="aifr-tab is-active" role="tab" aria-selected="true" data-proj-site="linkedin">LinkedIn</button>
+        <button type="button" class="aifr-tab" role="tab" aria-selected="false" data-proj-site="indeed">Indeed</button>
+        <button type="button" class="aifr-tab" role="tab" aria-selected="false" data-proj-site="glassdoor">Glassdoor</button>
+      </div>
+      <div class="proj-grid">
+        <div class="proj-form" data-proj-form></div>
+        <div class="proj-out">
+          <h4>Canonical scraped_jobs 字段</h4>
+          <table class="proj-table"><tbody data-proj-out></tbody></table>
+          <h4 style="margin-top:1rem">模块会记录的日志</h4>
+          <ul class="proj-warn" data-proj-warn></ul>
+        </div>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      三个值得一试的操作。在 LinkedIn 上，把工作地点设为<em>远程（remote）</em>，同时让
+      <code>work_remote_allowed</code> 保持 false——站点自相矛盾，标签胜出，并由一个专门命名的警告
+      记录这一矛盾，而不是把该列置空。在 Indeed 上，在 <code>job_types</code> 里输入
+      <code>Freelance</code>：它既没有被映射，也不是被认可的空操作值 <code>OTHER</code>，所以会触发警告——
+      正是这类警告让词表在七月从真实数据中长出了 <code>PERMANENT</code> token。在 Glassdoor 上，把
+      <code>OTHER</code> 单独放进 JSON-LD 列表：字段存在且已作答，因此页头回退永远不会触发，该列为 NULL，
+      且完全没有警告。
+    </p>
+  </div>
+</section>
+
+<!-- ============ WHAT IT IS ============ -->
+<section class="section--tight" id="how">
+  <div class="wrap">
+    <div class="prose">
+      <h2>它是什么</h2>
+      <p>
+        三个进程加一个数据库。<strong>extension</strong> 在真实浏览器会话内完成抓取：content script 读取各站点的职位列表，
+        通过站点暴露的任意接口获取完整描述，然后把每条职位交给 service worker，由它 POST 到后端。
+        <strong>后端</strong>负责摄入、回传、通过 WebSocket 流式推送扫描进度，并持有让 extension 能够独自运行数天的状态。
+        <strong>控制台</strong>有四个页面：搜索什么、职位列表、带调试追踪的扫描日志，以及 auto-scrape 仪表盘。
+        一切都在本地的 Docker Compose 下运行；没有云端，除了我之外也没有别的账号。
+      </p>
+    </div>
+
+    <div class="stats reveal">
+      <div class="stat"><b>737</b><span>一次验证扫描中经过 pipeline 的职位数——LinkedIn 606、Indeed 63、Glassdoor 68</span></div>
+      <div class="stat"><b>31</b><span>次 Alembic migration，每一次模式变更都有记录</span></div>
+      <div class="stat"><b>~24k</b><span>行代码：1 万行 Python、6 千行 extension JS、7.5 千行前端 TypeScript</span></div>
+      <div class="stat"><b>135</b><span>个前端单元测试，覆盖易踩坑的纯逻辑，外加四个后端 smoke test</span></div>
+      <div class="stat"><b>11</b><span>份规格，横跨两个仓库；仅最新一份就有 104 条需求、6 份检查清单和 146 项任务</span></div>
+    </div>
+
+    <figure class="arch">
+      <svg viewBox="0 0 900 400" role="img" aria-label="架构：带有各站点 content script 和 service worker orchestrator 的 Chrome extension，向 FastAPI 后端发送数据；后端在 PostgreSQL 中 dual-write 到各来源表和 canonical scraped_jobs 表，用 Redis 唤醒抓取后处理，并通过 REST 和 WebSocket 为 React 控制台提供服务">
+        <!-- extension -->
+        <rect class="box" x="10" y="30" width="250" height="340" rx="14"/>
+        <text class="t-head" x="28" y="58">Chrome extension（MV3）</text>
+        <text class="t-soft" x="28" y="78">运行在我已登录的浏览器里</text>
+        <rect class="box--sunken box" x="28" y="94" width="214" height="30" rx="8"/>
+        <text class="t-mono" x="40" y="113">linkedin/ · Voyager REST</text>
+        <rect class="box--sunken box" x="28" y="132" width="214" height="30" rx="8"/>
+        <text class="t-mono" x="40" y="151">indeed/ · mosaic + GraphQL</text>
+        <rect class="box--sunken box" x="28" y="170" width="214" height="30" rx="8"/>
+        <text class="t-mono" x="40" y="189">glassdoor/ · NEXT_DATA · JSON-LD</text>
+        <rect class="box--accent box" x="28" y="222" width="214" height="52" rx="8"/>
+        <text class="t-mono t-accent" x="40" y="242">background/ service worker</text>
+        <text class="t-mono t-accent" x="40" y="260">auto_scrape · poll · ingest</text>
+        <rect class="box--sunken box" x="28" y="288" width="214" height="30" rx="8"/>
+        <text class="t-mono" x="40" y="307">popup/ — 设置、立即扫描</text>
+        <text class="t-soft" x="28" y="350">探测 → 扫描矩阵 → 唤醒后端</text>
+
+        <!-- edges ext → api -->
+        <path class="edge" d="M260 150 H 320" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="290" y="140" text-anchor="middle">摄入</text>
+        <path class="edge" d="M260 248 H 320" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="290" y="238" text-anchor="middle">状态</text>
+        <path class="edge" d="M320 300 H 260" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="290" y="316" text-anchor="middle">配置</text>
+
+        <!-- backend -->
+        <rect class="box" x="320" y="30" width="300" height="340" rx="14"/>
+        <text class="t-head" x="338" y="58">FastAPI 后端 · :8000</text>
+        <text class="t-soft" x="338" y="78">异步 SQLAlchemy · Alembic · bearer 认证</text>
+        <rect class="box--accent box" x="338" y="94" width="264" height="44" rx="8"/>
+        <text class="t-mono t-accent" x="350" y="112">routers/jobs — 摄入：来源表行</text>
+        <text class="t-mono t-accent" x="350" y="128">+ canonical row，同一事务</text>
+        <rect class="box--sunken box" x="338" y="146" width="264" height="30" rx="8"/>
+        <text class="t-mono" x="350" y="165">routers/extension — 状态、运行日志</text>
+        <rect class="box--sunken box" x="338" y="184" width="264" height="30" rx="8"/>
+        <text class="t-mono" x="350" y="203">routers/auto_scrape — 周期、探测</text>
+        <rect class="box--sunken box" x="338" y="222" width="264" height="30" rx="8"/>
+        <text class="t-mono" x="350" y="241">ws/run-log — 实时扫描进度</text>
+        <rect class="box--sunken box" x="338" y="260" width="264" height="44" rx="8"/>
+        <text class="t-mono" x="350" y="278">auto_scrape/ — 抓取后处理：</text>
+        <text class="t-mono" x="350" y="294">两张表一同过期</text>
+        <rect class="box--sunken box" x="338" y="312" width="264" height="30" rx="8"/>
+        <text class="t-mono" x="350" y="331">core/scraped_job_projection — 纯函数</text>
+
+        <!-- edges api → stores -->
+        <path class="edge" d="M620 120 H 690" marker-end="url(#arr2)"/>
+        <path class="edge" d="M620 282 H 690" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="655" y="272" text-anchor="middle">唤醒</text>
+
+        <!-- postgres -->
+        <rect class="box" x="690" y="30" width="200" height="200" rx="14"/>
+        <text class="t-head" x="708" y="58">PostgreSQL 16</text>
+        <rect class="box--sunken box" x="708" y="72" width="164" height="30" rx="8"/>
+        <text class="t-mono" x="718" y="91">linkedin_jobs (39)</text>
+        <rect class="box--sunken box" x="708" y="108" width="164" height="30" rx="8"/>
+        <text class="t-mono" x="718" y="127">indeed_jobs (45)</text>
+        <rect class="box--sunken box" x="708" y="144" width="164" height="30" rx="8"/>
+        <text class="t-mono" x="718" y="163">glassdoor_jobs (48)</text>
+        <rect class="box--accent box" x="708" y="186" width="164" height="30" rx="8"/>
+        <text class="t-mono t-accent" x="718" y="205">scraped_jobs (27)</text>
+
+        <!-- redis -->
+        <rect class="box" x="690" y="250" width="200" height="60" rx="14"/>
+        <text class="t-head" x="708" y="276">Redis 7</text>
+        <text class="t-soft" x="708" y="296">及时唤醒抓取后处理</text>
+
+        <!-- console -->
+        <rect class="box" x="690" y="326" width="200" height="60" rx="14"/>
+        <text class="t-head" x="708" y="352">React 控制台 · :5173</text>
+        <text class="t-soft" x="708" y="372">配置 · 职位 · 日志 · auto-scrape</text>
+        <path class="edge" d="M690 356 H 620" marker-end="url(#arr2)"/>
+        <text class="edge-label" x="655" y="346" text-anchor="middle">REST · WS</text>
+
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--text-faint)"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>
+        extension 是唯一会接触招聘网站的部分；后端从不向招聘网站发起任何出站请求。需要在 service worker
+        重启后仍然保留的状态存放在 Postgres 里，而不是 extension 里。
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ SCRAPERS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>三个站点，三种不同的数据接口</h2>
+      <p>
+        三家招聘站都没有为此提供公开 API，而且每一家都把完整职位藏在不同的地方。每个站点的抓取器都是一组
+        独立的 content script，而每一个抓取器里最有意思的工作，都是找到那个返回结构化数据、而非需要解析渲染后
+        HTML 的接口。
+      </p>
+      <p>
+        <strong>LinkedIn</strong> 的职位页面由一个名为 Voyager 的内部 REST API 渲染。页面自己的
+        <code>JSESSIONID</code> cookie 同时充当 CSRF token，所以 content script 从 <code>document.cookie</code>
+        中读出它，然后用站点自身使用的同一个 <code>decorationId</code> 请求
+        <code>/voyager/api/jobs/jobPostings/{id}</code>，就能拿回完整的 <code>WebFullJobPosting</code>
+        实体 JSON——标题、描述、薪资、以枚举 URN 表示的工作地点类型、已解析为实体的行业。最多尝试两次，
+        遇到 429、403 或 LinkedIn 非标准的 999 就放弃这条职位，而不是一路重试到被封。
+      </p>
+      <p>
+        <strong>Indeed</strong> 把搜索结果作为嵌入页面的"mosaic"数据块下发，其中包含职位 key 和卡片级字段；
+        描述则来自 <code>apis.indeed.com</code> 上的一个 GraphQL 端点，需要在请求头里带上页面的 API key。
+        查询精确请求模式中存储的那些字段——属性、地点、带计薪单位的薪酬、语言——因此来源表行就是 API 的
+        原始回答，而不是对它的解析结果。Indeed 的脚本前后经历了六种抓取策略才定下这一种；文件至今仍叫
+        <code>rate_strategy.js</code>。
+      </p>
+      <p>
+        <strong>Glassdoor</strong> 最为混乱：列表页有时带一个 <code>__NEXT_DATA__</code> 块，有时只有
+        JSON-LD 的 <code>JobPosting</code> 模式，而两者对薪资来源的说法并不一致。曾经每一次 Glassdoor
+        详情抓取都失败——每次扫描都是零行——诊断结果来自一条 DevTools 日志：请求发向了一个地区子域
+        （<code>fr.glassdoor.ca</code>），而页面本身位于 <code>www.glassdoor.ca</code>，于是浏览器把它当作
+        跨域请求拦截了。把请求固定到页面自身的 origin，就是全部的修复。
+      </p>
+      <div class="callout">
+        <p>
+          <strong>关于抓取。</strong>这是个人工具，并且刻意保持这一属性：它在我自己的浏览器里、用我自己的
+          登录运行，节奏像一个人在滚动页面——每次滚动间隔两到四秒，每次扫描间隔三十秒——每个周期开始前都会
+          探测各站点的会话状态，一旦某个站点返回人机验证就立即停止，而且它收集的任何内容都不会离开我的机器。
+          它存在的意义是让我把每条职位只读一遍而不是三遍。它不是产品，不会二次分发数据，我也不会把它当作
+          其中任何一种来运行。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DATA MODEL ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>存两次：站点的形态，和我们的形态</h2>
+      <p>
+        模式的第一个版本只有一张按 LinkedIn 形态设计的表，并试图把 Indeed 和 Glassdoor 塞进去。塞不进去，
+        最后控制台读的是一张空表，而真实扫描却写到了别处。七月的重建把这种拆分变得明确。每次摄入都在一个
+        事务里写<em>两</em>行：一行来源表记录，写入 <code>linkedin_jobs</code>、<code>indeed_jobs</code> 或
+        <code>glassdoor_jobs</code>——只追加、不做 canonical 转换、忠实于站点原话，并以 JSONB 保存原始载荷——以及一行
+        canonical 记录，写入 <code>scraped_jobs</code>：27 列、单一形态，控制台和未来任何消费者都能直接读取，
+        无需按站点做连接。
+      </p>
+      <p>
+        所有 canonical 转换逻辑都集中在 projection 模块，它遵循三条经过一次真实扫描才校准好的规则。<strong>NULL 表示网站
+        没有说。</strong>绝不是"否"，也绝不是默认值：Glassdoor 没有远程布尔字段，所以当它列出远程工作类型时
+        <code>remote</code> 为 <code>true</code>，否则为 NULL——绝不会是 <code>false</code>。
+        <strong>带优先级的封闭词表。</strong><code>employment_type</code> 是七个 token 之一；一条同时标注
+        Full-time 和 Part-time 的职位会得到 <code>FULL_TIME</code>，另一个标签只保留在来源表行上。
+        <strong>未知值触发警告，已认可的空操作值不触发。</strong>表从未见过的 token 会记录一条警告，词表正是
+        借此从线上数据自我修正；而站点回答 <code>OTHER</code> 是一个正确答案，它映射不到任何东西并保持沉默，
+        因此不会淹没真正重要的警告。
+      </p>
+      <pre><code># projection 模块唯一一处明知比网站所说断言得更多的地方。
+def _indeed_workplace_type(remote_location: Any) -> str | None:
+    """Not a tri-state pass-through: False becomes ONSITE, an assertion Indeed
+    did not quite make. Indeed cannot express hybrid, so a hybrid posting is
+    recorded ONSITE — accepted so on-site filters return Indeed results at all.
+    Read ONSITE here as "not remote", not as confirmed on-site."""
+    if not isinstance(remote_location, bool):
+        return None
+    return "REMOTE" if remote_location else "ONSITE"</code></pre>
+      <p>
+        其中两个 token 来自数据，而非设计。筛选列上线后的第一次扫描，为 Indeed 的"Permanent"记录了
+        <code>projection_unknown_employment_type</code>，为它的"EXTRACTION"记录了
+        <code>projection_unknown_salary_source</code>。Permanent 是任期维度，不是工时维度——长期兼职是存在的——
+        所以它成了一个独立 token，优先级排在工时类 token 之后，常见的"Full-time, Permanent"仍然得到
+        <code>FULL_TIME</code>。EXTRACTION 表示 Indeed 从雇主自己的描述中解析出了薪资，因此算作雇主披露。
+        这两个决定都写在模块注释里，并附有促成它们的那次扫描的日期。
+      </p>
+      <div class="callout callout--warn">
+        <p>
+          <strong>流程抓住的陷阱。</strong>摄入使用 <code>ON CONFLICT DO NOTHING</code>，所以 canonical row
+          永远不会被重新计算。LinkedIn 工作地点修复之后，仪表盘显示"LinkedIn workplace = 0"，看起来像是一次
+          回归。把已存储的载荷重放一遍 projection，得到 REMOTE 180 / HYBRID 123 / ONSITE 76——代码是对的，旧行只是
+          过时了，而且会在一个 shelf life 内自行痊愈。区分这两种情况的方法——先重放，绝不重扫——现在写在该功能的
+          快速上手指南里。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ORCHESTRATOR LAB ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-orc-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">运行 orchestrator，一次一个周期</h2>
+        <p class="lab__note">
+          来自 <code>extension/background/auto_scrape.js</code> 的 <code>probeSiteSession</code>、
+          <code>preCycleCheck</code>、自动暂停计数器和 <code>scheduleNextCycle</code>，原样移植。
+          设定每个招聘站的探测会返回什么，按下运行，观察状态行的变化。
+        </p>
+      </div>
+      <div class="orc-grid">
+        <div class="orc-controls">
+          <div class="gmm-field">
+            <label for="orc-backend">后端</label>
+            <select id="orc-backend" data-orc-backend>
+              <option value="up" selected>在线——/health 正常，/config 可加载</option>
+              <option value="noconfig">在线，但 /config 失败</option>
+              <option value="down">离线</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label for="orc-li">LinkedIn 探测 → <code>/feed/</code></label>
+            <select id="orc-li" data-orc-probe="linkedin">
+              <option value="live" selected>200，正常页面</option>
+              <option value="challenge">302 → /checkpoint/challenge</option>
+              <option value="authwall">302 → /authwall</option>
+              <option value="body_captcha">200，但正文含 g-recaptcha</option>
+              <option value="r503">503 Service Unavailable</option>
+              <option value="threw">fetch 抛出异常（离线）</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label for="orc-in">Indeed 探测 → <code>/notifications</code></label>
+            <select id="orc-in" data-orc-probe="indeed">
+              <option value="live" selected>200，正常页面</option>
+              <option value="r429">429 Too Many Requests</option>
+              <option value="r403_bare">403，纯文本正文</option>
+              <option value="r403_cf">403，含 cf-challenge-running</option>
+              <option value="login">302 → /login</option>
+              <option value="r503">503 Service Unavailable</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label for="orc-gd">Glassdoor 探测 → <code>/Job/index.htm</code></label>
+            <select id="orc-gd" data-orc-probe="glassdoor">
+              <option value="live" selected>200，正常页面</option>
+              <option value="r403_bare">403，纯文本正文</option>
+              <option value="r403_cf">403，含 cf-challenge-running</option>
+              <option value="body_captcha">200，但正文含 g-recaptcha</option>
+              <option value="login">302 → /login</option>
+              <option value="threw">fetch 抛出异常（离线）</option>
+            </select>
+          </div>
+          <div class="gmm-field">
+            <label for="orc-kw">关键词（逗号分隔）</label>
+            <input id="orc-kw" type="text" value="software engineer, machine learning engineer" data-orc-keywords>
+          </div>
+          <div class="orc-actions">
+            <button class="btn btn--primary" type="button" data-orc-run>运行一个周期</button>
+            <button class="btn" type="button" data-orc-enable>启用</button>
+            <button class="btn" type="button" data-orc-reset>重置</button>
+          </div>
+          <div class="orc-state" data-orc-state></div>
+        </div>
+        <div class="trace" aria-live="polite">
+          <ol class="trace__steps trace--empty" data-orc-trace></ol>
+        </div>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      两条值得亲眼看看的规则。单纯的 403 被视为限流，而不是人机验证——只有验证挑战 URL 或可识别的验证
+      正文才配得上那个标签，因为人机验证需要一个人来处理，而限流只需要耐心。而 5xx 或 fetch 抛出异常会被
+      视为<em>在线</em>：招聘站宕机并不能证明我的会话已经失效，若因此暂停，每当某个站点状态不佳一分钟，
+      orchestrator 就会卡住。把后端设为"离线"并连续运行三次，就能看到自动暂停。
+    </p>
+  </div>
+</section>
+
+<!-- ============ UNATTENDED ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>让 service worker 老老实实</h2>
+      <p>
+        Manifest V3 的 service worker 随时可能被 Chrome 杀掉，所以一个要连续运行数天的 orchestrator 不能把状态放在
+        内存里。每个周期一开始就向后端的状态行写入 <code>cycle_phase: scrape_running</code>，结束时——在
+        <code>finally</code> 里——把它写回 <code>idle</code>。worker 还每 30 秒轮询一次那一行，只有在阶段不是
+        运行中且不存在闹钟时才重新设置自己的闹钟，正是这一点阻止了重启后的 worker 在第一个周期之上再叠一个
+        周期。状态行还带有一个含实例 id 的心跳，这样当同一个五分钟内有两份 extension 同时存活时，仪表盘能发出警告。
+      </p>
+      <p>
+        那些更细小的规则来自观察它如何失败。连续的 pre-check 失败会让 orchestrator 自动暂停，而不是无限重试。一个在三十秒内
+        结束、且没有任何成功的周期会得到五分钟的冷却，因为"什么都没成功，立刻再试"恰恰是招聘站会封禁的模式。
+        在优雅退出和 worker 启动时，任何看起来像招聘站抓取的弹出窗口都会被关闭，这样僵尸弹窗就不能继续抓取，
+        也不能把自己挂到错误的运行日志上。进度会镜像到后端并通过 WebSocket 扇出，因此在一次运行进行期间，
+        控制台的扫描页面无需轮询就能实时更新。
+      </p>
+
+      <h3>长时间运行才能发现短测试找不到的 bug</h3>
+      <p>
+        orchestrator 四月底的第一次十小时 soak test，是一份问题清单。一个从未被任何代码清除的
+        <code>config_change_pending</code> 标志，让 <strong>255 个周期里有 254 个</strong>中止。每一个 HTTP 403
+        都被归类为人机验证，于是 Indeed 因为其实只是限流的问题被连续挂起了 191 次探测——这就是上文那条规则的
+        由来：单纯的 403 意味着耐心，而不是需要人。从"决定启动一个周期"到"记录周期已启动"之间有三十秒的窗口，
+        导致一小时内有十二个周期启动，三个弹窗同时抓取 LinkedIn；把
+        <code>cycle_phase: scrape_running</code> 作为第一行写入，把这个窗口缩到了大约五十毫秒。而来自更早周期的
+        僵尸弹窗把 207 条 Indeed 职位归到了一份 LinkedIn 运行日志名下，这就是为什么启动时现在会关闭任何看起来
+        像抓取的弹窗。修复后的五小时验证运行完成了九个周期中的八个，抓取 984 条 LinkedIn 和 65 条 Glassdoor
+        职位，归属错误为零。
+      </p>
+      <p>
+        如果面试时要讲一个，我会讲第 455 个周期。仪表盘报告九次扫描零次成功——同时却有 949 行新的 LinkedIn
+        数据。原因是一个五分钟的"陈旧扫描"清理阈值，对完全健康的 33 分钟 LinkedIn 扫描（39 页、915 条职位）
+        误触发，随后一次状态写入又把 <code>failed</code> 翻回 <code>completed</code>，却把错误信息留在原地。
+        它从 5 月 4 日起就一直在悄悄触发。修复是两行代码；笔记里的教训只有一句：<em>可观测性撒谎比运行时
+        bug 更糟</em>。修复后的第 481 个周期以九次全成功摄入了 1,306 条职位。
+      </p>
+      <p>
+        另外两个较小的问题，对代码的影响远超其表面大小。摄入曾用 <code>scalar_one_or_none()</code> 按描述哈希
+        查找职位，而由于重复发布和 ATS 模板会合理地共享同一个哈希，百分之六到十的 LinkedIn 摄入返回了
+        HTTP 500；换一个方法调用就把每次扫描的新职位数从大约一百提升到大约 240。而 extension 最初的
+        <code>setInterval</code> 轮询器在 Chrome 因三十秒空闲而挂起 service worker 后干脆死掉，于是"扫描"
+        在你碰一下标签页之前什么都不做——这就是现在一切都由 <code>chrome.alarms</code> 驱动的原因。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="section--tight" id="method">
+  <div class="wrap">
+    <div class="prose">
+      <h2>开发方法：spec-first，与 Claude Code 协作</h2>
+      <p>
+        前四个月是以通常的方式、让 AI coding agent 参与其中构建的，到七月时，结果呈现出这种方式典型的形态：
+        大量能跑的代码、前端里三套样式系统、一条状态机藏在可空列里的匹配 pipeline，以及一份描述着已不复存在的
+        系统的 README。随后的重建是一次有意为之的 <em>spec-driven development</em> 练习，使用 GitHub Spec Kit，由
+        Claude Code 担任实现者——而起点是从未用过它。
+      </p>
+      <p>
+        每一次变更的循环都相同：<strong>constitution → specify → clarify → plan → tasks → analyze →
+        implement</strong>。constitution（宪章）是一份简短的文档，写明项目的真实规则——所有模式变更都经由
+        Alembic、来源表只追加、dual-write 必须原子、后台工作在新会话中进行、smoke test 即行为契约、外科手术式地修改。
+        在改动任何东西之前，agent 先为五个模块按其实际行为撰写了 <em>as-built spec</em>（竣工规格），每份都附带一次
+        对照源码的验证和一份优化待办。然后五份功能规格把系统从那时带到了现在：仅搜索拆分、Glassdoor 修复、
+        统一表、前端重建（94 项任务）和筛选列（48 项任务）。配套服务也以同样方式从一个空仓库建起：自己的 constitution、
+        一份 146 项任务的规格，以及六份领域检查清单——边界、成本、dedup、保真、完整性、需求——它们的处理结论
+        以带日期的澄清记录写在规格本身之中。
+      </p>
+      <p>
+        对于怀疑这种工作方式的人，我想说的是：规格正是工程判断所在之处，工作也正是转移到了那里。projection 模块的
+        词表在规格中被标注为"推理所得，非观察所得"，并要求在功能关闭之前审阅一次真实三站点扫描的警告——
+        这次审阅发现，agent 编写的 LinkedIn fixture 假设的是本地化标签（"Remote"、"Hybrid"），而线上载荷发送的
+        是裸枚举 URN。用模块自己的话说，这个 fixture 是虚构的；流程的设计就是为了让虚构无法上线。前端重建在每项
+        任务前都设了真正的 <code>tsc</code> 和 ESLint 门禁，包括一条自定义 lint 规则，禁止从 UI 调用
+        "消费即清除"的 <code>/extension/pending*</code> 路由，因为那些路由是未来某个页面必然会踩进去的陷阱。
+      </p>
+      <p>
+        我要求 agent 遵守的工作规则写在两份 constitution 里，它们都来自吃过的亏。<em>读条款，不读摘要。</em><em>用真实
+        数据验证，而不是推断</em>——代码审阅看不见状态，只有查询能看见，而且不止一次，agent 报告"实现完成"的
+        变更根本没有进入正在运行的容器。<em>不允许空洞的绿色</em>——被跳过的断言就是失败，因为一个从未运行
+        过的对勾会终结对 bug 的搜寻。<em>限定范围</em>——在另一个仓库里发现的腐坏要在规格中标记，而不是顺手
+        修掉。而在任何大改动之前，先问。匹配声明机制的方案在实现之前，对照线上仓库做了六轮冲突扫描——
+        13 个问题，然后 8、3、2、2、0——这 28 个发现中的每一个，在文档里修都比在代码里修便宜。
+      </p>
+      <div class="callout">
+        <p>
+          <strong>agent 做了什么，我做了什么。</strong>Claude Code 编写了两个仓库里几乎全部的代码、规格，以及
+          我为本页所参考的笔记。我设定方向，撰写并批准 constitution，做出规格中记录为澄清项的每一个设计决定：我否决了
+          "更纯粹"的声明设计，选择了更简单的表内列方案；我把 agent 构建的八十行失败摄入重放缓冲区换成了十行的
+          停止并上报，因为卡片仍然在来源页上，明天的扫描自会把它们捡起来；PERMANENT 之所以是一个 token，是因为
+          我判定它属于任期维度。我运行了十小时和五小时的 soak test，阅读了真实扫描的警告，必要时用 SQL 强制
+          停止失控的周期。本页记录的 bug 都是我在自己的求职过程中运行它时发现的。我认为这就是 2026 年诚实的
+          分工，我宁可把它写明白，也不愿让读者去猜。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MATCHING HALF ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>离开又归来、自成一个服务的那一半</h2>
+      <p>
+        七月之前，JHA 还负责对职位 dedup 并与我的简历匹配：三轮 dedup（元数据门禁、描述门禁，然后是精确哈希和
+        TF-IDF 余弦相似度的重复检测）和一条四阶段匹配 pipeline（CPU 提取、对年限、薪资、学历和签证的硬性门禁、
+        一次 CPU 预打分、可选的 <code>gpt-4o-mini</code> 重打分）。它能工作，但 as-built spec 仍然论证了应当移除它：
+        它的状态机隐含在可空列里，它只针对旧的 LinkedIn 形态表运行过，而且没有一个测试覆盖它的资格规则。
+        仅搜索拆分把它整个删除，canonical table 得到了一个 JHA 内部任何代码都不会设置的 <code>matched</code> 标志。
+      </p>
+      <p>
+        <strong>filter-matcher</strong> 是它在八月回归的地方：一个独立的仓库，有自己的 constitution。它是一个按需运行的
+        CLI——<code>python -m filtermatch run [--limit N] [--cpu-only]</code>——<em>只</em>读取
+        <code>scraped_jobs</code>，用 <code>WHERE matched = FALSE</code> 认领一批职位（在一个事务里翻转
+        canonical row 及其来源表的原始行，这是它对 JHA 数据做出的唯一写入），然后把每条职位推过严格按最便宜优先
+        排序的各个阶段：五项个人偏好、一次完整性检查、字段门禁、重复检测、CPU 技能提取与门禁，然后是
+        <em>任何 AI 调用之前的 coverage banding</em>。覆盖率低于 0.50 的直接拒绝，不花一个 token；恰好 1.00 的作为
+        <code>cpu_perfect</code> 进入短名单；只有介于两者之间的模糊区间才交给模型。它写入五个自己的存储——
+        短名单、排除审计、黑名单重入台账、技能候选表和运行记录——每次运行结束时都要对账：认领数必须等于
+        入围数加排除数加异常数，否则该次运行记为失败。
+      </p>
+      <pre><code># pipeline.py — 为什么完整性检查要在语言门禁之前运行。
+# 实测，2026-08-07：langdetect 对两个字符返回匈牙利语，置信度 0.999994；
+# "Job posting." 返回他加禄语，置信度 0.999996。短文本
+# 并不会产生低置信度——它会对错误的语言产生虚假的高置信度。
+# 所以一条被截断的职位若先到达语言门禁，会被记录为
+# (field_gate, language_mismatch) 并附上一个凭空捏造的判决，
+# 而不是它实际所属的 (cpu_gate, incomplete_posting)。</code></pre>
+      <p>
+        成本纪律是一条含七项编号规则的 constitution 原则，整个设计围绕它们展开：任何模型调用之前先过廉价门禁；只有
+        模糊区间才会消耗判断类 token；每份职位描述只压缩一次成 120–200 词的 <code>standardized_jd</code>，
+        输入 token 减少约 70%；prompt 按静态内容优先排序，让服务商的 prefix caching 为重复的那一半打折；技能由 CPU
+        别名词表提取，绝不交给模型。规格中的一个十五格结果矩阵管辖覆盖率区间、模式和 AI 结果的每一种组合——
+        十四种可达，一种被证明在结构上不可达——短名单还记录每条记录由四种决策方法中的哪一种产生，这样，用
+        规格自己的话说，一份满是 <code>cpu_tiebreak</code> 的短名单就能被识别为一次悄悄丢失了 AI 的 AI 运行。
+      </p>
+      <p>
+        这份规格有 104 条需求、25 条成功标准和 43 条记录在案的澄清，它所要求的真实数据审阅证明了自己的价值。
+        规格假设的计薪周期词表是 <code>YEARLY</code>；线上表里写的是 <code>ANNUAL</code>，28% 的职位本会
+        悄无声息地变成"薪资不可比较"。Glassdoor 把技能列表写进了它的经验水平字段，所以一个看似合理的经验
+        门禁本会排除掉 56% 的语料。而设计中"大约一半的积压可以认领"的假设错在了另一个方向：全部 113 条线上
+        记录都可以认领。constitution 的第四条原则——<em>误保留只多显示一张卡片；误丢弃则隐藏了一个真实机会</em>——
+        正是这些问题每一个都变成了"保留并计数"、而绝不是"排除"的原因。
+      </p>
+      <p>
+        五次 migration，五套 smoke test 中的 184 个测试（所有 AI 路径都已 mock），以及 146 项任务中的 137 项已完成。
+        未完成的九项是诚实的：三项被真实数据阻塞——服务在开发期间就已耗尽了所有可认领的职位（113 条中的
+        113 条），因此一次真实的 AI 模式运行、一份真实的 <code>cpu_strong</code> 短名单和一次真实的跨站合并，
+        都要等待下一次三站点扫描。构建它还暴露了一个值得记录的陷阱：它的技能候选 migration 与 JHA 自己的 017 号
+        migration 遗留的一张表相撞——7,976 行冻结数据，没有任何活代码使用它——修复是一次重命名，外加一条新规则：
+        每个存储的名称都要在 migration 时断言尚未被占用，这样下一次冲突就是一次有名有姓的中止，而不是一道谜题。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HONESTY ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>不足之处</h2>
+      <div class="callout callout--warn">
+        <p>
+          <strong>抓取器自七月以来一直闲置。</strong>extension 的最后一次心跳来自仅搜索重建完成的那一天；此后的
+          一切都是配套服务，基于七月的语料构建。README 也因同样的原因过时了，已在当前工作副本中重写——这次
+          重写，以及把文档移入 <code>docs/</code>，尚未推送。
+        </p>
+        <p>
+          <strong>Glassdoor 的 <code>workplace_type</code> 始终为 NULL</strong>，因为抓取器尚未捕获
+          <code>remoteWorkTypes</code>。projection 是正确的，一旦 extension 提供该字段就会立即填充——但如果某个消费者
+          用 <code>workplace_type</code> 而不是 <code>remote</code> 来筛选远程职位，就会悄无声息地丢掉整个
+          Glassdoor 语料。
+        </p>
+        <p>
+          <strong>测试不对称。</strong>前端有 135 个单元测试；后端有四个需要运行中的 Compose 栈的 smoke test 脚本，
+          以及 projection 模块上的一个单元测试。projection 模块值得拥有一套像样的参数化测试，摄入路由也是。
+        </p>
+        <p>
+          <strong>到处都是单用户假设。</strong>认证是一个 bearer token（<code>dev-token</code>），配置是一个
+          JSON 文件，orchestrator 状态是一个单例行。对于一台机器上的一个人来说全都正确，对于其他任何情形全都错误——
+          只要它一直是一台机器上的一个人，这就没有问题。
+        </p>
+        <p>
+          <strong>清单上的小事。</strong><code>GET /jobs</code> 按 <code>scrape_time DESC</code> 排序且没有
+          次级排序键，所以分页边界可能重复一行；constitution 仍然逐个列举测试文件名，新增一个就会漂移；还有两项前端
+          检查（360 px 布局和未保存更改守卫）仍需要一个人在真实浏览器里验证。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose">
+      <h2>代码，以及解释它的文档</h2>
+      <p>
+        两个仓库都是公开的。如果只读一个文件，请读 projection 模块——它的 docstring 承载了本页所概括的推理，并附有
+        决定每一处映射的那次扫描的日期。
+      </p>
+    </div>
+    <div class="artifacts">
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>job-hunting-assistant ↗</strong><span>extension · 后端 · 前端 · 规格 · 文档</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/backend/core/scraped_job_projection.py" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>scraped_job_projection.py ↗</strong><span>projection 模块，推理过程写在 docstring 里</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/extension/background/auto_scrape.js" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>auto_scrape.js ↗</strong><span>orchestrator：探测、矩阵、自动暂停、调度</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/filter-matcher" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>filter-matcher ↗</strong><span>配套的筛选与匹配服务 · Python CLI · 2026 年 8 月</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/docs/PROJECT-SUMMARY.md" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>PROJECT-SUMMARY.md ↗</strong><span>七月工作日志：改了什么、按什么顺序、为什么</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/blob/main/.specify/memory/constitution.md" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>constitution（宪章）↗</strong><span>每份规格都要对照检查的七条原则</span></span>
+      </a>
+      <a class="artifact" href="https://github.com/YimingCao-Eric/job-hunting-assistant/tree/main/specs" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>specs/001–010 ↗</strong><span>as-built 基线与功能规格，附方案、任务和检查清单</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>致谢与分工</h2>
+      <div class="credits">
+        <h3>一个人的项目，与 agent 协作完成</h3>
+        <p>
+          由曹一明自 2026 年 3 月起设计、主导并运营，作为他本人求职的工具。用 Claude Code 实现，
+          七月起采用 GitHub Spec Kit 的 spec-driven 工作流；分工已在上文说明。
+        </p>
+        <p>
+          基于 FastAPI、SQLAlchemy、Alembic、PostgreSQL、Redis、React、Vite、TanStack Query、Tailwind 和
+          DOMPurify 构建。本页的可交互图示由曹一明事后根据最终代码编写。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

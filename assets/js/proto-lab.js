@@ -16,6 +16,8 @@
 (function () {
   "use strict";
 
+  function tr(en, zh) { return (window.I18N && window.I18N.t) ? window.I18N.t(en, zh) : en; }
+
   /* ---------- palette (validated: see dataviz palette.md) ---------- */
   var PAL = {
     light: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"],
@@ -223,7 +225,7 @@
       if (outShift) {
         if (state.outlier) {
           var a = protos[0], b = cleanPrototype(0);
-          outShift.textContent = Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2)).toFixed(2) + " units";
+          outShift.textContent = Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2)).toFixed(2) + tr(" units", " 单位");
         } else outShift.textContent = "—";
       }
       if (legend) buildLegend(pal);
@@ -236,12 +238,12 @@
         c.width = c.height = 28; c.style.width = c.style.height = "14px";
         var g = c.getContext("2d"); g.fillStyle = pal[i]; shape(g, i, 14, 14, 9); g.fill();
         li.className = "proto-legend__item"; li.appendChild(c);
-        li.appendChild(document.createTextNode("class " + (i + 1)));
+        li.appendChild(document.createTextNode(tr("class ", "类别 ") + (i + 1)));
         legend.appendChild(li);
       }
       var key = document.createElement("span");
       key.className = "proto-legend__key";
-      key.textContent = "filled = support · hollow = query, stroked in predicted class · large = prototype · × = misclassified";
+      key.textContent = tr("filled = support · hollow = query, stroked in predicted class · large = prototype · × = misclassified", "实心 = 支持样本 · 空心 = 查询样本，描边为预测类别颜色 · 大标记 = 原型 · × = 误分类");
       legend.appendChild(key);
     }
 
@@ -312,8 +314,8 @@
       { key: "convnext_tiny", label: "ConvNeXt-T", slot: 2 }
     ];
     var NOAUG = [
-      { key: "resnet18_noaug", label: "ResNet-18, no aug.", slot: 0 },
-      { key: "densenet121_noaug", label: "DenseNet-121, no aug.", slot: 1 }
+      { key: "resnet18_noaug", label: tr("ResNet-18, no aug.", "ResNet-18，无增强"), slot: 0 },
+      { key: "densenet121_noaug", label: tr("DenseNet-121, no aug.", "DenseNet-121，无增强"), slot: 1 }
     ];
     var W = 0, H = 0, S = 1, hoverEpoch = -1, showNoaug = false;
     var padL, padR, padT, padB, iw, ih, YMIN = 30, YMAX = 90, XMAX = 99;
@@ -337,7 +339,7 @@
       }
       ctx.textAlign = "center"; ctx.textBaseline = "top";
       [0, 25, 50, 75, 99].forEach(function (e) { ctx.fillText(String(e), xOf(e), H - padB + 8 * S); });
-      ctx.fillText("epoch", padL + iw / 2, H - padB + 20 * S);
+      ctx.fillText(tr("epoch", "epoch（轮次）"), padL + iw / 2, H - padB + 20 * S);
 
       var drawn = SERIES.slice();
       if (showNoaug) drawn = drawn.concat(NOAUG);
@@ -378,7 +380,7 @@
             var acc = runs[s.key].acc, v = acc[hoverEpoch];
             return v == null ? "" : '<div><i style="background:' + pal[s.slot] + '"></i>' + s.label + "<b>" + v.toFixed(2) + "%</b></div>";
           }).join("");
-          tip.innerHTML = "<span>epoch " + hoverEpoch + "</span>" + rows;
+          tip.innerHTML = "<span>" + tr("epoch ", "第 ") + hoverEpoch + tr("", " 轮") + "</span>" + rows;
           tip.hidden = false;
           var left = hx / S, flip = left > canvas.clientWidth * 0.6;
           tip.style.left = (flip ? left - 12 : left + 12) + "px";

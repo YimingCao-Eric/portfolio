@@ -7,6 +7,9 @@
 (function () {
   "use strict";
 
+  /* i18n: site.js defines window.I18N; fall back to English if it is absent */
+  function t(en, zh) { return (window.I18N && window.I18N.t) ? window.I18N.t(en, zh) : en; }
+
   /* ============================================================
      Shared: the permission vocabulary the middleware understands
      ============================================================ */
@@ -28,9 +31,9 @@
 
   // util.ParseJWT: HS256 signature check + exp claim → issuer (the user id)
   function parseJWT(cookie) {
-    if (cookie.state === "none")     return { ok: false, why: "no \"jwt\" cookie on the request" };
-    if (cookie.state === "tampered") return { ok: false, why: "signature does not verify against SecretKey" };
-    if (cookie.state === "expired")  return { ok: false, why: "\"exp\" claim is in the past (tokens live 24 h)" };
+    if (cookie.state === "none")     return { ok: false, why: t("no \"jwt\" cookie on the request", "请求中没有 \"jwt\" Cookie") };
+    if (cookie.state === "tampered") return { ok: false, why: t("signature does not verify against SecretKey", "签名与 SecretKey 校验不通过") };
+    if (cookie.state === "expired")  return { ok: false, why: t("\"exp\" claim is in the past (tokens live 24 h)", "\"exp\" 声明已是过去时间（token 有效期 24 小时）") };
     return { ok: true, issuer: cookie.userId };
   }
 
@@ -127,39 +130,39 @@
       trace.innerHTML = "";
 
       // 0. CORS — always passes from the React dev server
-      trace.appendChild(step("ok", "cors.New", "origin http://localhost:3000 allowed, credentials on — the cookie rides along"));
+      trace.appendChild(step("ok", "cors.New", t("origin http://localhost:3000 allowed, credentials on — the cookie rides along", "允许来源 http://localhost:3000，开启凭据——Cookie 随请求一起发送")));
 
       // 1. IsAuthenticated
       var a = isAuthenticated(cookie);
       if (!a.pass) {
-        trace.appendChild(step("fail", "middlewares.IsAuthenticated", "util.ParseJWT failed: " + a.why + " → 401"));
+        trace.appendChild(step("fail", "middlewares.IsAuthenticated", t("util.ParseJWT failed: ", "util.ParseJWT 失败：") + a.why + " → 401"));
         finish(401, JSON.stringify(a.body));
         return;
       }
-      trace.appendChild(step("ok", "middlewares.IsAuthenticated", "cookie parsed, HS256 signature valid, issuer = user " + a.userId + " → c.Next()"));
+      trace.appendChild(step("ok", "middlewares.IsAuthenticated", t("cookie parsed, HS256 signature valid, issuer = user ", "Cookie 解析成功，HS256 签名有效，issuer = 用户 ") + a.userId + " → c.Next()"));
 
       // 2. controller → IsAuthorized (only where the repo wires it)
       var checked = WIRED[page] || wiredEverywhere;
       if (!checked) {
-        trace.appendChild(step("skip", "controllers." + cap(page) + " handler",
-          "does not call middlewares.IsAuthorized — the only gate was the cookie"));
+        trace.appendChild(step("skip", "controllers." + cap(page) + t(" handler", " handler"),
+          t("does not call middlewares.IsAuthorized — the only gate was the cookie", "没有调用 middlewares.IsAuthorized——唯一的关卡只有 Cookie")));
         finish(200, sampleBody(method, page));
         return;
       }
       trace.appendChild(step("ok", "database.DB.Preload(\"Role\")",
-        "user 7 → role \"" + roleName() + "\" → " + selected.length + " permission" + (selected.length === 1 ? "" : "s") + " loaded"));
+        t("user 7 → role \"", "用户 7 → 角色 \"") + roleName() + "\" → " + t(selected.length + " permission" + (selected.length === 1 ? "" : "s") + " loaded", "已加载 " + selected.length + " 项权限")));
 
       var z = isAuthorized(selected, method, page);
-      var need = method === "GET" ? "view_" + page + " or edit_" + page : "edit_" + page;
+      var need = method === "GET" ? "view_" + page + t(" or ", " 或 ") + "edit_" + page : "edit_" + page;
       if (!z.pass) {
         trace.appendChild(step("fail", "middlewares.IsAuthorized(c, \"" + page + "\")",
-          method + " needs " + need + " — none found → 401 (the code says 401, not 403)"));
+          method + t(" needs ", " 需要 ") + need + t(" — none found → 401 (the code says 401, not 403)", "——均未找到 → 401（代码返回的是 401，而不是 403）")));
         finish(401, "\"unauthorized\"");
         return;
       }
       trace.appendChild(step("ok", "middlewares.IsAuthorized(c, \"" + page + "\")",
-        method + " needs " + need + " — matched " + z.matched));
-      trace.appendChild(step("ok", "controllers." + handlerName(method, page), "GORM query runs, JSON out"));
+        method + t(" needs ", " 需要 ") + need + t(" — matched ", "——匹配到 ") + z.matched));
+      trace.appendChild(step("ok", "controllers." + handlerName(method, page), t("GORM query runs, JSON out", "执行 GORM 查询，输出 JSON")));
       finish(200, sampleBody(method, page));
     }
 
@@ -184,10 +187,10 @@
     function sampleBody(method, page) {
       if (method === "DELETE") return "204 No Content";
       if (method === "GET") {
-        return '{ "data": [ …5 ' + page + ' ], "meta": { "total": 12, "page": 1, "last_page": 3 } }';
+        return '{ "data": [ …5 ' + t('', '条 ') + page + ' ], "meta": { "total": 12, "page": 1, "last_page": 3 } }';
       }
       var one = page.slice(0, -1);
-      return '{ "id": 7, …' + one + ' fields }';
+      return '{ "id": 7, …' + one + t(' fields }', ' 的字段 }');
     }
 
     syncBoxes();
@@ -276,7 +279,7 @@
       pageSel.innerHTML = "";
       for (var p = 1; p <= lastPage; p++) {
         var opt = document.createElement("option");
-        opt.value = p; opt.textContent = "page " + p + " of " + lastPage;
+        opt.value = p; opt.textContent = t("page " + p + " of " + lastPage, "第 " + p + " 页，共 " + lastPage + " 页");
         if (p === page) opt.selected = true;
         pageSel.appendChild(opt);
       }

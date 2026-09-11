@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>无监督脑肿瘤分割 — 曹一明</title>
+<meta name="description" content="在 BraTS 2018 上用 k-means 与手写 GMM-EM 做无监督脑肿瘤分割——附两种算法的实时并排演示，以及它们共同面临的小肿瘤失效问题。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/mri-segmentation.html">
+<script defer src="../../assets/js/site.js"></script>
+<script defer src="../../assets/js/gmm-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-toggle" data-lang-toggle="en" href="../../projects/mri-segmentation.html" lang="en" title="Switch to English">EN</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">医学影像 · 无监督学习</p>
+    <h1>没有标注，也要找到肿瘤</h1>
+    <p class="lede">
+      在 BraTS 2018 上只用聚类完成脑肿瘤分割：一是 k-means（K 均值聚类），二是 GMM（高斯混合模型），
+      后者由一个在 PyTorch 中从零手写的 EM（期望最大化）算法拟合，在 GPU 上一次处理九百万个体素。
+      十位患者中有六位，两种方法的 Dice 系数（Dice score）都达到 0.9 左右；另外四位则精确地暴露了
+      无监督方法在哪里失效——其中一种失效，还需要人工介入才能勉强补上。
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../../assets/files/segmentation-report.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        阅读论文
+      </a>
+      <a class="btn" href="../../assets/files/segmentation-notebook.ipynb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        项目 Notebook
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>课程研究论文</dd></div>
+      <div><dt>背景</dt><dd>EECE 562，UBC</dd></div>
+      <div><dt>时间</dt><dd>2022 年 12 月</dd></div>
+      <div><dt>团队</dt><dd>2 位作者</dd></div>
+      <div><dt>技术栈</dt><dd>PyTorch (GPU), NumPy, scikit-learn, nibabel</dd></div>
+      <div><dt>数据</dt><dd>BraTS 2018 · 10 位患者 · 4 种模态</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PLAYGROUND ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-gmm-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">K-means 与 EM 并排对比</h2>
+        <p class="lab__note">
+          合成的组织群体，大小和形状差异悬殊——这正是体素强度数据的真实处境。相同的点，相同的 K，
+          GMM 从 k-means 质心初始化，与项目中的做法完全一致。带圆环的点是真实肿瘤。
+        </p>
+      </div>
+
+      <div class="gmm-grid">
+        <canvas data-gmm-kmeans aria-label="合成组织数据的 k-means 聚类结果"></canvas>
+        <canvas data-gmm-em aria-label="同一数据的 GMM 聚类结果，带协方差椭圆"></canvas>
+      </div>
+
+      <div class="gmm-controls">
+        <div class="gmm-field">
+          <label for="gmm-k">聚类数 K</label>
+          <select id="gmm-k" data-gmm-k>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <div class="gmm-field">
+          <label for="gmm-t">肿瘤大小 &nbsp;<span data-out-tumour-n>40</span> 个体素</label>
+          <input id="gmm-t" type="range" min="6" max="90" value="40" step="2" data-gmm-tumour>
+        </div>
+        <button class="btn" type="button" data-gmm-play>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          重放 EM
+        </button>
+        <button class="btn" type="button" data-gmm-resample>重新采样</button>
+      </div>
+
+      <div class="lab__readout" style="grid-template-columns:repeat(4,1fr)">
+        <div><span>k-means · 肿瘤 Dice</span><b data-out-km>—</b></div>
+        <div><span>GMM-EM · 肿瘤 Dice</span><b data-out-em>—</b></div>
+        <div><span>EM 迭代次数</span><b data-out-iter>—</b></div>
+        <div><span>平均对数似然</span><b data-out-ll>—</b></div>
+      </div>
+      <p class="gmm-legend">
+        <b>实线椭圆</b> 1σ &nbsp; <b>虚线</b> 2σ &nbsp; <b>大圆环</b> k-means 质心 &nbsp;
+        <b>带圆环的点</b> 真实肿瘤 &nbsp; <b>Dice</b> 取与真实肿瘤匹配最好的那一个簇计算
+      </p>
+    </div>
+
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      k-means 只会画等大的圆，所以它把细长的白质群体一分为二，并把肿瘤糊进离它最近的簇。GMM 为每个群体
+      拟合一个椭圆，通常直接胜出。现在把肿瘤大小拖到十来个体素：两者一起崩溃——这就是患者 7。再把 K 调到 5，
+      小簇回来了，随之而来的却是另一个问题：五个簇里哪一个才是肿瘤？这就是流程中的那一步人工操作。
+    </p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>为什么选择无监督</h2>
+      <p>
+        BraTS 2018 提供 285 位患者的数据，每位患者有四种 MRI 模态——T1、增强 T1、T2 和 FLAIR——体积为
+        240×240×155 个体素，肿瘤区域由神经放射科医生勾画。有监督的路线早已被走通。这里的问题不同：在完全
+        没有标注的情况下，经典聚类方法能走多远，又究竟止步于何处？
+      </p>
+      <p>
+        这样的设定是有意为之。人工标注是所有医学影像流程中最昂贵的环节。一种完全不需要标注的方法，即便
+        输给需要标注的方法，也值得弄清楚——尤其是当你能准确知道它会漏掉哪些肿瘤的时候。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>处理流程</h2>
+      <h3>从体素到特征向量</h3>
+      <p>
+        每种模态先做 z-score 标准化到零均值、单位方差，避免不同扫描仪之间的对比度差异占据主导。随后每个体素
+        被替换为其 3×3×3 邻域的均值——一次轻度的三维平滑，用来压制那些会把簇打碎的噪声。结果是每个体素对应
+        一个 4 维向量 (μ<sub>T1</sub>, μ<sub>T1c</sub>, μ<sub>T2</sub>, μ<sub>FLAIR</sub>)，每位患者有 890 万个这样的向量。
+      </p>
+
+      <h3>以 K = 5 聚类</h3>
+      <p>
+        假设存在五个群体：背景、白质与灰质（合为一类）、脑脊液（CSF）、脑边缘，以及整体肿瘤。k-means 直接用
+        scikit-learn 的实现；GMM 则不是——它是在 PyTorch 中手写的 EM，每个分量带完整的 4×4 协方差，
+        E 步用 log-sum-exp 保证数值稳定，用 Cholesky 分解计算对数行列式，并加了一道保护：一旦对数似然下降
+        就回退参数。它必须在 GPU 上运行，因为每位患者九百万个点，别的方案都不现实；它还用 k-means 质心作为
+        初始值，让 EM 从一个合理的最优点附近出发，而不是从随机点出发。
+      </p>
+
+      <figure class="figure">
+        <img src="../../assets/img/seg/clusters-gmm-vs-kmeans.png" alt="同一切片上 GMM 与 k-means 的五簇图，簇分别标注为 CSF、背景、边缘、白质与灰质、整体肿瘤">
+        <figcaption>
+          论文图 1：某位患者上的五个簇，左为 GMM，右为 k-means。两者都找到了肿瘤（黄色）；k-means 把它
+          渗进了 CSF。
+        </figcaption>
+      </figure>
+
+      <h3>从五个簇中挑出肿瘤</h3>
+      <p>
+        聚类给出的是标签，不是名字。五个簇中有三个按规则指派：角落体素的众数所在的簇是背景；剩余最大的簇是
+        白质与灰质；最小的簇是脑边缘。这就只剩下两个——CSF 和肿瘤——而它们无法通过数量或概率区分开来。
+      </p>
+      <div class="callout callout--warn">
+        <p>
+          <strong>没有自动化的那一步。</strong>CSF 和肿瘤是靠人眼看出来的。论文对此直言不讳，这也是该方法
+          诚实的边界：整条流程直到最后的二元决策之前都是无监督的，而在那一步需要一个人。这也正是上面的
+          演示在 K 调到 5 时所展示的同一个问题。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>十位患者，三项指标</h2>
+      <p>
+        随机抽取十例高级别胶质瘤病例，各自独立聚类。真实标注仅用于对结果打分。
+      </p>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <caption>整体肿瘤分割结果，来自论文表 I 与表 II。Dice = 2|GT∩PM| / (|GT|+|PM|)。加粗表示该患者上更优的 Dice。</caption>
+        <thead>
+          <tr>
+            <th scope="col">患者</th>
+            <th scope="col" colspan="3">k-means</th>
+            <th scope="col" colspan="3">GMM-EM</th>
+          </tr>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Dice</th><th scope="col">灵敏度</th><th scope="col">精确率</th>
+            <th scope="col">Dice</th><th scope="col">灵敏度</th><th scope="col">精确率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">1</th><td>0.886</td><td>0.877</td><td>0.894</td><td class="delta">0.889</td><td>0.865</td><td>0.915</td></tr>
+          <tr><th scope="row">2</th><td>0.887</td><td>0.933</td><td>0.845</td><td class="delta">0.892</td><td>0.944</td><td>0.846</td></tr>
+          <tr><th scope="row">3</th><td class="delta">0.452</td><td>0.896</td><td>0.302</td><td>0.447</td><td>0.869</td><td>0.301</td></tr>
+          <tr><th scope="row">4</th><td class="delta">0.886</td><td>0.896</td><td>0.878</td><td>0.841</td><td>0.929</td><td>0.767</td></tr>
+          <tr><th scope="row">5</th><td>0.901</td><td>0.840</td><td>0.971</td><td class="delta">0.915</td><td>0.848</td><td>0.994</td></tr>
+          <tr><th scope="row">6</th><td class="delta">0.904</td><td>0.903</td><td>0.906</td><td>0.891</td><td>0.946</td><td>0.815</td></tr>
+          <tr><th scope="row">7</th><td>0.004</td><td>1.000</td><td>0.002</td><td class="delta">0.009</td><td>1.000</td><td>0.004</td></tr>
+          <tr><th scope="row">8</th><td>0.003</td><td>0.003</td><td>0.004</td><td class="delta delta--big">0.348</td><td>0.661</td><td>0.236</td></tr>
+          <tr><th scope="row">9</th><td>0.871</td><td>0.782</td><td>0.982</td><td class="delta delta--big">0.929</td><td>0.918</td><td>0.940</td></tr>
+          <tr><th scope="row">10</th><td>0.388</td><td>0.943</td><td>0.244</td><td class="delta">0.485</td><td>0.977</td><td>0.322</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <p>
+        六位患者——1、2、4、5、6、9——用两种方法都能分割得很好，GMM 在大多数病例上领先，最好的一例
+        Dice 达到 0.929。另外四位才是有意思的部分，它们以三种截然不同的方式失效。
+      </p>
+      <p>
+        <strong>患者 3 和 10</strong> 的灵敏度高于 0.87，精确率却只有 0.3 左右：肿瘤是找到了，但大量非肿瘤
+        组织也一起被带了进来。这是过度分割，论文提出的提高 K 的方案可以直接应对这一问题。
+      </p>
+      <p>
+        <strong>患者 8</strong> 是两种方法分道扬镳之处。k-means 得分 0.003——什么都没找到。GMM 得分 0.348，
+        虽然不高，但在 k-means 一片空白的地方，它把肿瘤的轮廓勾了出来。
+      </p>
+    </div>
+
+    <figure class="figure reveal">
+      <img src="../../assets/img/seg/patient8.png" alt="患者 8：k-means 结果未显示任何肿瘤，GMM 结果勾出了肿瘤轮廓，以及真实标注掩膜">
+      <figcaption>患者 8——k-means、GMM、真实标注。箭头指向 GMM 找回而 k-means 完全漏掉的肿瘤。</figcaption>
+    </figure>
+
+    <div class="prose">
+      <p>
+        <strong>患者 7</strong> 让两种方法都败下阵来，而原因在任何聚类运行之前就已经看得见：肿瘤太小了。
+        只有五个簇时，没有第五个群体留给它占据，它被吸收进了周围的任何组织。灵敏度 1.0、精确率 0.002
+        已经说明了一切——所谓的"肿瘤"簇几乎覆盖了一切，所以从技术上讲它确实包含了真正的肿瘤。
+      </p>
+    </div>
+
+    <figure class="figure reveal">
+      <img src="../../assets/img/seg/patient7.png" alt="患者 7：增强 T1 与 T2 切片，以及非常小的真实肿瘤掩膜">
+      <figcaption>患者 7——T1c、T2 与真实标注。这么小的肿瘤，对一个五分量混合模型来说是不可见的。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ LIMITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>止步之处</h2>
+      <p>
+        论文以两点局限收尾，而且两者都是结构性的，而非偶然的。小肿瘤的失效源于把 K 固定在五：这么小的群体
+        争不到属于自己的分量。提高 K 会有帮助，上面的演示也证明了这一点——但每多一个簇，最后那一步
+        "判断哪个簇是肿瘤"就更难一分。而那一步本来就已经是人工完成的。
+      </p>
+      <p>
+        由此得出的结论反而更诚实：无监督聚类在大而对比度好的肿瘤上能走很远，而它需要人介入的那个点，
+        恰恰是人的判断最难被替代的那个点。论文为后续工作指出的方向——用降维在多位患者上联合拟合，以及基于
+        GAN 的无监督分割——都是在向这条边界发起攻击。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>论文</h2>
+      <p>
+        五页，IEEE 格式，含 EM 推导。
+        <a href="../../assets/files/segmentation-report.pdf" target="_blank" rel="noopener">在新标签页中打开 ↗</a>
+      </p>
+    </div>
+    <object class="pdf-embed" data="../../assets/files/segmentation-report.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>您的浏览器无法内嵌显示此 PDF。</p>
+        <a class="btn btn--primary" href="../../assets/files/segmentation-report.pdf" target="_blank" rel="noopener">打开论文（PDF，5 页）</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose"><h2>全部原始材料</h2></div>
+    <div class="artifacts">
+      <a class="artifact" href="../../assets/files/segmentation-report.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>研究论文 ↗</strong><span>5 页 · PDF · IEEE 格式</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/segmentation-notebook.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>项目 Notebook</strong><span>Jupyter · 预处理、k-means、PyTorch 版 EM、评估指标</span></span>
+      </a>
+    </div>
+    <p class="lab__note" style="margin-top:1rem;max-width:70ch">
+      BraTS 2018 受其自身数据使用条款约束，因此这里不再分发影像体数据本身。上方图片均转载自论文。
+    </p>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>致谢与分工</h2>
+      <div class="credits">
+        <h3>两人合作的课程项目</h3>
+        <p>
+          于 2022 年 12 月与一位团队成员共同完成，工作由两人平均分担。曹一明为第二作者。
+        </p>
+        <p>
+          本页的 k-means / EM 演示由曹一明在项目之后单独构建，不属于原始提交的一部分。它使用的是
+          合成数据，而非 BraTS 体素。
+        </p>
+      </div>
+
+      <h3>数据与参考文献</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>S. Bakas et al. <em>Identifying the best machine learning algorithms for brain tumor segmentation, progression assessment, and overall survival prediction in the BraTS challenge.</em> arXiv:1811.02629, 2018——BraTS 2018 数据集。</li>
+        <li>J. Liu, L. Guo. <em>An improved k-means algorithm for brain MRI image segmentation.</em> ICMRA 2015——邻域均值特征。</li>
+        <li>J. Qiao et al. <em>Data on MRI brain lesion segmentation using k-means and Gaussian mixture model-expectation maximization.</em> Data in Brief 27, 2019.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

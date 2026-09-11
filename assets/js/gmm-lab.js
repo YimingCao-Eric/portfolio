@@ -13,6 +13,9 @@
 (function () {
   "use strict";
 
+  // i18n: site.js defines window.I18N before DOMContentLoaded; fall back to English.
+  function t(en, zh) { return (window.I18N && window.I18N.t) ? window.I18N.t(en, zh) : en; }
+
   var PAL = {
     light: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"],
     dark:  ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181"]
@@ -149,7 +152,7 @@
       ctx.font = "600 " + 12 * S + "px " + css("--font-sans", "sans-serif"); ctx.textBaseline = "top"; ctx.textAlign = "left"; ctx.fillStyle = ink;
       ctx.fillText(title, 9 * S, 8 * S);
       ctx.font = 11.5 * S + "px " + css("--font-mono", "monospace"); ctx.textAlign = "right"; ctx.fillStyle = faint;
-      ctx.fillText("tumour Dice " + dice.toFixed(2), W - 9 * S, 8 * S);
+      ctx.fillText(t("tumour Dice ", "肿瘤 Dice ") + dice.toFixed(2), W - 9 * S, 8 * S);
     }
 
     function drawKm() {
@@ -178,7 +181,7 @@
         });
       });
       if (outEm) outEm.textContent = d.dice.toFixed(3);
-      if (outIter) outIter.textContent = g.iter + (g.done ? " (converged)" : "");
+      if (outIter) outIter.textContent = g.iter + (g.done ? t(" (converged)", "（已收敛）") : "");
       if (outLL) outLL.textContent = isFinite(g.ll) ? g.ll.toFixed(4) : "—";
     }
     function render() { drawKm(); drawEm(); if (outN) outN.textContent = tN; }

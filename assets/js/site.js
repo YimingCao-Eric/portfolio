@@ -24,6 +24,28 @@
     document.dispatchEvent(new CustomEvent("themechange", { detail: next }));
   });
 
+
+  /* ---------- language ---------- */
+  var LKEY = "yc-lang";
+  var lang = /^zh/i.test(document.documentElement.getAttribute("lang") || "") ? "zh" : "en";
+  window.I18N = {
+    lang: lang,
+    t: function (en, zh) { return lang === "zh" && zh != null ? zh : en; }
+  };
+  /* remembered preference: hop to the alternate-language page if one exists */
+  try {
+    var want = localStorage.getItem(LKEY);
+    var alt = document.querySelector('link[rel="alternate"][hreflang]');
+    if (want && want !== lang && alt) {
+      location.replace(alt.getAttribute("href") + location.hash);
+    }
+  } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("[data-lang-toggle]");
+    if (!a) return;
+    try { localStorage.setItem(LKEY, a.getAttribute("data-lang-toggle")); } catch (err) {}
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
     /* ---------- sticky header shadow ---------- */
     var header = document.querySelector(".site-header");

@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Few-shot learning 的 feature extractor — 曹一明</title>
+<meta name="description" content="以 ResNet、DenseNet 与 ConvNeXt 作为 Prototypical Networks 在 CUB 数据集上的 feature extractor——附可交互的原型分类器、真实训练曲线，以及最初失败的两个想法。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/few-shot-learning.html">
+<script defer src="../../assets/js/site.js"></script>
+<script defer src="../../assets/js/fsl-runs.js"></script>
+<script defer src="../../assets/js/proto-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-toggle" data-lang-toggle="en" href="../../projects/few-shot-learning.html" lang="en" title="Switch to English">EN</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">深度学习 · 独立完成的研究项目</p>
+    <h1>Few-shot 分类器应该信任哪个 backbone？</h1>
+    <p class="lede">
+      Prototypical Networks（原型网络）按特征空间中到各类均值的距离进行分类，这意味着 feature extractor 就是整个模型。
+      我从零开始训练了 ResNet-18、DenseNet-121 和 ConvNeXt-T 作为 feature extractor，在 CUB 数据集上做 5-way 5-shot
+      分类（每个 episode 5 个类别、每类 5 个支持样本），对 data augmentation 做了 ablation，并记录了我最初尝试的两种分类器改进方案——两者都没有奏效。
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../../assets/files/fsl-report.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        阅读报告
+      </a>
+      <a class="btn" href="#walkthrough">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        观看讲解视频
+      </a>
+      <a class="btn" href="../../assets/files/fsl-notebook.ipynb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        Notebook
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>课程研究项目</dd></div>
+      <div><dt>背景</dt><dd>EECE 570，UBC</dd></div>
+      <div><dt>时间</dt><dd>2023 年 4 月</dd></div>
+      <div><dt>团队</dt><dd>独立完成</dd></div>
+      <div><dt>技术栈</dt><dd>PyTorch, torchvision, easyfsl, Colab GPU</dd></div>
+      <div><dt>实验设置</dt><dd>5-way · 5-shot · 5-query · CUB-200</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PLAYGROUND ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-proto-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">二维空间中的分类器</h2>
+        <p class="lab__note">
+          报告中的算法 1 实时运行：原型是每个类别支持特征的均值，每个查询样本被归入最近的原型。可以拖动任意实心点。
+        </p>
+      </div>
+
+      <div class="proto-grid">
+        <div>
+          <canvas data-proto-canvas aria-label="二维 Prototypical Networks：支持样本点、类别原型、决策区域与分类后的查询样本"></canvas>
+          <div class="proto-legend" data-proto-legend></div>
+        </div>
+        <div class="proto-controls">
+          <div class="proto-field">
+            <label for="proto-n">类别数（way）</label>
+            <select id="proto-n" data-proto-n>
+              <option value="3" selected>3-way（3 类）</option>
+              <option value="5">5-way（5 类）</option>
+            </select>
+          </div>
+          <div class="proto-field">
+            <label for="proto-k">每类支持样本数（shot）</label>
+            <select id="proto-k" data-proto-k>
+              <option value="1">1-shot（每类 1 个）</option>
+              <option value="5" selected>5-shot（每类 5 个）</option>
+              <option value="10">10-shot（每类 10 个）</option>
+            </select>
+          </div>
+          <button class="btn" type="button" data-proto-resample>重新采样一个 episode</button>
+          <label class="proto-toggle">
+            <input type="checkbox" data-proto-outlier>
+            <span>
+              向类别 1 注入一个不具代表性的支持样本
+              <small>简单均值无法降低它的权重：原型被它拉偏，边界随之移动，查询样本开始落到错误的一侧。这正是报告附录 B 试图解决的失效情形。</small>
+            </span>
+          </label>
+          <div class="lab__readout" style="grid-template-columns:1fr 1fr">
+            <div><span>查询准确率</span><b data-out-acc>—</b></div>
+            <div><span>原型偏移</span><b data-out-shift>—</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:70ch">
+      在真实模型中，这些点位于 CNN 产生的 512 维或 1024 维空间里，而不是平面上——但算术完全相同，弱点也完全相同。
+      试试 1-shot：每类只有一个支持样本时，原型<em>就是</em>那个样本本身，连同其中的噪声。
+    </p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>问题设定</h2>
+      <p>
+        few-shot 分类要求模型仅凭少量带标签的样本识别新类别——比如每类五张从未见过的鸟类图片。标准的表述是 episodic（回合式）的：
+        每一步训练采样 <em>N</em> 个类别，给模型每类 <em>K</em> 张带标签的图片（support set），再让它对另外 <em>Q</em> 张进行分类（query set）。
+        这里 <em>N</em> = <em>K</em> = <em>Q</em> = 5，每个 epoch 从 CUB-200 的训练集采样 500 个 episode，从验证集采样 50 个。
+      </p>
+      <p>
+        Prototypical Networks 是能奏效的最简单方案：把支持图片和查询图片送入 CNN，把每个类别的支持特征取平均作为原型，
+        再按哪个原型最近来给查询样本分类。没有需要学习的分类头。CNN 就是整个模型，于是"选哪个 CNN"就成了整个问题。
+      </p>
+      <div class="callout">
+        <p>
+          <strong>一个值得说明的选择。</strong>三个 backbone 都从随机初始化开始训练——用的是
+          <code>resnet18()</code>，而不是 <code>resnet18(weights=…)</code>。这使得绝对准确率低于使用 ImageNet
+          预训练特征时的水平，但也让架构之间的比较更干净：没有任何东西是继承来的。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>三个 backbone 的表现</h2>
+      <p>
+        各模型单次训练的每 epoch 测试准确率，直接取自 notebook 的日志。悬停查看数值。下方报告中的核心数字是十次运行的平均值。
+      </p>
+    </div>
+
+    <div class="curves reveal" data-curves>
+      <div class="curves__head">
+        <div class="curves__legend">
+          <span><i style="background:#2a78d6"></i>ResNet-18</span>
+          <span><i style="background:#eb6834"></i>DenseNet-121</span>
+          <span><i style="background:#1baf7a"></i>ConvNeXt-T</span>
+        </div>
+        <label class="proto-toggle" style="font-size:.84rem">
+          <input type="checkbox" data-curves-noaug>
+          <span>叠加显示无 data augmentation 的训练曲线（虚线）</span>
+        </label>
+      </div>
+      <canvas data-curves-canvas aria-label="三个 backbone 的测试准确率随 epoch 的变化"></canvas>
+      <div class="curves__tip" data-curves-tip hidden></div>
+    </div>
+
+    <div class="table-wrap reveal" style="margin-top:2.25rem">
+      <table class="data-table">
+        <caption>报告结果（报告表 1）：10 次运行的均值 ± 标准差，100 个 epoch，Adam 1e-3。训练时间为 Colab GPU 上每 100 个 epoch 的耗时。</caption>
+        <thead>
+          <tr><th scope="col">backbone</th><th scope="col">准确率</th><th scope="col">训练时间</th><th scope="col">无 data augmentation</th><th scope="col">下降</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">ResNet-18</th><td>81.84 ±1.2 %</td><td>1 小时</td><td>69.28 %</td><td class="delta">−12.56</td></tr>
+          <tr><th scope="row">DenseNet-121</th><td class="delta delta--big">83.76 ±0.9 %</td><td>2 小时</td><td>74.56 %</td><td class="delta">−8.80</td></tr>
+          <tr><th scope="row">ConvNeXt-T</th><td>78.56 ±1.5 %</td><td>2.5 小时</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>如何解读</h3>
+      <p>
+        <strong>ResNet-18</strong> 之所以是主力模型，是有原因的：单位训练时间内的准确率遥遥领先，曲线也最稳定。
+        <strong>DenseNet-121</strong> 在准确率上略胜一筹——高出两个百分点，超出误差范围——而且去掉 data augmentation 后损失小得多（−8.8 对 −12.6），
+        这是一个模型能从更少数据中泛化的标志。代价是尽管参数更少，训练速度却慢了一倍；密集连接意味着每一层都要看到之前所有的特征图，
+        真正付出代价的是激活值，而不是权重。
+      </p>
+      <p>
+        <strong>ConvNeXt-T</strong> 的表现不如它自己的前辈。报告的解读是：它的 7×7 卷积核扩大了感受野，却牺牲了局部细节，
+        而小数据集上基于距离的分类器恰恰需要那些被平均掉的细节。为 ImageNet 规模数据调优的现代架构，并不自动就是每个 episode 25 张图片场景下更好的架构。
+      </p>
+      <p>
+        ablation 干净利落地回答了一个问题：data augmentation 在这里不是可选项。去掉它会损失 9 到 13 个百分点——比任意两个 backbone 之间的差距都大。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHAT FAILED ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>我最初尝试了什么，以及为什么没有奏效</h2>
+      <p>
+        最初的计划并不是比较 backbone，而是改进分类器。有两个想法一直推进到了实现阶段，我才明白它们为什么无法按原设想成立；
+        两者都写进了报告的附录，我认为它们也应该出现在这个页面上。
+      </p>
+
+      <h3>核化原型（Kernelised prototypes）</h3>
+      <p>
+        最近原型分类是特征空间中的线性决策规则。如果类别在该空间中不是线性可分的，经典的补救办法是核方法——映射到更高维的空间，让它们变得可分。
+        问题在于：CNN 输出的特征本身已经处在 512 维或更高的空间中。在这样的宽度下，线性不可分并不是瓶颈，核方法没有什么可补充的。
+        如果说有什么有用的方向，反而是相反的——一个更小、更锐利的特征空间。
+      </p>
+
+      <h3>注意力加权原型（Attention-weighted prototypes）</h3>
+      <p>
+        简单均值把每个支持样本都视为同样可信。每类五个样本时，一个坏样本就会把原型朝它所在的位置拉动五分之一的距离——本页顶部的图正演示了这一点。
+        这个想法是按支持特征与查询样本的相似度对其加权，借用 Transformer 的 <em>softmax(QKᵀ/√d)·V</em>，以查询样本为 Q、原型为 K、支持特征为 V。
+      </p>
+      <p>
+        问题在于：Transformer 中这三个矩阵在构造上共享同一个维度，而这里它们并不共享——有 <em>N</em> 个原型、<em>N·K</em> 个支持特征和
+        <em>N·Q</em> 个查询样本——所以公式无法按原样套用。它需要一种形状不同的注意力机制，这是一个真正的研究问题而非课程项目能解决的，我如实说明了这一点，而没有强行凑出来。
+      </p>
+
+      <div class="callout">
+        <p>
+          <strong>为什么保留这些失败。</strong>从"改进分类器"转向"刻画 feature extractor"，是因为前两个想法已经被理解得足够透彻、足以被排除，而不是因为它们被放弃了。
+          知道为什么显而易见的修复方案并不适用，是我从这个项目中学到的最主要的东西。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CODE ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>完整的模型</h2>
+      <p>
+        整个分类器就是一个模块。backbone 的分类头被替换为 <code>nn.Flatten()</code>，使其输出原始特征；原型是类别均值；
+        输出是负的欧氏距离，cross-entropy 会把它变成类别上的 softmax。
+      </p>
+      <pre><code>class PrototNet(nn.Module):
+    def __init__(self, FE):
+        super().__init__()
+        self.FE = FE                              # 任意 torchvision backbone，去掉分类头
+
+    def forward(self, images_K, labels_K, images_Q):
+        features_K = self.FE(images_K)            # 支持特征，(N*K, D)
+        features_Q = self.FE(images_Q)            # 查询特征，(N*Q, D)
+
+        prototypes = torch.stack([               # 每类一个均值 -> (N, D)
+            features_K[labels_K == c].mean(0)
+            for c in labels_K.unique()
+        ])
+        return -torch.cdist(features_Q, prototypes)   # logits：越近越可能
+
+FE = resnet18()                                   # 从零开始：不传 weights=
+FE.fc = nn.Flatten()                              # 输出特征，而不是类别
+model = PrototNet(FE).cuda()
+
+# 一个回合：
+loss = nn.CrossEntropyLoss()(model(x_K, y_K, x_Q), y_Q)</code></pre>
+      <p style="font-size:.85rem;color:var(--text-faint)">
+        在 notebook 原代码基础上略作整理——原版用循环和 <code>torch.cat</code> 构建原型张量；这里的计算是相同的。
+      </p>
+      <p>
+        episode 由 <code>easyfsl</code> 的 <code>TaskSampler</code> 采样，它负责处理 N-way K-shot 的簿记工作。其余的一切——训练循环、评估、
+        data augmentation pipeline、三个 backbone 的替换以及 ablation——都在 notebook 里。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIDEO ============ -->
+<section class="section--tight" id="walkthrough">
+  <div class="wrap">
+    <div class="prose">
+      <h2>讲解视频</h2>
+      <p>一段四分半钟的报告讲解录音，在提交时录制。</p>
+    </div>
+    <div class="video-frame reveal">
+      <video controls preload="metadata" poster="../../assets/img/fsl/walkthrough-poster.jpg">
+        <source src="../../assets/files/fsl-walkthrough.mp4" type="video/mp4">
+        您的浏览器无法播放此视频。
+        <a href="../../assets/files/fsl-walkthrough.mp4">请改为下载。</a>
+      </video>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>项目报告</h2>
+      <p>
+        九页，NeurIPS 格式。
+        <a href="../../assets/files/fsl-report.pdf" target="_blank" rel="noopener">在新标签页中打开 ↗</a>
+      </p>
+    </div>
+    <object class="pdf-embed" data="../../assets/files/fsl-report.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>您的浏览器无法内嵌显示 PDF。</p>
+        <a class="btn btn--primary" href="../../assets/files/fsl-report.pdf" target="_blank" rel="noopener">打开报告（PDF，9 页）</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose"><h2>全部原始材料</h2></div>
+    <div class="artifacts">
+      <a class="artifact" href="../../assets/files/fsl-report.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>项目报告 ↗</strong><span>9 页 · PDF · 附录含失败的想法</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/fsl-notebook.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>训练 notebook</strong><span>Jupyter · 模型、训练循环、全部五次运行及日志</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/fsl-walkthrough.mp4">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <span><strong>讲解视频</strong><span>MP4 · 4:45 · 12 MB</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>致谢与分工</h2>
+      <div class="credits">
+        <h3>独立项目</h3>
+        <p>
+          选题、实现、实验、报告与录制均由曹一明完成，2023 年 4 月。本页的可交互图示是后来制作的，不属于原始提交内容。
+        </p>
+      </div>
+
+      <h3>参考文献</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>J. Snell, K. Swersky, R. Zemel. <em>Prototypical Networks for Few-shot Learning.</em> NeurIPS 2017.</li>
+        <li>C. Wah et al. <em>The Caltech-UCSD Birds-200-2011 Dataset.</em> Caltech, 2011.</li>
+        <li>Y. Bendou et al. <em>EASY: Ensemble Augmented-Shot Y-shaped Learning.</em> arXiv:2201.09699, 2022 —— 以及 <code>easyfsl</code> 库。</li>
+        <li>K. He et al., <em>Deep Residual Learning</em> (CVPR 2016); G. Huang et al., <em>Densely Connected Convolutional Networks</em> (CVPR 2017); Z. Liu et al., <em>A ConvNet for the 2020s</em> (CVPR 2022).</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

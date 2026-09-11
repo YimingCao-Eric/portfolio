@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DWI MRI denoising — 曹一明</title>
+<meta name="description" content="在三名受试者、四个 b 值的 DWI MRI 数据上比较 DCT 与 PCA denoising——并附带一个可在浏览器中实时运行的 DCT denoiser。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/mri-denoising.html">
+<script defer src="../../assets/js/site.js"></script>
+<script defer src="../../assets/js/dwi-slice.js"></script>
+<script defer src="../../assets/js/mri-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-toggle" data-lang-toggle="en" href="../../projects/mri-denoising.html" lang="en" title="Switch to English">EN</a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">生物医学影像 · 课程研究</p>
+    <h1>DWI MRI denoising：DCT 与 PCA 的对比</h1>
+    <p class="lede">
+      DWI MRI 用信号换取速度，得到的图像颗粒感很强，足以让定量测量发生漂移。我们从零实现了两种经典 denoising 方法，在三名受试者、四个
+      b 值上分别测量，发现 PCA 领先约 3.5&nbsp;dB——但更有意思的结果，是两种方法共同撞上的那道天花板。
+    </p>
+
+    <div class="btn-row" style="margin-top:2rem">
+      <a class="btn btn--primary" href="../../assets/files/mri-denoising-report.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        阅读论文
+      </a>
+      <a class="btn" href="../../assets/files/mri-denoising-slides.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        查看幻灯片
+      </a>
+      <a class="btn" href="#artifacts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        全部文件
+      </a>
+    </div>
+
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>课程研究论文 + 报告</dd></div>
+      <div><dt>背景</dt><dd>EECE 523，UBC</dd></div>
+      <div><dt>时间</dt><dd>2022 年 12 月</dd></div>
+      <div><dt>团队</dt><dd>5 位作者</dd></div>
+      <div><dt>技术栈</dt><dd>Python、NumPy、SciPy</dd></div>
+      <div><dt>数据</dt><dd>3 名受试者 · 4 个 b 值</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ INTERACTIVE ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-mri-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">DCT denoiser，在真实切片上实时运行</h2>
+        <p class="lab__note">
+          货真价实的 8×8 分块离散余弦变换（DCT）、系数截断与逆 DCT——在你的浏览器中，对数据集里一张真实的 DWI 切片实时计算。
+        </p>
+      </div>
+
+      <div class="mri-panels">
+        <div class="lab__panel">
+          <h4>原图</h4>
+          <canvas data-mri-original aria-label="一张带噪声的 DWI MRI 切片"></canvas>
+        </div>
+        <div class="lab__panel">
+          <h4>DCT denoising 后</h4>
+          <canvas data-mri-denoised aria-label="同一切片经 DCT denoising 后的结果"></canvas>
+        </div>
+      </div>
+
+      <div class="mri-side">
+        <div class="lab__panel mri-mask-panel">
+          <h4>保留的系数</h4>
+          <canvas data-mri-mask aria-label="一个 8×8 网格，显示哪些 DCT 系数在截断后得以保留"></canvas>
+          <p class="mri-caption">
+            左上角为低频，右下角为高频。
+          </p>
+        </div>
+        <div class="lab__panel mri-chart-panel">
+          <h4>SSIM 随 <em>d</em> 的变化</h4>
+          <canvas data-mri-chart aria-label="SSIM 随截断参数 d 变化的曲线"></canvas>
+          <p class="mri-caption">
+            在这张切片上实时计算，而非照抄论文数据。
+          </p>
+        </div>
+      </div>
+
+      <div class="lab__controls">
+        <div class="lab__row">
+          <label for="mri-d" class="mri-label">保留系数 &nbsp;<em>d</em></label>
+          <input class="lab__slider" type="range" min="1" max="7" value="3" step="1"
+                 id="mri-d" data-mri-slider aria-label="DCT 截断参数 d">
+        </div>
+        <div class="lab__readout">
+          <div><span>d</span><b data-out-d>3</b></div>
+          <div><span>系数数量</span><b data-out-kept>12 / 64</b></div>
+          <div><span>与原图的 SSIM</span><b data-out-ssim>0.0000</b></div>
+        </div>
+      </div>
+
+      <p class="mri-unavailable">
+        实时 denoiser 无法在此浏览器中启动。下方的图片展示了相同的结果。
+      </p>
+    </div>
+
+    <p class="lab__note" style="margin-top:.9rem;max-width:70ch">
+      把 <em>d</em> 往下拖，背景中的斑点会随之消失——但你本想测量的皮层细节也一起没了。这种耦合正是整个问题所在，而且无论
+      <em>d</em> 取何值都无法摆脱。
+    </p>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>为什么这张图“天生”就有噪声</h2>
+      <p>
+        DWI（diffusion-weighted imaging，扩散加权成像）测量的是组织内水分子的布朗运动。在运动受限的地方——急性脑卒中、肿瘤——信号会发生变化，这使
+        DWI 成为发现梗死灶最快的手段之一，而这类病灶在常规 MRI 上可能完全看不到。
+      </p>
+      <p>
+        问题出在物理原理上。DWI 会刻意削弱信号幅度，而它所需的快速回波平面读出又会拾取大量热噪声。结果是 SNR（信噪比）先天就偏低——而且由于临床医生真正关心的扩散系数是由这些图像的比值计算得到的，噪声不只是难看而已，它会让数值产生偏差。
+      </p>
+      <div class="callout">
+        <p>
+          <strong>研究问题。</strong>两种经典的、非学习型的 denoising 方法——一种在频域工作，一种在像素域工作——各自能恢复多少
+          SNR？在结构保真度上又要付出多大代价？没有神经网络，没有训练数据，没有 GPU。只有带一个旋钮的变换。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>两种变换，同一个思路</h2>
+      <p>
+        两种方法的框架相同：把切片切成小的重叠图块，把每个图块变换到一个能让信号与噪声分离的基底上，丢掉以噪声为主的分量，再变换回来。它们的差别只在于用哪个基底。
+      </p>
+
+      <h3>共同部分：图块进，图像出</h3>
+      <p>
+        一个滑动窗口在切片上每次移动一个像素，因此图块之间高度重叠。在重建时，每个输出像素是所有覆盖它的图块之和，再除以一张记录重叠次数的权重图。这种平均并非可有可无——它在做实实在在的工作，抑制了非重叠变换会留下的块状伪影。
+      </p>
+
+      <h3>DCT——丢掉高频</h3>
+      <p>
+        在 8×8 图块上做二维离散余弦变换，只保留左上角的 <em>d</em> × (<em>d</em>+1)
+        个系数，其余置零。噪声是宽带的，因而主要分布在高频角落；图像结构则集中在低频角落。截断就是一个低通滤波器，<em>d</em>
+        是它的截止频率。本页顶部的交互图做的正是这件事。
+      </p>
+
+      <h3>PCA——丢掉次要成分</h3>
+      <p>
+        在 5×5 图块上，把每个图块展平为 25 维向量，堆叠成矩阵 <em>X</em>，对各列做中心化，然后做 SVD
+        分解。来自同一组织的像素强相关；噪声则与任何东西都不相关。因此靠前的主成分（PCA，主成分分析）承载解剖结构，靠后的主成分主要承载噪声——保留前
+        <em>k</em> 个，丢弃其余，再重建。
+      </p>
+      <figure class="figure">
+        <img src="../../assets/img/mri/pca-svd.png" alt="示意图：图块矩阵 X 分解为得分矩阵 Z 与主成分矩阵 W">
+        <figcaption>
+          论文中的分解：<em>X</em> ≈ <em>Z</em><em>W</em>，只保留前 <em>k</em> 个成分。减小 <em>k</em>
+          会丢弃信息——赌的是最先丢掉的是噪声。
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE TRADE-OFF ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>真正重要的结果</h2>
+      <p>
+        两个旋钮都有效。把 <em>d</em> 或 <em>k</em> 调低，SNR
+        就上升。但与原图的 SSIM 同时下降，而且降得更快。把两者对参数作图，困境一目了然：没有任何一个设置能让你免费获得降噪。
+      </p>
+    </div>
+
+    <div class="figure-pair reveal">
+      <figure class="figure">
+        <img src="../../assets/img/mri/tradeoff-dct.png" alt="DCT 方法下 SNR 与 SSIM 随 d 变化的曲线">
+        <figcaption><strong>DCT。</strong>随着 <em>d</em> 增大，SNR（蓝色）下降，SSIM（绿色）上升。虚线为未去噪时的 SNR，17.49 dB。</figcaption>
+      </figure>
+      <figure class="figure">
+        <img src="../../assets/img/mri/tradeoff-pca.png" alt="PCA 方法下 SNR 与 SSIM 随 k 变化的曲线">
+        <figcaption><strong>PCA。</strong>随 <em>k</em> 变化的形状相同，但 SNR 曲线的起点高得多——<em>k</em>=1 时接近 30 dB。</figcaption>
+      </figure>
+    </div>
+
+    <div class="prose">
+      <p>
+        SSIM 太低意味着图像已被平滑到毫无用处；SSIM
+        太高则意味着你忠实地保留了原图——连同它的噪声。两个极端都不是目标，所以工作点只能靠选择而非优化得到。通过肉眼评分 denoising 结果，可用区间落在
+        <strong>SSIM 0.88 到 0.93 之间</strong>，这把 DCT 的 <em>d</em> 限定在 [2, 5]，PCA 的 <em>k</em> 限定在 [8, 16]。
+      </p>
+      <div class="callout">
+        <p>
+          <strong>为什么这比头条数字更重要。</strong>带自由参数的 denoiser 几乎可以被调到在任何单一指标上取胜。报告两项指标都保持可接受的区间——并坦承它是由人的判断而非目标函数确定的——这正是“一个结果”与“一个数字”之间的区别。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>在三名受试者上的测量</h2>
+      <p>
+        该数据集以完全相同的采集设置对同样三个人成像，共四种 diffusion weighting（b 值，b-value）。这给了比较结果十二次独立的“翻盘”机会。它一次也没有翻盘。
+      </p>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="data-table">
+        <caption>SNR，单位 dB，均值 ± 标准差。Δ 列为相对未去噪图像的增益。</caption>
+        <thead>
+          <tr>
+            <th scope="col">受试者</th><th scope="col">b 值</th>
+            <th scope="col">原图</th>
+            <th scope="col">DCT</th><th scope="col">Δ</th>
+            <th scope="col">PCA</th><th scope="col">Δ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row" rowspan="4">sub-1</th><td>0</td>    <td>14.4 ±0.2</td><td>15.8 ±0.3</td><td class="delta">+1.4</td><td>18.8 ±0.3</td><td class="delta delta--big">+4.4</td></tr>
+          <tr><td>1000</td> <td>16.8 ±0.2</td><td>18.4 ±0.2</td><td class="delta">+1.6</td><td>21.5 ±0.1</td><td class="delta delta--big">+4.7</td></tr>
+          <tr><td>2000</td> <td>16.0 ±0.3</td><td>17.7 ±0.3</td><td class="delta">+1.7</td><td>21.1 ±0.5</td><td class="delta delta--big">+5.1</td></tr>
+          <tr><td>3000</td> <td>16.3 ±0.1</td><td>18.1 ±0.1</td><td class="delta">+1.8</td><td>21.6 ±0.1</td><td class="delta delta--big">+5.2</td></tr>
+
+          <tr class="row-group"><th scope="row" rowspan="4">sub-2</th><td>0</td>    <td>15.7 ±0.4</td><td>17.3 ±0.4</td><td class="delta">+1.6</td><td>20.9 ±0.4</td><td class="delta delta--big">+5.2</td></tr>
+          <tr><td>1000</td> <td>17.1 ±0.4</td><td>18.9 ±0.4</td><td class="delta">+1.7</td><td>22.8 ±0.4</td><td class="delta delta--big">+5.7</td></tr>
+          <tr><td>2000</td> <td>16.7 ±0.1</td><td>18.9 ±0.3</td><td class="delta">+2.1</td><td>22.7 ±0.1</td><td class="delta delta--big">+5.9</td></tr>
+          <tr><td>3000</td> <td>16.5 ±0.2</td><td>18.5 ±0.1</td><td class="delta">+1.9</td><td>22.7 ±0.3</td><td class="delta delta--big">+6.2</td></tr>
+
+          <tr class="row-group"><th scope="row" rowspan="4">sub-3</th><td>0</td>    <td>16.3 ±0.2</td><td>17.8 ±0.2</td><td class="delta">+1.5</td><td>21.2 ±0.1</td><td class="delta delta--big">+5.0</td></tr>
+          <tr><td>1000</td> <td>17.7 ±0.3</td><td>19.4 ±0.2</td><td class="delta">+1.6</td><td>22.9 ±0.1</td><td class="delta delta--big">+5.2</td></tr>
+          <tr><td>2000</td> <td>17.1 ±0.4</td><td>18.8 ±0.4</td><td class="delta">+1.7</td><td>22.5 ±0.2</td><td class="delta delta--big">+5.4</td></tr>
+          <tr><td>3000</td> <td>16.6 ±0.2</td><td>18.8 ±0.2</td><td class="delta">+2.1</td><td>22.7 ±0.1</td><td class="delta delta--big">+5.7</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <p>
+        PCA 十二局全胜，增益为 4.4 到 6.2 dB，而 DCT 只有 1.4 到 2.1 dB。差距还随 b
+        值增大而拉开——采集噪声越大，PCA 的优势越明显，这恰好是对它最有利的方向，因为高 b 值图像正是最需要帮助的那些。
+      </p>
+      <p>
+        SNR 按 NEMA 双相邻切片标准测量，感兴趣区域取整个大脑，而非一小块白质。这是刻意为之：小 ROI
+        会让严重模糊的图像报出漂亮的 SNR，而我们希望这个指标恰好能抵御我们最可能犯的那种错误。
+      </p>
+    </div>
+
+    <figure class="figure reveal">
+      <img src="../../assets/img/mri/comparison.jpg" alt="三张并排的轴位 DWI 切片：原图、DCT denoising、PCA denoising">
+      <figcaption>
+        同一切片，未去噪以及经两种方法处理后的结果。PCA 结果中，原图上密布的暗色斑点明显减少。
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ LIMITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>我们想修正的地方</h2>
+      <p>两个我们发现了但未能解决的问题：</p>
+      <ol>
+        <li>
+          <strong>在这里，denoising 和模糊是同一个操作。</strong>两种方法在提高 SNR
+          的同时都损失了整体图像质量。权衡曲线量化了这一点，却无法绕开它。一种利用高于二阶统计量的信息来分离噪声与结构的方法——即学习到的先验——不会撞上同一堵墙。
+        </li>
+        <li>
+          <strong>我们是逐切片处理的。</strong>DWI
+          是体数据，相邻切片高度相关。独立地对每张二维切片去噪丢掉了这一信息，而且在把切片重新堆叠成体数据时会损失分量。在三维图块上操作是显而易见的下一步。
+        </li>
+      </ol>
+      <p>
+        自然的延续正是相关工作已经指向的方向：用一个卷积网络对整个体数据去噪，在低噪声采集数据上做逐体素训练。那是一个大得多的项目，而且坦率地说，这个领域后来正是往那个方向走的。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDES ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose"><h2>报告</h2></div>
+    <div class="slides reveal"
+         data-slides="../../assets/img/slides-mri/slide-"
+         data-slides-count="18" data-slides-pad="2" data-slides-ext="jpg">
+      <div class="slides__stage" data-slide-stage></div>
+      <div class="slides__bar">
+        <button type="button" data-slide-prev aria-label="上一页">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" data-slide-next aria-label="下一页">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <span class="slides__label" data-slide-label>1 / 18</span>
+        <span class="slides__hint">使用方向键切换</span>
+      </div>
+      <div class="slides__rail" data-slide-rail></div>
+    </div>
+    <p class="deck-links">
+      <a href="../../assets/files/mri-denoising-slides.pdf" target="_blank" rel="noopener">以 PDF 打开 ↗</a>
+    </p>
+  </div>
+</section>
+
+<!-- ============ PAPER ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose">
+      <h2>论文</h2>
+      <p>
+        六页，IEEE 格式。
+        <a href="../../assets/files/mri-denoising-report.pdf" target="_blank" rel="noopener">在新标签页中打开 ↗</a>
+        以全屏阅读。
+      </p>
+    </div>
+    <object class="pdf-embed" data="../../assets/files/mri-denoising-report.pdf#view=FitH" type="application/pdf">
+      <div style="padding:2rem;text-align:center">
+        <p>你的浏览器无法内嵌显示 PDF。</p>
+        <a class="btn btn--primary" href="../../assets/files/mri-denoising-report.pdf" target="_blank" rel="noopener">打开论文（PDF，6 页）</a>
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ============ ARTIFACTS ============ -->
+<section class="section--tight" id="artifacts">
+  <div class="wrap">
+    <div class="prose">
+      <h2>全部原始材料</h2>
+      <p>PDF 在新标签页中打开；notebook 为下载。</p>
+    </div>
+    <div class="artifacts">
+      <a class="artifact" href="../../assets/files/mri-denoising-report.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+        <span><strong>研究论文 ↗</strong><span>6 页 · PDF · IEEE 格式</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/mri-denoising-slides.pdf" target="_blank" rel="noopener">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span><strong>汇报幻灯片 ↗</strong><span>18 页 · PDF</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/mri-denoising-dct.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>DCT notebook</strong><span>Jupyter · 变换、截断、重建</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/mri-denoising-pca.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>PCA notebook</strong><span>Jupyter · SVD、成分选择</span></span>
+      </a>
+      <a class="artifact" href="../../assets/files/mri-denoising-main.ipynb">
+        <span class="artifact__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+        <span><strong>pipeline notebook</strong><span>Jupyter · 数据加载、指标、评估</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose" style="max-width:760px">
+      <h2>致谢与分工</h2>
+      <div class="credits">
+        <h3>一个五人课程项目</h3>
+        <p>
+          曹一明为第一作者，主要负责代码——DCT 与 PCA
+          denoiser 以及评估 pipeline。选题与数据集收集由团队成员完成。论文、汇报与幻灯片由全组协作完成。
+        </p>
+        <p>
+          本页的交互式 denoiser 由曹一明在项目之后编写。它用 JavaScript 重新实现了项目中的 DCT
+          方法，并非原始提交的一部分。
+        </p>
+      </div>
+
+      <h3>数据</h3>
+      <p style="font-size:.9rem;color:var(--text-soft)">
+        Q. Tong, H. He, T. Gong, C. Li, P. Liang, T. Qian, Y. Sun, Q. Ding, K. Li, J. Zhong.
+        <em>Multicenter dataset of multi-shell diffusion MRI in healthy traveling adults with
+        identical settings.</em> Scientific Data <strong>7</strong>, 2020。开放数据集，健康成年志愿者，1.5&nbsp;mm
+        各向同性，b = 0/1000/2000/3000 s·mm⁻²。
+      </p>
+
+      <h3>参考文献</h3>
+      <ol style="font-size:.9rem;color:var(--text-soft)">
+        <li>L. Zhang et al. <em>Two-stage image denoising by principal component analysis with local pixel grouping.</em> Pattern Recognition, 2010.</li>
+        <li>J. V. Manjón et al. <em>Diffusion weighted image denoising using overcomplete local PCA.</em> PLoS ONE, 2013.</li>
+        <li>H. Cheng et al. <em>Denoising diffusion weighted imaging data using convolutional neural networks.</em> bioRxiv, 2022.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
