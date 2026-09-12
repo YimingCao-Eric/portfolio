@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>历史时空穿越模拟器 — 曹一明</title>
+<meta name="description" content="规划中的项目（尚未动工）：一个交互式模拟，把玩家投放到某个历史时刻，让其在其中探索、行动；构建在与海龟汤游戏相同的 LLM + 实时图像/音效引擎之上。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/planned-time-travel-simulator.html">
+<script defer src="../../assets/js/site.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-switch" data-lang-toggle="en" href="../../projects/planned-time-travel-simulator.html" title="Switch to English" aria-label="切换语言"><span class="lang-switch__opt" lang="en">EN</span><span class="lang-switch__opt is-on">中文</span></a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#planned">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">规划中 · 模拟 · LLM pipeline · retrieval grounding</p>
+    <h1>历史时空穿越模拟器</h1>
+    <p class="lede">一个交互式模拟，把玩家投放到某个历史时刻，让其在其中探索、行动；构建在与海龟汤游戏相同的 LLM + 实时图像/音效引擎之上。</p>
+    <div class="callout callout--warn" style="margin-top:1.5rem;max-width:72ch">
+      <p><strong>状态：暂缓。</strong> 这是大纲，不是实现 —— 记录下来是为了不让想法和待解问题丢失。随着思考深入它会不断修改。创建于 <time datetime="2026-09-12">2026-09-12</time> · 最近更新 <time datetime="2026-09-12" data-updated>2026-09-12</time>。</p>
+    </div>
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>规划中的独立项目</dd></div>
+      <div><dt>状态</dt><dd>暂缓</dd></div>
+      <div><dt>创建</dt><dd><time datetime="2026-09-12">2026-09-12</time></dd></div>
+      <div><dt>更新</dt><dd><time datetime="2026-09-12" data-updated>2026-09-12</time></dd></div>
+      <div><dt>团队</dt><dd>独立完成，使用 Claude Code</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ OUTLINE ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose planned-outline">
+<p><strong>优先级：</strong> 排在 01 之后</p>
+<h2>核心想法（我自己的话）</h2>
+<ul>
+<li>基本概念与海龟汤一致：LLM 驱动的交互、实时生成的场景和音效、每一局都独一无二。</li>
+<li>现在记下来是为了不丢失；等海龟汤引擎做出来之后才动工。</li>
+</ul>
+<h2>可以从海龟汤沿用的部分</h2>
+<ul>
+<li>Scene Director + scene bible（整局的视觉一致性）。</li>
+<li>状态变化时的图像与音效生成。</li>
+<li>用结构化的游戏状态驱动 LLM，而不是自由形式的聊天。</li>
+</ul>
+<h2>新的部分（以后再细想）</h2>
+<ul>
+<li>Grounding（事实锚定）：“隐藏真相”变成了真实历史 —— 需要一个事实来源（整理好的笔记、对参考资料的 retrieval），让模拟不会凭空捏造事件。</li>
+<li>交互模型：探索 / 与历史人物对话 / “换你会怎么做”的决策，而不是是/否提问。</li>
+<li>范围控制：每个情景只选一个很窄的时刻（某一天、某一座城），而不是开放世界。</li>
+<li>教育向还是娱乐向 —— 这决定了历史 grounding 必须有多严格。</li>
+</ul>
+<h2>待解问题（暂不解决）</h2>
+<ul>
+<li>先做哪些历史时刻？</li>
+<li>自由角色扮演，还是目标导向的情景（如“撑过这一天”、“解开谜团”）？</li>
+<li>语言：中国历史情景用中文，还是英文优先？</li>
+</ul>
+<h2>相关</h2>
+<ul>
+<li>依赖想法 01。</li>
+</ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

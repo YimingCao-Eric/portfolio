@@ -75,3 +75,18 @@ remembered language automatically. Default (no choice yet) is English.
 The interactive figures are shared between both versions: their user-visible strings go
 through `I18N.t("English", "中文")` (defined in `site.js`), which picks by `<html lang>`.
 When you add a project, create both pages and keep the `hreflang` links pointing at each other.
+
+## Planned projects ("On the drawing board")
+
+Ideas that are scoped but not started live in `projects/planned-<slug>.html` (and `zh/projects/…`),
+generated from the outlines in `E:\workSpace\project ideas`. Each card on the home page and each
+page carries two stamps:
+
+```html
+created <time datetime="2026-09-12">2026-09-12</time> · updated <time datetime="2026-09-12" data-updated>2026-09-12</time>
+```
+
+When you revise an outline, change the `data-updated` `<time>` (both the `datetime` attribute and
+the text) on the page and on its home-page card — in both languages. The `created` stamp never
+changes. Status words on the card (`Next up` / `Parked` / `Recorded`) are plain text in the
+`.status` span.

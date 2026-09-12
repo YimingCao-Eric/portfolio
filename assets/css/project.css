@@ -587,3 +587,11 @@
 .stat { border: 1px solid var(--border); border-radius: var(--r-md); background: var(--bg-elev); padding: .85rem 1rem; }
 .stat b { display: block; font-size: 1.35rem; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .stat span { font-size: .76rem; color: var(--text-faint); line-height: 1.35; display: block; margin-top: .15rem; }
+
+/* ---------- planned-project outline pages ---------- */
+.planned-outline h2 { margin-top: 2.2em; }
+.planned-outline h3 { margin-top: 1.6em; font-size: 1.02rem; }
+.planned-outline h4 { margin-top: 1.2em; font-size: .92rem; color: var(--text-soft); }
+.planned-outline ul, .planned-outline ol { padding-left: 1.3rem; }
+.planned-outline li { margin-bottom: .35rem; }
+.planned-outline > p:first-child { font-size: .84rem; color: var(--text-faint); }

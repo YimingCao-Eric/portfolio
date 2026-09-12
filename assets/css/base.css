@@ -262,6 +262,31 @@ pre code { background: none; border: 0; padding: 0; font-size: inherit; }
   text-decoration: none; transition: all .18s var(--ease);
 }
 .lang-toggle:hover { color: var(--text); background: var(--bg-sunken); }
+/* two-state language switch */
+.lang-switch {
+  margin-left: .35rem; height: 34px; display: inline-flex; align-items: stretch; padding: 3px;
+  border-radius: 999px; border: 1px solid var(--border-strong); background: var(--bg-sunken);
+  text-decoration: none; transition: border-color .18s var(--ease);
+}
+.lang-switch:hover { border-color: var(--accent); }
+.lang-switch__opt {
+  display: inline-flex; align-items: center; padding: 0 .6rem; border-radius: 999px;
+  font-size: .74rem; font-weight: 600; letter-spacing: .04em; color: var(--text-faint);
+  transition: all .18s var(--ease);
+}
+.lang-switch__opt.is-on { background: var(--bg-elev); color: var(--text); box-shadow: var(--shadow-sm); }
+.lang-switch:hover .lang-switch__opt:not(.is-on) { color: var(--text-soft); }
+/* ---------- compact header on phones ---------- */
+@media (max-width: 560px) {
+  .brand { font-size: 0; gap: 0; }               /* keep the mark, drop the wordmark */
+  .nav { gap: 0; }
+  .nav a { font-size: .8rem; padding: .38rem .42rem; }
+  .nav a[href^="mailto:"] { display: none; }     /* contact is in the hero and footer */
+  .lang-switch { margin-left: .25rem; }
+  .lang-switch__opt { padding: 0 .45rem; }
+  .theme-toggle { margin-left: .25rem; }
+}
+@media (max-width: 440px) { .nav a[href$="#planned"] { display: none; } }
 :lang(zh-CN) body { font-family: ui-sans-serif, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", "Segoe UI", sans-serif; }
 :lang(zh-CN) h1, :lang(zh-CN) h2, :lang(zh-CN) h3, :lang(zh-CN) h4 { letter-spacing: 0; }
 :lang(zh-CN) body { line-height: 1.75; }

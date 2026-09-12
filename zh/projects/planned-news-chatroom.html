@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>把新闻做成聊天室：事实与观点分离 — 曹一明</title>
+<meta name="description" content="规划中的项目（尚未动工）：一条 LLM pipeline / agent，解析新闻报道、把事实与观点分开，并以聊天室式的界面呈现：房间标题是底层事实，“发言者”是陈述各自观点的媒体，读者是旁观者而非参与者。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/planned-news-chatroom.html">
+<script defer src="../../assets/js/site.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-switch" data-lang-toggle="en" href="../../projects/planned-news-chatroom.html" title="Switch to English" aria-label="切换语言"><span class="lang-switch__opt" lang="en">EN</span><span class="lang-switch__opt is-on">中文</span></a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#planned">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">规划中 · LLM pipeline · 事件聚类 · 评估</p>
+    <h1>把新闻做成聊天室：事实与观点分离</h1>
+    <p class="lede">一条 LLM pipeline / agent，解析新闻报道、把事实与观点分开，并以聊天室式的界面呈现：房间标题是底层事实，“发言者”是陈述各自观点的媒体，读者是旁观者而非参与者。</p>
+    <div class="callout callout--warn" style="margin-top:1.5rem;max-width:72ch">
+      <p><strong>状态：已记录。</strong> 这是大纲，不是实现 —— 记录下来是为了不让想法和待解问题丢失。随着思考深入它会不断修改。创建于 <time datetime="2026-09-12">2026-09-12</time> · 最近更新 <time datetime="2026-09-12" data-updated>2026-09-12</time>。</p>
+    </div>
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>规划中的独立项目</dd></div>
+      <div><dt>状态</dt><dd>已记录</dd></div>
+      <div><dt>创建</dt><dd><time datetime="2026-09-12">2026-09-12</time></dd></div>
+      <div><dt>更新</dt><dd><time datetime="2026-09-12" data-updated>2026-09-12</time></dd></div>
+      <div><dt>团队</dt><dd>独立完成，使用 Claude Code</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ OUTLINE ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="prose planned-outline">
+<h2>核心想法（我自己的话）</h2>
+<ul>
+<li>新闻报道把事实和观点混在同一段文字里。正因为二者交织，读者的情绪和认知会被观点左右，真正的事实反而被忽视或淡化。</li>
+<li>用 LLM 把二者分开，然后改变呈现方式：每个事实/事件一个聊天室。每家媒体是一个发言者，发表自己的看法。读者只旁观。</li>
+<li>例子：俄乌战争 —— 双方持有相互冲突的叙事，对同一事件的报道大相径庭。许多有争议的话题都适合这种形式。</li>
+</ul>
+<h2>为什么这种形式有效</h2>
+<ul>
+<li>把事实放在标题、观点放在聊天里，让这种分离<em>看得见</em>，而不是藏在文字之中。</li>
+<li>把几家媒体并排展示，把“新闻”变成“每家媒体各自声称了什么”，这才是正确的心智模型。</li>
+<li>旁观者立场（没有回复框）让读者不去争辩，也让产品不会变成评论区。</li>
+</ul>
+<h2>初步的系统大纲</h2>
+<h3>Pipeline</h3>
+<ol>
+<li><strong>Ingest（接入）</strong> —— 从多家媒体收集某一话题的文章（RSS、公开 API、允许的情况下做抓取）。存储来源、媒体、时间戳、全文。</li>
+<li><strong>事件聚类</strong> —— 把关于同一底层事件的文章分为一组（embedding + LLM 确认）。</li>
+<li><strong>事实 / 观点分离</strong> —— 对每篇文章提取：</li>
+</ol>
+<ul>
+<li>事实陈述（谁 / 什么 / 何时 / 何地，附带引用的证据片段），</li>
+<li>观点 / 立场表述（评价性语言、推测、对动机的归因），</li>
+<li>带倾向性用语的标记。</li>
+</ul>
+<ol>
+<li><strong>事实调和</strong> —— 跨媒体把陈述合并为该事件的“公认事实”与“有争议的说法”（注明谁说了什么）。房间标题来自公认事实；有争议的说法照实标示。</li>
+<li><strong>渲染</strong> —— 聊天室：标题 = 事实；消息 = 每家媒体的观点/立场，用其自身的口吻、带时间戳；可展开的引用可追溯到原句。</li>
+</ol>
+<h3>UI</h3>
+<ul>
+<li>房间列表（每个事件一个），按时间或争议程度排序。</li>
+<li>房间视图：置顶的事实标题；有争议说法面板；按媒体划分的消息流，带媒体头像；可点击跳转到来源。</li>
+<li>没有输入框。对于持续发展的事件，也许加一个“自昨天以来有什么变化”的 diff。</li>
+</ul>
+<h3>关键问题</h3>
+<ul>
+<li>事实/观点并不是干净的二元划分；需要一套 rubric（评判标准）和评估集。考虑分三类：可验证的事实、有归属的说法、观点/立场。</li>
+<li>来源覆盖与访问权限（付费墙、ToS）；先从可免费获取的媒体和官方声明开始。</li>
+<li>分离模型本身的偏见 —— 通过始终展示证据片段、以及报告各媒体的统计数据而非裁决来缓解。</li>
+<li>多语言：同一事件的俄语/乌克兰语/中文/英文报道是最有说服力的 demo，也是最难的接入问题。</li>
+</ul>
+<h3>里程碑</h3>
+<ol>
+<li>单一话题、3–5 家媒体、一个手选的事件；运行分离 prompt，目测质量。</li>
+<li>建立评估集（约 50 句，标注为事实 / 说法 / 观点）；调优 prompt。</li>
+<li>为一个话题自动化接入 + 聚类。</li>
+<li>聊天室 UI（静态站点即可）；每日重新生成。</li>
+<li>扩展话题；加入“有争议的说法”调和。</li>
+</ol>
+<h2>技术备注</h2>
+<ul>
+<li>Python pipeline、结构化的 LLM 输出、Postgres 存储、embedding 做聚类；简单的 Web 前端。</li>
+<li>复用 JHA 项目在抓取/dedup 上的经验。</li>
+</ul>
+<h2>相关</h2>
+<ul>
+<li>与想法 05（每日摘要）共用接入基础设施。</li>
+</ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
