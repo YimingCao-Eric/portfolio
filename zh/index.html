@@ -13,6 +13,7 @@
 <script defer src="../assets/js/proto-lab.js"></script>
 <script defer src="../assets/js/ecom-lab.js"></script>
 <script defer src="../assets/js/jha-lab.js"></script>
+<script defer src="../assets/js/digest-lab.js"></script>
 </head>
 <body>
 
@@ -112,6 +113,32 @@
 
     <div class="grid">
 
+      <!-- ---- AI-news daily digest ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <canvas data-digest-strip aria-label="一条七个 stage 的 pipeline —— fetch、normalise、store、rank、summarise、render、deliver —— 前三个 stage 已构建完成"></canvas>
+        </div>
+        <div class="card__body">
+          <p class="card__meta"><span class="status status--next-up">进行中 · 5 个 phase 中的第 3 个</span> · 开始于 <time datetime="2026-09-12">2026-09-12</time> · 更新于 <time datetime="2026-09-14" data-updated>2026-09-14</time> · <a class="card__gh" href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">GitHub ↗</a></p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/daily-news-digest.html">AI-news：按我的兴趣给全网排序的个人每日摘要</a>
+          </h3>
+          <p class="card__desc">
+            一个定时任务：抓取 AI、硬件和游戏类信息源，丢掉已经见过的内容，把剩下的按兴趣画像排序，
+            每天早上写出一页 Markdown。5 个 phase 已合并 3 个 —— 骨架、第一个信息源、带 canonical URL
+            与近重复检测的 SQLite store —— 每个都是一个经过评审的 pull request，一次一个 Claude Code
+            session 构建。dedupe 逻辑在页面上实时运行。
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">可交互</span>
+            <span class="tag">Python · uv</span>
+            <span class="tag">SQLite</span>
+            <span class="tag">RSS + JSON API</span>
+            <span class="tag">进行中</span>
+          </div>
+        </div>
+      </article>
+
       <!-- ---- Job Hunting Assistant ---- -->
       <article class="card reveal">
         <div class="card__media">
@@ -169,7 +196,7 @@
   <div class="wrap">
     <div class="section-head">
       <h2>构思中的项目</h2>
-      <p class="lede">已经完成 scope、尚未动工的项目 —— 每个页面都有大纲、待解问题和里程碑，并带有创建/更新时间戳。它们会经常变动；大纲是计划，不是承诺。</p>
+      <p class="lede">已经完成 scope、尚未动工的项目 —— 每个页面都有大纲、待解问题和里程碑，并带有创建/更新时间戳。它们会经常变动；大纲是计划，不是承诺。一旦某个项目开工，就会上移到「独立项目」。</p>
     </div>
 
     <div class="grid">
@@ -215,17 +242,6 @@
           <h3 class="card__title"><a class="card__link" href="projects/planned-news-chatroom.html">把新闻做成聊天室：事实与观点分离</a></h3>
           <p class="card__desc">一条 LLM pipeline，把各家媒体报道中的事实陈述与立场表述分开，再把每个事件呈现为一个聊天室 —— 事实是房间标题，媒体是发言者，读者只旁观。</p>
           <div class="tags"><span class="tag tag--planned">规划中</span><span class="tag">事实 / 观点分离</span><span class="tag">事件聚类</span><span class="tag">评估集</span></div>
-        </div>
-      </article>
-
-      <!-- ---- Planned 05 ---- -->
-      <article class="card card--planned reveal">
-        <div class="card__media"><div class="card__placeholder">05 · 规划中</div></div>
-        <div class="card__body">
-          <p class="card__meta"><span class="status status--recorded">已记录</span> · 创建于 <time datetime="2026-09-12">2026-09-12</time> · 更新于 <time datetime="2026-09-12" data-updated>2026-09-12</time></p>
-          <h3 class="card__title"><a class="card__link" href="projects/planned-daily-digest.html">个性化每日新闻摘要</a></h3>
-          <p class="card__desc">每天早上从免费来源 —— GitHub Trending、AI 实验室的 release notes、软件发布 —— 汇成一页：先 dedup，再按可编辑的兴趣画像排序，只对排名靠前的条目做摘要。一个周末规模的项目，与想法 04 共用抓取层。</p>
-          <div class="tags"><span class="tag tag--planned">规划中</span><span class="tag">RSS + 抓取</span><span class="tag">排序</span><span class="tag">定时任务</span></div>
         </div>
       </article>
 

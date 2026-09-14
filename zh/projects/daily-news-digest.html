@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-news：按我的兴趣给全网排序的个人每日摘要 — 曹一明</title>
+<meta name="description" content="一个定时任务：抓取 AI、硬件和游戏类信息源，丢掉已经见过的内容，把剩下的按兴趣画像排序，每天早上渲染成一页 Markdown。进行中：5 个 phase 中的 phase 0–2 已用 Claude Code 构建完成；dedupe 逻辑在页面上实时运行。">
+<link rel="stylesheet" href="../../assets/css/base.css">
+<link rel="stylesheet" href="../../assets/css/project.css">
+<link rel="alternate" hreflang="en" href="../../projects/daily-news-digest.html">
+<script defer src="../../assets/js/site.js"></script>
+<script defer src="../../assets/js/digest-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="../index.html"><span class="brand__mark" aria-hidden="true"></span>曹一明</a>
+    <nav class="nav">
+      <a href="../index.html#work" aria-current="page">作品</a>
+      <a href="../index.html#about">关于</a>
+      <a href="mailto:caoyimingeric@gmail.com">联系</a>
+      <a class="lang-switch" data-lang-toggle="en" href="../../projects/daily-news-digest.html" title="Switch to English" aria-label="切换语言"><span class="lang-switch__opt" lang="en">EN</span><span class="lang-switch__opt is-on">中文</span></a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换配色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <a class="case-hero__back" href="../index.html#work">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      全部作品
+    </a>
+    <p class="eyebrow">进行中 · Python · SQLite · RSS + JSON API · 定时任务</p>
+    <h1>AI-news：按我的兴趣给全网排序的个人每日摘要</h1>
+    <p class="lede">
+      一个定时任务：从一份固定的 AI、硬件和游戏类信息源列表抓取内容，丢掉所有之前见过的条目，
+      把剩下的按兴趣画像排序，对排名靠前的一段做摘要，然后写出一页 Markdown——我每天早上读它，
+      而不是去刷 Hacker News。没有 app，没有服务器，没有 UI——这一页就是产品本身。
+    </p>
+    <div class="callout" style="margin-top:1.5rem;max-width:72ch">
+      <p><strong>状态：进行中——5 个 phase 中的 phase 0、1、2 已合并。</strong>骨架、端到端跑通的第一个信息源，
+      以及带去重的 SQLite store。下一步是 phase 3：再接四个信息源、一个带按主题配额的规则 ranker，以及渲染出来的页面。开始于
+      <time datetime="2026-09-12">2026-09-12</time> · 最近更新于 <time datetime="2026-09-14" data-updated>2026-09-14</time>。</p>
+    </div>
+    <dl class="case-meta">
+      <div><dt>类型</dt><dd>独立项目，进行中</dd></div>
+      <div><dt>开始于</dt><dd><time datetime="2026-09-12">2026 年 9 月 12 日</time></dd></div>
+      <div><dt>更新于</dt><dd><time datetime="2026-09-14" data-updated>2026 年 9 月 14 日</time></dd></div>
+      <div><dt>团队</dt><dd>独立完成，与 Claude Code 协作</dd></div>
+      <div><dt>技术栈</dt><dd>Python 3.12 · uv · httpx · pydantic v2 · feedparser · selectolax · jinja2 · stdlib sqlite3 · pytest · ruff</dd></div>
+      <div><dt>代码</dt><dd><a href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">github.com/YimingCao-Eric/AI-news ↗</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ DEDUPE LAB ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal" data-dedupe-lab>
+      <div class="lab__head">
+        <h2 class="lab__title">是同一条新闻吗？</h2>
+        <p class="lab__note">
+          来自 <code>src/digest/store.py</code> 的 <code>canonical_url</code>、<code>url_hash</code> 和
+          <code>titles_are_near_duplicates</code>，被原样移植成了 JavaScript——同一份跟踪参数列表、同样的 34 个
+          stopword、阈值 0.85 的 Dice coefficient，以及同一个数字守卫。改动任意一侧，观察判定结果。
+        </p>
+      </div>
+      <div class="dd-grid">
+        <div class="dd-col">
+          <h4>两家媒体的两条标题</h4>
+          <div class="gmm-field">
+            <label for="dd-preset-title">预设</label>
+            <select id="dd-preset-title" data-dd-preset-title></select>
+          </div>
+          <div class="gmm-field"><label for="dd-left">标题 A</label><input id="dd-left" type="text" data-dd-left autocomplete="off"></div>
+          <div class="gmm-field"><label for="dd-right">标题 B</label><input id="dd-right" type="text" data-dd-right autocomplete="off"></div>
+          <table class="proj-table"><tbody data-dd-title-out></tbody></table>
+          <p class="dd-verdict" data-dd-verdict></p>
+        </div>
+        <div class="dd-col">
+          <h4>指向同一页面的两个链接</h4>
+          <div class="gmm-field">
+            <label for="dd-preset-url">预设</label>
+            <select id="dd-preset-url" data-dd-preset-url></select>
+          </div>
+          <div class="gmm-field"><label for="dd-url-left">URL A</label><input id="dd-url-left" type="text" data-dd-url-left autocomplete="off" spellcheck="false"></div>
+          <div class="gmm-field"><label for="dd-url-right">URL B</label><input id="dd-url-right" type="text" data-dd-url-right autocomplete="off" spellcheck="false"></div>
+          <table class="proj-table"><tbody data-dd-url-out></tbody></table>
+          <p class="dd-verdict" data-dd-url-verdict></p>
+        </div>
+      </div>
+    </div>
+    <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
+      三个值得一试的操作。第一个标题预设的 Dice 比值是 0.89——妥妥的重复——却仍被判为不重复，因为
+      <em>4.5</em> 和 <em>4.6</em> 是两个不同的数字 token；这个守卫就是"一条新闻"与"两次模型发布"之间的分界线。
+      第五个预设是已知的漏网之鱼："releases"和"released"是不同的 token，所以一条调换了语序的标题只得到 0.80，
+      就这样溜了过去——要修它需要 stemming（词干提取），而 v1 刻意不做。在 URL 一侧，第二个预设说明了为什么
+      <code>source</code> <em>不在</em>剥除列表里：<code>?source=trending</code> 和 <code>?source=likes</code>
+      是 Hugging Face 上两个不同的列表页，若剥掉这个参数，两者就会被合并——没有新行、没有日志、也没有任何办法察觉。
+    </p>
+  </div>
+</section>
+
+<!-- ============ WHAT IT IS ============ -->
+<section class="section--tight" id="what">
+  <div class="wrap">
+    <div class="prose">
+      <h2>它是什么</h2>
+      <p>
+        一个带四个子命令的命令行程序——<code>digest fetch</code>、<code>rank</code>、<code>render</code>、
+        <code>run</code>——刻意分开，好让排序逻辑可以反复迭代而无需重新抓取。它读取两个 YAML 文件：
+        <code>sources.yaml</code>（拉取哪些 feed、各自的权重，以及每个信息源的 <code>fetch_limit</code>）和
+        <code>interests.yaml</code>（带关键词的主题、按主题的配额、反主题、硬性规则）。它学到的一切都落在一个
+        SQLite 文件里；输出是 <code>digests/YYYY-MM-DD.md</code>。起步只有五个信息源——Hacker News、GitHub Trending、
+        Hugging Face daily papers、一组 AI 实验室博客、arXiv cs.AI——以及一条硬规矩：pipeline 端到端跑通之前，
+        绝不加第六个。
+      </p>
+      <p>
+        pipeline 分七个 stage，能写成纯函数的都写成纯函数，每个 stage 都在自己的模块里，配一行契约：
+      </p>
+      <pre><code>fetch → normalise → store → rank → summarise → render → deliver
+
+adapters/    only fetch and map to Item. No scoring, no DB, no LLM.
+store.py     only reads/writes SQLite. No business logic.
+rank.py      pure: (items, profile) -> scored items. No I/O.
+summarise.py the only module allowed to call an LLM.
+render.py    only turns selected items into text via a jinja2 template.</code></pre>
+      <p>
+        这套分层作为硬性约束写进了仓库的 <code>CLAUDE.md</code>——不用 web 框架、不用 ORM、不用 Docker、不用队列、
+        不经询问不加新依赖、测试里不许访问网络——正是为了让构建 phase 4 的 agent 无法重新翻案 phase 0 已经定下的事。
+      </p>
+    </div>
+
+    <div class="stats reveal">
+      <div class="stat"><b>3 / 5</b><span>个 phase 已合并——骨架、第一个信息源、store 与 dedupe——以三个经过评审的 pull request 的形式</span></div>
+      <div class="stat"><b>99</b><span>个测试，全部离线：一个 session 级的 socket 守卫会让任何网络调用直接判为测试失败</span></div>
+      <div class="stat"><b>30 → 0</b><span>第二次连续 fetch 的新增行数——dedupe 的验收检查</span></div>
+      <div class="stat"><b>0.85</b><span>近重复标题的 Dice 阈值，上面再叠一层数字 token 守卫</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PHASES ============ -->
+<section class="section--tight" id="phases">
+  <div class="wrap">
+    <div class="prose">
+      <h2>进展到哪了</h2>
+      <p>
+        构建计划分 phase 推进，使每一步都独立有用、也可以独立放弃。各个 phase 交付了什么，以及合并前必须通过的验收检查：
+      </p>
+      <div class="table-wrap"><table class="data-table data-table--left">
+        <thead><tr><th>Phase</th><th>内容</th><th>完成标准</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>骨架：<code>uv</code> 项目、pydantic 的 <code>Item</code> / <code>SourceHealth</code>、出错就大声失败的配置加载、四子命令 CLI</td><td><code>uv run digest --help</code> 列出四个子命令；23 个测试</td><td><strong>已合并</strong> 9 月 12 日</td></tr>
+          <tr><td>1</td><td>Hacker News 端到端：adapter 契约、Algolia adapter、注册表、并发抓取且单个信息源失败绝不中止整次运行</td><td>30 条带可用链接的新闻；关掉 wifi 后 52 个测试通过</td><td><strong>已合并</strong> 9 月 13 日</td></tr>
+          <tr><td>2</td><td>SQLite store：canonical URL、<code>INSERT OR IGNORE</code>、近重复检测、真正的失败计数器、把"新"定义为从未被渲染过</td><td>第二次 fetch 报告 <code>new 0</code>；漏跑一天的测试通过；99 个测试</td><td><strong>已合并</strong> 9 月 13 日</td></tr>
+          <tr><td>3</td><td>同一接口之下再加四个 adapter、带按主题配额的规则排序、带信息源健康页脚的 Markdown 渲染——然后先读四个早上，再写任何 LLM 代码</td><td>一条命令产出一个我愿意读的带日期文件</td><td>下一步</td></tr>
+          <tr><td>4</td><td>对规则筛选的幸存者做一次批量 LLM 重排（只看标题，绝不看正文）、为前八条生成结构化摘要、每次运行记录成本、API 挂掉时优雅降级</td><td>每次运行不到一美分；未设 key 时仍能工作</td><td>计划中</td></tr>
+          <tr><td>5</td><td>定时调度（GitHub Action，温哥华时间 07:00，SQLite 提交回仓库）和一个投递渠道</td><td>连续七天无人值守运行</td><td>计划中</td></tr>
+        </tbody>
+      </table></div>
+      <p>
+        整个项目的完成定义，是五个条件连续七天成立——无人值守运行、每天三分钟以内且花费不超过 0.10 加元、
+        某个信息源挂掉只降级一个板块而绝不拖垮整页、"这条怎么会在这里"的条目少于三条——外加一条比其他都重要的：
+        我真的会在打开 Hacker News 之前先读它。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DECISIONS ============ -->
+<section class="section--tight" id="decisions">
+  <div class="wrap">
+    <div class="prose">
+      <h2>值得辩护的决定</h2>
+      <p>
+        三个 phase 的代码并不多——连测试大约 2,600 行——但其中大多数行之所以存在，都是因为某个具体的决定，
+        而每个 pull request 都记录了评审者应该追问的那些决定。塑造了 store 的几个：
+      </p>
+      <h3>"新"意味着 <code>digest_date IS NULL</code>，而绝不是日期比较</h3>
+      <p>
+        最显而易见的查询——<code>first_seen_at</code> 落在今天的条目——错在两处。存储的时间戳是 UTC，而摘要的"一天"
+        是 America/Vancouver，所以当地 07:00 的一次运行对应 UTC 14:00，按日历日期比较会把同一个早上的条目劈到两个
+        UTC 日期里，天天如此。而且基于日期的查询会永久丢掉任何没跑成的那一天：笔记本休眠、Action 失败、周末出门。
+        取而代之，<code>digest_date</code> 一开始为 NULL，只有当条目被渲染进某期摘要时才盖章；漏跑一次之后自然会
+        自己补上。有一个测试专门跳过一天，并断言两天的条目都会回来。
+      </p>
+      <h3>Dice 而非 Jaccard——上面再叠一层数字守卫</h3>
+      <p>
+        在 0.85 的阈值下，Jaccard 对真实标题几乎够不到：七个 token 的标题多出一个词就已经贴在边界上，多两个词就
+        判为不同，于是这项检查看起来在工作，实际上几乎从不触发。Dice 让 0.85 保持有意义。但 Dice 单独使用有一类
+        误报，正好砸在这份摘要的题材上——<em>RTX 5090 Super</em> 与 <em>RTX 5080 Super</em> 得 0.875，两个只差一个
+        数字的模型版本或两篇 arXiv 论文也是如此。所以凡是含数字的 token 不一致的标题，无论比值多高，一律不算重复；
+        而且守卫用的是"token 里含有数字"而非 <code>str.isdigit()</code>，因为 <code>7B</code>、<code>v2</code> 和
+        <code>gpt-5</code> 恰恰是最要紧的 token，而它们没有一个是纯数字。一个名为
+        <code>test_the_numeric_guard_is_load_bearing</code> 的测试断言 5090/5080 和 4.5/4.6 这两对都得分高于阈值，
+        这样一旦删掉守卫，测试套件会准确说出坏在哪里，而不是悄无声息。
+      </p>
+      <h3>只剥除毫无歧义的跟踪参数</h3>
+      <p>
+        最初的 spec 把 <code>source</code> 和 <code>utm_*</code>、<code>fbclid</code>、<code>gclid</code> 一起剥掉。
+        这是错的：光秃秃的 <code>source</code> 是个普通的应用参数，<code>huggingface.co/models?source=trending</code>
+        和 <code>?source=likes</code> 是两个不同的列表页，却会得到完全相同的哈希。这种失败是不对称且不可见的——
+        dedupe 用的是 <code>INSERT OR IGNORE</code>，所以第二条会被直接丢弃，没有新行也没有日志——而误拆则不过是把
+        一条新闻显示两次。这种不对称——<em>一条新闻看到两次可以挽回，两条被悄悄合并则不能</em>——是这个项目里每一个
+        dedupe 决定背后的准则。
+      </p>
+      <h3>要么带时区，要么拒收</h3>
+      <p>
+        <code>Item</code> 模型会拒绝 naive datetime，而不是默认它是 UTC。feedparser 返回 naive 的结构体，HN API 返回
+        带 <code>Z</code> 的 ISO 字符串，arXiv 自带偏移量；默认当作 UTC 是一个数小时的误差，没人会注意到，直到 ranker
+        按时间新旧排序并把两者混在一起。store 在写入时转成 ISO 字符串，读出时解析回带时区的 datetime，并用一个
+        <code>+05:30</code> 的值做往返测试——HN adapter 则从整数 <code>created_at_i</code> 取时间戳，时区信息由结构
+        保证，而不依赖某个后缀。
+      </p>
+      <h3>两个上限，两个名字</h3>
+      <p>
+        <code>fetch_limit</code> 按信息源计，限制摄入；<code>quota</code> 按主题计，限制选取。给它们同一个名字会招来
+        "到底哪个生效"的 bug，所以有一个测试往 <code>sources.yaml</code> 里塞一个 <code>quota:</code> 键并断言它会
+        报错。摄入刻意放得宽——arXiv 50、HN 30——因为每条原始载荷都原封不动地存在 <code>raw_json</code> 里，这样当
+        第三周 ranker 改了之后，可以离线对三周的历史重跑一遍，而不是再等三周才知道改动是否有效。
+      </p>
+      <h3>48 小时窗口，而不是 24</h3>
+      <p>
+        24 小时的创建窗口会永久错过慢热的新闻：一条 30 小时前发布、今天早上才破 100 分的帖子，在两次运行中都不曾
+        落在窗口内。重新看到昨天的条目没有任何代价，URL 哈希一去重就没了。回看窗口和画像里的 <code>max_age_hours</code>
+        目前共享 48 这个值，并被注明是两件不同的事，必须保留各自独立变化的自由。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHAT THE WORK TURNED UP ============ -->
+<section class="section--tight" id="findings">
+  <div class="wrap">
+    <div class="prose">
+      <h2>做的过程中发现了什么</h2>
+      <p>
+        每个 phase 的 pull request 都有一个以此为题的小节，因为一个 phase 在它之前的 phase 里发现的 bug，是最值得记录的东西。
+      </p>
+      <p>
+        <strong><code>fetch</code> 一上线，就有一个测试开始访问网络。</strong>phase 0 的一个测试调用了
+        <code>main(["fetch"])</code>，它悄悄变成了一次对 Algolia 的真实 HTTP 调用——而且通过了，所以没有任何东西标记它。
+        修复是结构性的，而不是加一句断言：<code>tests/conftest.py</code> 安装了一个 session 级的 socket 守卫，任何测试都
+        无法选择退出。深挖它的过程中冒出两个细节。loopback 必须豁免，因为在 Windows 上 asyncio 事件循环用一对
+        <code>127.0.0.1</code> socket 搭建自己的 self-pipe，一刀切地抛异常会把它本该保护的测试一起干掉。而守卫的异常
+        派生自 <code>BaseException</code> 而非 <code>Exception</code>：复现这个回归时发现守卫装上后测试依然通过，因为
+        <code>fetch_all</code> 会捕获所有 <code>Exception</code> 以保证没有哪个信息源能中止运行——于是被拦下的连接
+        变成了一次记录在案的信息源失败，以及退出码 0。
+      </p>
+      <p>
+        <strong>同一个 catch 还吞掉了 Ctrl-C。</strong>追查上面的问题时暴露出 <code>fetch_all</code> 把
+        <code>KeyboardInterrupt</code>、<code>SystemExit</code> 和 <code>CancelledError</code> 都当成"这个信息源失败了"——
+        一次被打断的抓取会被记录成一个死掉的 feed，并在第二天早上的健康页脚里显示为信息源腐坏。现在非
+        <code>Exception</code> 的 <code>BaseException</code> 会被重新抛出：绝不中止的规则说的是信息源失败，不是操作者退出。
+      </p>
+      <p>
+        <strong>一个只等第一条非 Latin-1 标题出现就会崩溃的 bug。</strong>在 Windows 控制台上 <code>sys.stdout</code>
+        是 cp1252，所以打印一条 CJK 或 emoji 标题会抛出 <code>UnicodeEncodeError</code>，把一个本该在 07:00 无人值守运行
+        的任务整个打垮。已复现，通过把 stdout 重新配置为 UTF-8 修复，而且值得一提的是 GitHub Action 永远不会复现它——
+        所以本地运行是横在它和一次静默失败的早晨之间的唯一屏障。<code>CLAUDE.md</code> 现在对所有文件 I/O 明确要求
+        <code>encoding="utf-8"</code>，因为 phase 3 的 <code>open(path, "w")</code> 就是同一个 bug 换了个表面。
+      </p>
+      <p>
+        <strong>Algolia 对纯文本帖子会省略 <code>url</code> 字段——而不是发 <code>null</code>。</strong>
+        adapter 本来就会回退到 HN 的条目页，但第一版测试断言的是 <code>is None</code>，对着真实 fixture 就挂了。现在它被
+        一个参数化测试钉死在全部三种形态上（缺失、<code>null</code>、空字符串），将来从一种变成另一种也不会以崩溃的形式
+        传到定时任务里。
+      </p>
+      <p>
+        <strong>数字守卫让自己的六个测试挂了，而它是对的。</strong>fixture 里那一对是"…at CES 2027"与"…at CES"——
+        被标注为重复，但数字不同，所以守卫拒绝了它。错的是标题，不是规则。另外，WAL 模式的 SQLite 在进程被杀后会留下
+        <code>-wal</code> 和 <code>-shm</code> 伴生文件；直到某次运行被打断之前，它们都不在 <code>.gitignore</code> 里。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT'S MADE ============ -->
+<section class="section--tight" id="method">
+  <div class="wrap">
+    <div class="prose">
+      <h2>开发方法：一个 phase 一个 session</h2>
+      <p>
+        这个项目在写任何代码之前就有两份设计文档——一份构建计划（范围、每个端点都经手动验证的信息源目录、数据模型、
+        三个递进版本的排序设计、各个 phase），以及一份实施指南，里面写着每个 phase 要用的 prompt 原文。两者都在仓库的
+        <code>docs/</code> 下。这套方法承袭自 JHA 的经验：<strong>每个 phase 都是一个全新的 Claude Code session</strong>，
+        因此不会有任何漂移，而跨 session 的固定约束由 <code>CLAUDE.md</code> 承载，而不是靠对话记忆。
+      </p>
+      <p>
+        每个 phase 都走同一个循环。贴上 prompt；prompt 的结尾要求 agent 先给一份简短计划，并在动手之前回答一两个问题
+        （"说出一种 <code>canonical_url</code> 可能把两个真正不同的 URL 合并成一个的情况"——上文的 <code>source</code>
+        参数决定正是这样浮现的）。读计划、提出反对、说开始。当它说完成时，我亲自跑验收命令——关掉 wifi 跑测试、第二次
+        fetch 必须报告 <code>new 0</code>——因为这个项目全是 I/O，而 I/O 正是 agent 的自信最不可靠的地方。然后在一个
+        全新的 session 里跑一个评审 prompt，它比写代码的那个 session 审得更好，因为它不用为自己的选择辩护。每个 phase
+        一个 pull request，决定和发现都写进描述里。
+      </p>
+      <p>
+        我亲自把关而不委托出去的规则：不经询问不加新依赖（token 集合比值、CLI 和配置加载都是 agent 会伸手去拿
+        <code>rapidfuzz</code>、<code>typer</code> 或 <code>pydantic-settings</code> 来省二十行代码的地方）；测试不许联网；
+        adapter 保持"笨"；解析不了的抓取器要抛异常而不是返回空列表，因为空列表和"今天没新闻"无法区分，而这恰恰是
+        健康页脚抓不住的静默腐坏。
+      </p>
+      <p>
+        分工说得直白一点：计划、约束、phase 边界、验收检查和评审是我的；几乎全部代码是 Claude Code 依据它们写出来的。
+        上面的"决定"一节，如实记录了 agent 的第一版答案在哪里被改掉、以及为什么。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHERE IT'S THIN ============ -->
+<section class="section--tight" id="thin">
+  <div class="wrap">
+    <div class="prose">
+      <h2>不足之处</h2>
+      <div class="callout callout--warn">
+        <p>
+          <strong>它还产不出摘要。</strong>五个 phase 完成三个，意味着数据库里有一个信息源，外加一份未渲染条目的纯文本
+          列表。排序、渲染和定时调度才是决定它究竟能取代 Hacker News、还是沦为又一个我不读的 feed 的部分；计划对这个
+          风险的回答是：在写任何 LLM 代码之前，先读四个早上的规则排序输出。
+        </p>
+        <p>
+          <strong>近重复检测有一个已知的漏网之鱼。</strong>屈折变体是不同的 token，所以一条调换语序的标题——
+          "Anthropic releases X"与"X released by Anthropic"——只得 0.80，会被当成两条新闻放过。stemming 能修它，
+          但不在 v1 范围内；这个取舍记录在阈值旁边。
+        </p>
+        <p>
+          <strong>AI 博客合集的新鲜度尚未验证。</strong>编制信息源列表时，Anthropic 的镜像 feed 读出来已经过期两个月。
+          它保持 <code>enabled: false</code>，并在 <code>sources.yaml</code> 里加了标记指明备选方案；核查它是 phase 3a
+          之前的门槛——给一个悄悄什么都不送的 feed 上一个 adapter，正是健康页脚存在的目的所要暴露的那种失败，而避免它
+          比检测它便宜。
+        </p>
+        <p>
+          <strong>从 GitHub Action 提交一个 WAL 模式的 SQLite 文件</strong>——phase 5 的计划——需要在 commit 步骤之前先执行
+          <code>PRAGMA wal_checkpoint(TRUNCATE)</code>，否则提交的文件可能恰好缺少这次运行刚写下的那些事务。已记下留给
+          phase 5，尚未处理。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDITS ============ -->
+<section class="section--tight" id="credits">
+  <div class="wrap">
+    <div class="prose">
+      <h2>致谢与分工</h2>
+      <div class="credits">
+        <h3>一个人的项目，与 agent 协作完成</h3>
+        <p>
+          由曹一明自 2026 年 9 月起设计、主导并评审，作为他本人每天早上使用的工具。用 Claude Code 实现，一个 phase
+          一个 session，依据一份书面计划和一份记录固定约束的 <code>CLAUDE.md</code>；分工已在上文说明。
+        </p>
+        <p>
+          基于 httpx、feedparser、selectolax、pydantic、jinja2、pyyaml、uv、pytest 和 ruff 构建，并使用 Hacker News
+          的 Algolia API。本页的 dedupe 图示由曹一明在 phase 2 合并后根据 <code>store.py</code> 编写。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> 曹一明</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="mailto:caoyimingeric@gmail.com">邮箱</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

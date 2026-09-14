@@ -90,3 +90,10 @@ When you revise an outline, change the `data-updated` `<time>` (both the `dateti
 the text) on the page and on its home-page card — in both languages. The `created` stamp never
 changes. Status words on the card (`Next up` / `Parked` / `Recorded`) are plain text in the
 `.status` span.
+
+When a planned project starts, it graduates: its card moves from `#planned` to the top of
+`#work` (status `Ongoing · phase N of M`), the page is rewritten as a case study under a new
+slug (e.g. `projects/daily-news-digest.html` with its figure in `assets/js/digest-lab.js`), and
+the old `projects/planned-<slug>.html` becomes a one-line `<meta http-equiv="refresh">` redirect
+so links that were already shared keep working. Keep bumping the `data-updated` stamp on the
+card and the page hero as phases land.

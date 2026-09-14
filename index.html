@@ -13,6 +13,7 @@
 <script defer src="assets/js/proto-lab.js"></script>
 <script defer src="assets/js/ecom-lab.js"></script>
 <script defer src="assets/js/jha-lab.js"></script>
+<script defer src="assets/js/digest-lab.js"></script>
 </head>
 <body>
 
@@ -115,6 +116,33 @@
 
     <div class="grid">
 
+      <!-- ---- AI-news daily digest ---- -->
+      <article class="card reveal">
+        <div class="card__media">
+          <canvas data-digest-strip aria-label="A seven-stage pipeline — fetch, normalise, store, rank, summarise, render, deliver — with the first three stages built"></canvas>
+        </div>
+        <div class="card__body">
+          <p class="card__meta"><span class="status status--next-up">Ongoing · phase 3 of 5</span> · started <time datetime="2026-09-12">2026-09-12</time> · updated <time datetime="2026-09-14" data-updated>2026-09-14</time> · <a class="card__gh" href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">GitHub ↗</a></p>
+          <h3 class="card__title">
+            <a class="card__link" href="projects/daily-news-digest.html">AI-news: a personal daily digest that ranks the web against my interests</a>
+          </h3>
+          <p class="card__desc">
+            One scheduled job that fetches AI, hardware and games sources, drops what it has seen,
+            ranks the rest against an interest profile and writes one Markdown page a morning.
+            Three of five phases merged — skeleton, first source, SQLite store with URL
+            canonicalisation and near-duplicate detection — each as a reviewed pull request
+            built one Claude Code session at a time. The dedupe logic runs live on the page.
+          </p>
+          <div class="tags">
+            <span class="tag tag--accent">Interactive</span>
+            <span class="tag">Python · uv</span>
+            <span class="tag">SQLite</span>
+            <span class="tag">RSS + JSON APIs</span>
+            <span class="tag">In progress</span>
+          </div>
+        </div>
+      </article>
+
       <!-- ---- Job Hunting Assistant ---- -->
       <article class="card reveal">
         <div class="card__media">
@@ -176,7 +204,7 @@
   <div class="wrap">
     <div class="section-head">
       <h2>On the drawing board</h2>
-      <p class="lede">Projects I've scoped but not started — each page holds the outline, the open questions and the milestones, with a created/updated stamp. These change often; the outlines are the plan, not a promise.</p>
+      <p class="lede">Projects I've scoped but not started — each page holds the outline, the open questions and the milestones, with a created/updated stamp. These change often; the outlines are the plan, not a promise. When one starts, it moves up to Independent work.</p>
     </div>
 
     <div class="grid">
@@ -222,17 +250,6 @@
           <h3 class="card__title"><a class="card__link" href="projects/planned-news-chatroom.html">News as a chat room: facts vs. opinions</a></h3>
           <p class="card__desc">An LLM pipeline that separates factual claims from framing across outlets and renders each event as a chat room — the fact is the room title, outlets are the speakers, the reader only observes.</p>
           <div class="tags"><span class="tag tag--planned">Planned</span><span class="tag">Fact / opinion separation</span><span class="tag">Event clustering</span><span class="tag">Eval set</span></div>
-        </div>
-      </article>
-
-      <!-- ---- Planned 05 ---- -->
-      <article class="card card--planned reveal">
-        <div class="card__media"><div class="card__placeholder">05 · planned</div></div>
-        <div class="card__body">
-          <p class="card__meta"><span class="status status--recorded">Recorded</span> · created <time datetime="2026-09-12">2026-09-12</time> · updated <time datetime="2026-09-12" data-updated>2026-09-12</time></p>
-          <h3 class="card__title"><a class="card__link" href="projects/planned-daily-digest.html">Personalized daily news digest</a></h3>
-          <p class="card__desc">One page each morning from free sources — GitHub Trending, AI-lab release notes, software releases — deduplicated, ranked against an editable interest profile, and summarized only for the top items. A weekend-sized project that shares its fetch layer with idea 04.</p>
-          <div class="tags"><span class="tag tag--planned">Planned</span><span class="tag">RSS + scraping</span><span class="tag">Ranking</span><span class="tag">Scheduled job</span></div>
         </div>
       </article>
 
