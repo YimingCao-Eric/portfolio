@@ -119,19 +119,20 @@
       <!-- ---- AI-news daily digest ---- -->
       <article class="card reveal">
         <div class="card__media">
-          <canvas data-digest-strip aria-label="A seven-stage pipeline — fetch, normalise, store, rank, summarise, render, deliver — with the first three stages built"></canvas>
+          <canvas data-digest-strip aria-label="A seven-stage pipeline — fetch, normalise, store, rank, summarise, render, deliver — with the first three stages built and all five sources live"></canvas>
         </div>
         <div class="card__body">
-          <p class="card__meta"><span class="status status--next-up">Ongoing · phase 3 of 5</span> · started <time datetime="2026-09-12">2026-09-12</time> · updated <time datetime="2026-09-14" data-updated>2026-09-14</time> · <a class="card__gh" href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">GitHub ↗</a></p>
+          <p class="card__meta"><span class="status status--next-up">Ongoing · phase 3b of 5</span> · started <time datetime="2026-09-12">2026-09-12</time> · updated <time datetime="2026-09-15" data-updated>2026-09-15</time> · <a class="card__gh" href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">GitHub ↗</a></p>
           <h3 class="card__title">
             <a class="card__link" href="projects/daily-news-digest.html">AI-news: a personal daily digest that ranks the web against my interests</a>
           </h3>
           <p class="card__desc">
             One scheduled job that fetches AI, hardware and games sources, drops what it has seen,
             ranks the rest against an interest profile and writes one Markdown page a morning.
-            Three of five phases merged — skeleton, first source, SQLite store with URL
-            canonicalisation and near-duplicate detection — each as a reviewed pull request
-            built one Claude Code session at a time. The dedupe logic runs live on the page.
+            All five sources live behind one adapter contract, a SQLite store with URL
+            canonicalisation and near-duplicate detection, and a 54-finding interphase review
+            absorbed without moving a row of the pipeline snapshot — each step a reviewed pull
+            request built one Claude Code session at a time. The dedupe logic runs live on the page.
           </p>
           <div class="tags">
             <span class="tag tag--accent">Interactive</span>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI-news：按我的兴趣给全网排序的个人每日摘要 — 曹一明</title>
-<meta name="description" content="一个定时任务：抓取 AI、硬件和游戏类信息源，丢掉已经见过的内容，把剩下的按兴趣画像排序，每天早上渲染成一页 Markdown。进行中：5 个 phase 中的 phase 0–2 已用 Claude Code 构建完成；dedupe 逻辑在页面上实时运行。">
+<meta name="description" content="一个定时任务：抓取 AI、硬件和游戏类信息源，丢掉已经见过的内容，把剩下的按兴趣画像排序，每天早上渲染成一页 Markdown。进行中：五个信息源全部上线，一次 54 条发现的代码 review 已消化，下一步是排序；用 Claude Code 构建，dedupe 逻辑在页面上实时运行。">
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/project.css">
 <link rel="alternate" hreflang="en" href="../../projects/daily-news-digest.html">
@@ -46,14 +46,15 @@
       而不是去刷 Hacker News。没有 app，没有服务器，没有 UI——这一页就是产品本身。
     </p>
     <div class="callout" style="margin-top:1.5rem;max-width:72ch">
-      <p><strong>状态：进行中——5 个 phase 中的 phase 0、1、2 已合并。</strong>骨架、端到端跑通的第一个信息源，
-      以及带去重的 SQLite store。下一步是 phase 3：再接四个信息源、一个带按主题配额的规则 ranker，以及渲染出来的页面。开始于
-      <time datetime="2026-09-12">2026-09-12</time> · 最近更新于 <time datetime="2026-09-14" data-updated>2026-09-14</time>。</p>
+      <p><strong>状态：进行中——5 个 phase 中的 phase 0 到 3a 已合并，外加一次完整的代码 review。</strong>骨架、端到端跑通的全部五个信息源、
+      带去重的 SQLite store，以及一次阶段间 review：提出 54 条发现、修掉其中 43 条，而 pipeline snapshot 一行未动。下一步是 phase 3b：带按主题配额的规则
+      ranker，然后是渲染出来的页面。开始于
+      <time datetime="2026-09-12">2026-09-12</time> · 最近更新于 <time datetime="2026-09-15" data-updated>2026-09-15</time>。</p>
     </div>
     <dl class="case-meta">
       <div><dt>类型</dt><dd>独立项目，进行中</dd></div>
       <div><dt>开始于</dt><dd><time datetime="2026-09-12">2026 年 9 月 12 日</time></dd></div>
-      <div><dt>更新于</dt><dd><time datetime="2026-09-14" data-updated>2026 年 9 月 14 日</time></dd></div>
+      <div><dt>更新于</dt><dd><time datetime="2026-09-15" data-updated>2026 年 9 月 15 日</time></dd></div>
       <div><dt>团队</dt><dd>独立完成，与 Claude Code 协作</dd></div>
       <div><dt>技术栈</dt><dd>Python 3.12 · uv · httpx · pydantic v2 · feedparser · selectolax · jinja2 · stdlib sqlite3 · pytest · ruff</dd></div>
       <div><dt>代码</dt><dd><a href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">github.com/YimingCao-Eric/AI-news ↗</a></dd></div>
@@ -105,6 +106,8 @@
       就这样溜了过去——要修它需要 stemming（词干提取），而 v1 刻意不做。在 URL 一侧，第二个预设说明了为什么
       <code>source</code> <em>不在</em>剥除列表里：<code>?source=trending</code> 和 <code>?source=likes</code>
       是 Hugging Face 上两个不同的列表页，若剥掉这个参数，两者就会被合并——没有新行、没有日志、也没有任何办法察觉。
+      两侧各自的最后一个预设，是五个信息源跑起来之后线上数据库抓到的第一个跨信息源重复：同一篇论文分别出现在
+      Hugging Face 和 arXiv 上，两个 URL 哈希不同，一条标题完全一致。
     </p>
   </div>
 </section>
@@ -119,9 +122,9 @@
         <code>run</code>——刻意分开，好让排序逻辑可以反复迭代而无需重新抓取。它读取两个 YAML 文件：
         <code>sources.yaml</code>（拉取哪些 feed、各自的权重，以及每个信息源的 <code>fetch_limit</code>）和
         <code>interests.yaml</code>（带关键词的主题、按主题的配额、反主题、硬性规则）。它学到的一切都落在一个
-        SQLite 文件里；输出是 <code>digests/YYYY-MM-DD.md</code>。起步只有五个信息源——Hacker News、GitHub Trending、
-        Hugging Face daily papers、一组 AI 实验室博客、arXiv cs.AI——以及一条硬规矩：pipeline 端到端跑通之前，
-        绝不加第六个。
+        SQLite 文件里；输出是 <code>digests/YYYY-MM-DD.md</code>。五个信息源，全部上线——Hacker News、GitHub Trending、
+        Hugging Face daily papers、一组六个 AI 实验室博客 feed、arXiv cs.AI / cs.CL / cs.MA——以及一条硬规矩：pipeline
+        端到端跑通之前，绝不加第六个。
       </p>
       <p>
         pipeline 分七个 stage，能写成纯函数的都写成纯函数，每个 stage 都在自己的模块里，配一行契约：
@@ -140,10 +143,10 @@ render.py    only turns selected items into text via a jinja2 template.</code></
     </div>
 
     <div class="stats reveal">
-      <div class="stat"><b>3 / 5</b><span>个 phase 已合并——骨架、第一个信息源、store 与 dedupe——以三个经过评审的 pull request 的形式</span></div>
-      <div class="stat"><b>99</b><span>个测试，全部离线：一个 session 级的 socket 守卫会让任何网络调用直接判为测试失败</span></div>
-      <div class="stat"><b>30 → 0</b><span>第二次连续 fetch 的新增行数——dedupe 的验收检查</span></div>
-      <div class="stat"><b>0.85</b><span>近重复标题的 Dice 阈值，上面再叠一层数字 token 守卫</span></div>
+      <div class="stat"><b>456</b><span>条每次 fetch 的条目，来自五个已上线的信息源——hn 30、gh_trending 24、hf_papers 50、ai_blogs 112、arxiv 240——第二次运行 <code>new 0</code></span></div>
+      <div class="stat"><b>242</b><span>个测试，全部离线：一个 session 级的 socket 守卫会让任何网络调用直接判为测试失败</span></div>
+      <div class="stat"><b>54</b><span>条阶段间 review 的发现——43 条已修复，10 条依据书面触发条件推迟，1 条不予修复</span></div>
+      <div class="stat"><b>425</b><span>行 pipeline snapshot，在七个重构主题之后仍逐字节一致</span></div>
     </div>
   </div>
 </section>
@@ -162,7 +165,10 @@ render.py    only turns selected items into text via a jinja2 template.</code></
           <tr><td>0</td><td>骨架：<code>uv</code> 项目、pydantic 的 <code>Item</code> / <code>SourceHealth</code>、出错就大声失败的配置加载、四子命令 CLI</td><td><code>uv run digest --help</code> 列出四个子命令；23 个测试</td><td><strong>已合并</strong> 9 月 12 日</td></tr>
           <tr><td>1</td><td>Hacker News 端到端：adapter 契约、Algolia adapter、注册表、并发抓取且单个信息源失败绝不中止整次运行</td><td>30 条带可用链接的新闻；关掉 wifi 后 52 个测试通过</td><td><strong>已合并</strong> 9 月 13 日</td></tr>
           <tr><td>2</td><td>SQLite store：canonical URL、<code>INSERT OR IGNORE</code>、近重复检测、真正的失败计数器、把"新"定义为从未被渲染过</td><td>第二次 fetch 报告 <code>new 0</code>；漏跑一天的测试通过；99 个测试</td><td><strong>已合并</strong> 9 月 13 日</td></tr>
-          <tr><td>3</td><td>同一接口之下再加四个 adapter、带按主题配额的规则排序、带信息源健康页脚的 Markdown 渲染——然后先读四个早上，再写任何 LLM 代码</td><td>一条命令产出一个我愿意读的带日期文件</td><td>下一步</td></tr>
+          <tr><td>3a</td><td>同一接口之下再加四个 adapter——Hugging Face papers、arXiv、AI 博客合集、GitHub Trending——每个都在动笔之前先对着线上端点探测，并带有逐 feed 的陈旧度诊断</td><td>五个信息源全部有报告；第二次运行 <code>new 0</code>；171 个测试离线通过</td><td><strong>已合并</strong> 9 月 14 日</td></tr>
+          <tr><td>review</td><td>阶段间 review R0–R3：以一份 pipeline snapshot 作为契约、六个评审维度、54 条发现分流为修复 / 推迟 / 不予修复、七个修复主题一个 session 一个</td><td>每次 commit 时 snapshot 均未变化；242 个测试；README 里每条命令都真的能跑</td><td><strong>已合并</strong> 9 月 14 日</td></tr>
+          <tr><td>3b</td><td>规则排序：用词边界关键词分配主题、每条附带打分理由、按信息源归一化的互动热度、按主题配额作为上限；为重复项定一个明确的跨信息源优先级</td><td><code>digest rank</code> 打印出带分数和理由的选取结果；配额测试通过</td><td>下一步</td></tr>
+          <tr><td>3c</td><td>带信息源健康页脚的 Markdown 渲染、<code>digest run</code> 端到端接通——然后先读四个早上，再写任何 LLM 代码</td><td>一条命令产出一个我愿意读的带日期文件</td><td>计划中</td></tr>
           <tr><td>4</td><td>对规则筛选的幸存者做一次批量 LLM 重排（只看标题，绝不看正文）、为前八条生成结构化摘要、每次运行记录成本、API 挂掉时优雅降级</td><td>每次运行不到一美分；未设 key 时仍能工作</td><td>计划中</td></tr>
           <tr><td>5</td><td>定时调度（GitHub Action，温哥华时间 07:00，SQLite 提交回仓库）和一个投递渠道</td><td>连续七天无人值守运行</td><td>计划中</td></tr>
         </tbody>
@@ -176,14 +182,153 @@ render.py    only turns selected items into text via a jinja2 template.</code></
   </div>
 </section>
 
+<!-- ============ PHASE 3A ============ -->
+<section class="section--tight" id="sources">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Phase 3a：先探测，再动手</h2>
+      <p>
+        剩下的四个 adapter 是凭对各家 API 的记忆写出规格的，所以这个 phase 从对每个端点逐一探测开始，然后才对着它写代码——
+        凭空捏造不存在的隐患，代价和漏掉真实隐患一样大。brief 里的三条假设没能撑过探测。arXiv 的标题本来就是干净的：
+        270 条 cs.AI 条目里有 0 条带着 prompt 所警告的 <code>arXiv:</code> 前缀或内嵌换行，所以 normaliser 保留下来
+        作为对旧格式的防护，并用一个测试钉住这次测量，好让注释永远不会漂移成宣称一个并不存在的隐患。arXiv 的量是
+        估计的五倍——仅 cs.AI 就有 270 条，三个类别共 401 条。而且 38% 的 arXiv 条目是<em>修订版</em>：一条
+        <code>replace</code> 是某篇可能已经几个月前的论文的 v2，进入摘要时却像刚发布一样，所以 adapter 只保留
+        <code>new</code> 和 <code>cross</code> 两种 announcement，并用一个测试断言修订版占比超过 25%，这样一旦删掉
+        这个过滤器，测试会说明坏在哪里，而不是悄无声息。
+      </p>
+      <h3>六个 feed 里有三个已经死了，却仍返回 200</h3>
+      <div class="table-wrap"><table class="data-table data-table--left">
+        <thead><tr><th>Feed</th><th>最新条目</th><th>探测时的年龄</th></tr></thead>
+        <tbody>
+          <tr><td>openai_news</td><td>2026-09-14</td><td>0 天</td></tr>
+          <tr><td>deepmind</td><td>2026-09-08</td><td>6 天</td></tr>
+          <tr><td>anthropic_news</td><td>2026-09-01</td><td>13 天</td></tr>
+          <tr><td>anthropic_engineering</td><td>2026-05-25</td><td>112 天——陈旧</td></tr>
+          <tr><td>meta_ai</td><td>2026-07-27</td><td>49 天——陈旧</td></tr>
+          <tr><td>mistral</td><td>2026-05-22</td><td>115 天——陈旧</td></tr>
+        </tbody>
+      </table></div>
+      <p>
+        模式比数字更要紧：两个<em>官方</em> feed 都是新鲜的，四个<em>镜像</em> feed 里有三个已经陈旧，而且全都是
+        格式良好的 XML。一个逐 feed 不可靠的镜像是最糟糕的形态，因为一个健康的 feed 对其他 feed 的状况毫无说明。
+        核查过的每一个替代方案都返回 404，所以镜像保留；三个死掉的 feed 换成了 <code>claude</code>、
+        <code>anthropic_research</code> 和 <code>cursor</code>——都新鲜，并且偏向 AI coding agent，也就是画像里权重
+        最高的主题——被撤下的那几个则以注释的形式留在 <code>sources.yaml</code> 里，附上实测的年龄，这样"Mistral
+        怎么不在？"就有了书面答案。随后一个 commit 把每个 feed 的陈旧阈值挪到配置里，紧挨着它的 URL，并把实测的更新
+        节奏写成注释，因为一个全局数字要么对慢 feed 狼来了，要么对快 feed 睡过头，而一个狼来了的警告会被无视。
+      </p>
+      <h3>两个只有线上运行才能抓到的缺陷</h3>
+      <p>
+        <strong>博客合集把整个历史存档都导了进来——1,824 条。</strong>不同于发布当前列表的 arXiv、Hugging Face 或
+        GitHub，这些 feed 提供的是好几年的历史（仅 <code>openai_news</code> 就有 1,193 条），而在 48 小时的
+        <code>max_age_hours</code> 之下，它们永远不可能被选中。一个 30 天的条目截止线，给出了任何可能被选中的条目
+        十五倍的余量：1,824 变成了 112。
+      </p>
+      <p>
+        <strong>这个修复本会悄悄毁掉陈旧度警告。</strong>一个陈旧了 112 天的 feed，在 30 天窗口内的条目为零，所以
+        在截止线<em>之后</em>测量陈旧度只会报告一句干巴巴的"0 items"——读起来像是安静的一周，恰恰丢掉了这个机制
+        存在所为的那个信号。现在最新条目的日期是在截止之前对全部条目计算的，并有一个测试断言这条备注说的是
+        <em>stale</em> 而不是 <em>0 entries</em>。这是项目里第四次出现同一种形态——两个各自正确的改动互相遮蔽——
+        它变成了计划里一条常设的评审问题：<em>对每一个过滤器，下游有哪个测量读取的是过滤后的数据，它需要的是不是
+        未过滤的版本？</em>
+      </p>
+      <h3>什么时候零条目是个错误</h3>
+      <p>
+        当零意味着我们已经不再理解这个端点时，抛异常；当零是信息源真的可能处于的状态时，返回空。GitHub Trending 永远
+        有行，所以零就是选择器腐坏或者 403 的响应体，adapter 抛异常；精选论文列表同理。arXiv 返回空，但 feed 格式
+        错误时抛异常；博客合集逐 feed 返回空，但六个都一无所获时抛异常；Hacker News 直接返回空。逐 feed 的诊断信息
+        作为数据传递——对 adapter 契约做了一个小小的 <code>drain_notes()</code> 扩展，因为 adapter 不许写日志，而
+        <code>Item</code> 和 <code>SourceHealth</code> 都没法表达"成功了，但六个 feed 里有一个已经死了四个月"——
+        并在 <code>finally</code> 里排空，好让六行失败记录在"所有 feed 全死"的错误中幸存下来。恰恰在出了问题的时候
+        丢掉诊断信息，正是这个机制所要防止的那种失败。
+      </p>
+      <p>
+        这个 phase 还在线上数据库里产出了第一个跨信息源重复：同一篇论文来自 Hugging Face 和 arXiv，两个 URL 哈希
+        不同，被 Dice 和数字守卫抓住了。没有实现胜出方——这个 phase 是为了观察——但有两条发现转到了 3b：两个 URL
+        都以同一个 arXiv id 结尾，所以一条提取 id 的规则能精确抓住每一对这样的重复，并且应该放在标题相似度<em>之上</em>，
+        而不是折叠进 <code>canonical_url</code>——在那里一次合并就是一次静默丢弃；而目前的胜出方是由配置顺序决定的，
+        那不算一个决定。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEW ============ -->
+<section class="section--tight" id="review">
+  <div class="wrap">
+    <div class="prose">
+      <h2>阶段间 review：十一个 commit，零新功能</h2>
+      <p>
+        phase 3a 往一条 pipeline 里加了四个 adapter，而这条 pipeline 的形态是在只有一个 adapter 时定下的，从没有人问过
+        这个形态是否还成立。所以在 ranker 动工之前，整个代码库沿六个维度做了一次评审——静默失败与可观测性、分层与
+        耦合、重复与 adapter 的形态、测试套件的健康度、词汇与错误分类体系、文档漂移——每条发现都归入三个桶之一：
+        在项目约束内可以改进的；约束本身在造成伤害的；或者约束在起作用、而显而易见的改进反倒是退步的。五十四条
+        发现：43 条已修复，10 条依据明确的触发条件推迟，1 条不予修复。七个修复主题，一个 session 一个。测试套件从
+        收集到的 178 个增至 242 个。
+      </p>
+      <h3>先搭安全网</h3>
+      <p>
+        在任何评审 session 开跑之前，先用一个 commit 建了一份 characterisation snapshot：对录制好的 fixture 跑真实的
+        <code>fetch → store</code> 组合，导出为 425 行排好序的记录，每条附带原始载荷的哈希。它对正确性不做任何断言——
+        只断言这个组合没有移动——正因如此它才是重构可以被衡量的契约，覆盖了单元测试在结构上无法覆盖的东西：跨信息源
+        dedupe、每一条 <code>dupe_of</code> 的方向、四种日期格式汇入同一个 store。它的时钟从 fixture manifest 里
+        钉定，而不是一个常量，因为博客合集是按 <em>now − 30 days</em> 过滤的：把时钟冻住，第一次刷新 fixture 就会把
+        每一条都推出截止线之外，得到一份空空如也的 snapshot，而生成它的测试依然通过。它经历了一次模型拆分、六次重命名、
+        一次上限搬迁、一次注册表替换和一套新的错误层级，仍然逐字节一致——而为了让红色的测试变绿而重新生成它是被
+        禁止的，因为那等于一次删掉了证据的重构。
+      </p>
+      <h3>后果最严重的一条发现</h3>
+      <p>
+        <strong>所有信息源都可以失败，而进程仍然以 0 退出。</strong>连续七次全盘失败，本可以在什么都没交付的情况下满足
+        项目自己的"无人值守连跑七天"标准，而定时任务会自始至终显示为绿色。修复方式是从各个 outcome 读出一个
+        exit code——所有启用的信息源全部失败时为 4——而明确<em>不是</em>去收窄那个让一个死掉的 feed 不会中止整次
+        运行的 catch。紧随其后的一条：明文要求的"每个信息源一行"运行日志位于 INFO 级别，而默认级别是 WARNING，
+        所以 07:00 的定时运行会把它写到无处可寻。没有人会在 crontab 里敲 <code>-v</code>。
+      </p>
+      <p>
+        唯一一条针对约束本身的发现：<code>CLAUDE.md</code> 的完成定义要求 <code>digest run --dry-run</code> 能跑完，
+        而 <code>run</code> 是一个打印"not implemented"然后以 0 退出的桩——于是一个弄坏了所有 adapter 的改动，也
+        能一字不差地满足质量门槛。这比没有这一条更糟，因为它读起来像端到端验证，挤掉了 session 本会即兴补上的
+        检查。它单独落在一个 commit 上，而不是塞进某次重构里，因为埋在 diff 里的治理改动，对后来追问"门槛为什么
+        变了"的人是不可见的。
+      </p>
+      <h3>报告提议，diff 决定</h3>
+      <p>
+        review 文档是从各个 commit 的 <code>git show</code> 推导出来的，而不是从报告，而两者的比较是最有意思的结果。
+        每一条发现、每一个修复或推迟的决定都站住了。五条规定好的<em>机制</em>却没有：一旦代码在手，每一条都朝着更
+        保守或更具体的方向挪动了——其中两条是对指令而非发现的纠正，triage 建议的重命名会恰好重用相邻那条发现正在
+        移除的那个词。事实证明，从报告写出来的 triage 在方向上可靠、在机制上欠缺细节，而这些偏离之所以存在，只是
+        因为每个主题在被允许写代码之前都必须先提出计划。triage 得到的是一条注明日期的修正说明，而不是重写：它是
+        当时所作决定的记录，而那道差距正是有用的部分。
+      </p>
+      <p>
+        修复过程中发现的一些东西不在任何报告里，只在 diff 里。fixture 录制器把整个 Hacker News 的 URL 写死了，
+        所以一次配置改动就会让 snapshot 建立在一个生产环境已经不再使用的窗口上。一个抽取出来的日期 helper 差点把
+        格式错误的日期变成缺失的日期——条目还在，看起来什么都没丢，只是永远不会被排进去——它被一个为另一条发现
+        而写的测试抓住了。有一处编辑悄悄地从未生效，<code>digest render</code> 在整整一个主题期间把禁用的信息源
+        错标为<em>quiet</em>，因为测试直接调用了 helper 并传入了真实调用点所缺的那个参数；这变成了一条常设规则——
+        <em>一个自己提供参数的测试，证明不了调用方也提供了它</em>。而作为最后一个主题的最后一步，把 README 里声称的
+        每条命令都执行一遍，找出了三处不实的说法，其中一处就写在同一个 commit 里。
+      </p>
+      <p>
+        六条发现被记录为<em>不要</em>改进的事项，因为显而易见的修复恰恰是退步：不要收窄 catch-all，不要把部分失败
+        变成非零退出，不要把 arXiv id 折叠进 URL canonicalisation，不要剥除 <code>source</code>，不要让四位数年份
+        豁免数字守卫，不要合并那三个 48 小时窗口。十条推迟项各自带着一个触发条件，写在将来动手的那个文件里——一条
+        docstring、一个常量、一句配置注释——而不是只写在一张要有人重读才会生效的表格里。
+      </p>
+    </div>
+  </div>
+</section>
+
 <!-- ============ DECISIONS ============ -->
 <section class="section--tight" id="decisions">
   <div class="wrap">
     <div class="prose">
       <h2>值得辩护的决定</h2>
       <p>
-        三个 phase 的代码并不多——连测试大约 2,600 行——但其中大多数行之所以存在，都是因为某个具体的决定，
-        而每个 pull request 都记录了评审者应该追问的那些决定。塑造了 store 的几个：
+        大多数代码之所以存在，都是因为某个具体的决定，而每个 pull request 都记录了评审者应该追问的那些决定。
+        塑造了 store 的几个——它们全部经受住了阶段间 review，其中好几条还在它"<em>不要</em>改进"的清单上：
       </p>
       <h3>"新"意味着 <code>digest_date IS NULL</code>，而绝不是日期比较</h3>
       <p>
@@ -301,7 +446,9 @@ render.py    only turns selected items into text via a jinja2 template.</code></
         参数决定正是这样浮现的）。读计划、提出反对、说开始。当它说完成时，我亲自跑验收命令——关掉 wifi 跑测试、第二次
         fetch 必须报告 <code>new 0</code>——因为这个项目全是 I/O，而 I/O 正是 agent 的自信最不可靠的地方。然后在一个
         全新的 session 里跑一个评审 prompt，它比写代码的那个 session 审得更好，因为它不用为自己的选择辩护。每个 phase
-        一个 pull request，决定和发现都写进描述里。
+        一个 pull request，决定和发现都写进描述里。在 phase 之间，当代码的形态变化足够大时——设计时假设只有一个
+        adapter，现在有五个——同一套纪律就放大成上文的阶段间 review：先做 snapshot，再跑六轮相互独立的评审，然后
+        triage，最后一个 session 一个修复主题，每个主题在获准写代码之前先提出自己的计划。
       </p>
       <p>
         我亲自把关而不委托出去的规则：不经询问不加新依赖（token 集合比值、CLI 和配置加载都是 agent 会伸手去拿
@@ -324,8 +471,8 @@ render.py    only turns selected items into text via a jinja2 template.</code></
       <h2>不足之处</h2>
       <div class="callout callout--warn">
         <p>
-          <strong>它还产不出摘要。</strong>五个 phase 完成三个，意味着数据库里有一个信息源，外加一份未渲染条目的纯文本
-          列表。排序、渲染和定时调度才是决定它究竟能取代 Hacker News、还是沦为又一个我不读的 feed 的部分；计划对这个
+          <strong>它还产不出摘要。</strong>数据库里的五个信息源，外加一份 428 条未渲染条目的纯文本列表，是一个摄入层，
+          不是一个产品。排序、渲染和定时调度才是决定它究竟能取代 Hacker News、还是沦为又一个我不读的 feed 的部分；计划对这个
           风险的回答是：在写任何 LLM 代码之前，先读四个早上的规则排序输出。
         </p>
         <p>
@@ -334,10 +481,19 @@ render.py    only turns selected items into text via a jinja2 template.</code></
           但不在 v1 范围内；这个取舍记录在阈值旁边。
         </p>
         <p>
-          <strong>AI 博客合集的新鲜度尚未验证。</strong>编制信息源列表时，Anthropic 的镜像 feed 读出来已经过期两个月。
-          它保持 <code>enabled: false</code>，并在 <code>sources.yaml</code> 里加了标记指明备选方案；核查它是 phase 3a
-          之前的门槛——给一个悄悄什么都不送的 feed 上一个 adapter，正是健康页脚存在的目的所要暴露的那种失败，而避免它
-          比检测它便宜。
+          <strong>AI 博客镜像逐 feed 来看并不可靠。</strong>它六个 feed 里有三个已经陈旧了好几个月，却仍返回 HTTP 200
+          和格式良好的 XML，而核查过的每一个替代方案都返回 404，所以镜像保留，陈旧度警告是承重的而非装饰性的。
+          conditional GET 已实现并有测试，但没有持久化：<code>sources</code> 表每个信息源只有一个 <code>etag</code>
+          列，而合集需要六个，所以每次请求仍然是无条件发出的——刻意不做成半成品，直到真有哪个主机对这个任务限流。
+        </p>
+        <p>
+          <strong>跨信息源重复的优先级是配置顺序，不是一个决定。</strong>一篇论文的 arXiv 副本目前指向 Hugging Face
+          副本，仅仅因为 <code>hf_papers</code> 在 <code>sources.yaml</code> 里排在 <code>arxiv_cs_ai</code> 之前；
+          把文件按字母排一下序就会悄悄翻转它。phase 3b 欠一个明确的优先级，以及一个把文件重新排序后断言胜出方不变的测试。
+        </p>
+        <p>
+          <strong>review 写明了没有人看过的地方。</strong>性能、never-abort 之外的并发、年量级的数据增长、数据库体积和
+          供应链都不在范围内，而 review 文档把它们列了出来，好让"54 条发现，全部有了决定"在六个月后不会被误当成完整。
         </p>
         <p>
           <strong>从 GitHub Action 提交一个 WAL 模式的 SQLite 文件</strong>——phase 5 的计划——需要在 commit 步骤之前先执行
@@ -358,11 +514,11 @@ render.py    only turns selected items into text via a jinja2 template.</code></
         <h3>一个人的项目，与 agent 协作完成</h3>
         <p>
           由曹一明自 2026 年 9 月起设计、主导并评审，作为他本人每天早上使用的工具。用 Claude Code 实现，一个 phase
-          一个 session，依据一份书面计划和一份记录固定约束的 <code>CLAUDE.md</code>；分工已在上文说明。
+          ——或一个 review 主题——一个 session，依据一份书面计划和一份记录固定约束的 <code>CLAUDE.md</code>；分工已在上文说明。
         </p>
         <p>
           基于 httpx、feedparser、selectolax、pydantic、jinja2、pyyaml、uv、pytest 和 ruff 构建，并使用 Hacker News
-          的 Algolia API。本页的 dedupe 图示由曹一明在 phase 2 合并后根据 <code>store.py</code> 编写。
+          的 Algolia API、Hugging Face 的 daily-papers API、arXiv RSS、GitHub Trending 以及 Olshansk/rss-feeds 镜像。本页的 dedupe 图示由曹一明在 phase 2 合并后根据 <code>store.py</code> 编写。
         </p>
       </div>
     </div>

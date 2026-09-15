@@ -80,13 +80,15 @@
     ["Llama 4 Scout 7B quantised to 4-bit runs on a phone", "Llama 4 Scout 8B quantised to 4-bit runs on a phone"],
     ["Show HN: A local-first RAG pipeline for your notes", "Show HN: A local-first RAG pipeline for the notes"],
     ["Anthropic releases Claude Code 2.0", "Claude Code 2.0 released by Anthropic"],
-    ["vLLM v0.12 adds speculative decoding for MoE models", "vLLM v0.12 adds speculative decoding for MoE models on AMD"]
+    ["vLLM v0.12 adds speculative decoding for MoE models", "vLLM v0.12 adds speculative decoding for MoE models on AMD"],
+    ["SAS: Simple Attention Sparsification via End-to-End Training", "SAS: Simple Attention Sparsification via End-to-End Training"]
   ];
   var URL_PRESETS = [
     ["https://WWW.Example.com/blog/post/?utm_source=hn&utm_medium=social&ref=twitter#comments", "https://example.com/blog/post"],
     ["https://huggingface.co/models?source=trending", "https://huggingface.co/models?source=likes"],
     ["https://github.com/anthropics/claude-code/releases/tag/v2.0.0?fbclid=abc", "https://github.com/anthropics/claude-code/releases/tag/v2.0.0/"],
-    ["https://openai.com/index/gpt-5/?gclid=123", "https://openai.com/index/gpt-5-mini/?gclid=123"]
+    ["https://openai.com/index/gpt-5/?gclid=123", "https://openai.com/index/gpt-5-mini/?gclid=123"],
+    ["https://huggingface.co/papers/2609.13141", "https://arxiv.org/abs/2609.13141"]
   ];
 
   function initDedupe(root) {
@@ -184,7 +186,7 @@
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
 
     var stages = ["fetch", "normalise", "store", "rank", "summarise", "render", "deliver"];
-    var built = 3;
+    var built = 3;  // rank is next (phase 3b)
     var x0 = 34, boxW = 74, gap = 12, y = 128, boxH = 44;
     ctx.textBaseline = "middle"; ctx.textAlign = "center";
     stages.forEach(function (s, i) {
@@ -203,21 +205,21 @@
     ctx.fillStyle = text; ctx.font = "600 14px ui-sans-serif, system-ui, sans-serif";
     ctx.fillText(t("one job, seven stages", "一个任务，七个阶段"), x0, 70);
     ctx.fillStyle = faint; ctx.font = "500 11px ui-monospace, Menlo, monospace";
-    ctx.fillText(t("built · phases 0–2", "已完成 · phase 0–2"), x0, 96);
-    ctx.fillText(t("next · phase 3: four more sources, rule ranker, Markdown", "下一步 · phase 3：再接四个源、规则排序、Markdown"), x0, 216);
+    ctx.fillText(t("built · phases 0–3a + review", "已完成 · phase 0–3a + review"), x0, 96);
+    ctx.fillText(t("next · phase 3b: rule ranker with per-topic quotas", "下一步 · phase 3b：带 per-topic quota 的规则排序"), x0, 216);
     // source row
-    var srcs = ["hn ✓", "gh_trending", "hf_papers", "ai_blogs", "arxiv"];
+    var srcs = ["hn 30", "gh_trending 24", "hf_papers 50", "ai_blogs 112", "arxiv 240"];
     var sx = x0;
-    srcs.forEach(function (s, i) {
+    srcs.forEach(function (s) {
       ctx.font = "500 11px ui-monospace, Menlo, monospace";
       var w = ctx.measureText(s).width + 18;
-      ctx.fillStyle = i === 0 ? elev : bg; ctx.strokeStyle = i === 0 ? accent : border; ctx.lineWidth = 1;
+      ctx.fillStyle = elev; ctx.strokeStyle = accent; ctx.lineWidth = 1;
       roundRect(ctx, sx, 250, w, 24, 12); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = i === 0 ? text : faint; ctx.fillText(s, sx + 9, 262);
+      ctx.fillStyle = text; ctx.fillText(s, sx + 9, 262);
       sx += w + 8;
     });
     ctx.fillStyle = faint; ctx.font = "500 11px ui-monospace, Menlo, monospace";
-    ctx.fillText("99 tests · offline · SQLite · uv", x0, 312);
+    ctx.fillText("242 tests · offline · 425-row snapshot · SQLite · uv", x0, 312);
   }
 
   document.addEventListener("DOMContentLoaded", function () {

@@ -116,18 +116,19 @@
       <!-- ---- AI-news daily digest ---- -->
       <article class="card reveal">
         <div class="card__media">
-          <canvas data-digest-strip aria-label="一条七个 stage 的 pipeline —— fetch、normalise、store、rank、summarise、render、deliver —— 前三个 stage 已构建完成"></canvas>
+          <canvas data-digest-strip aria-label="一条七个 stage 的 pipeline —— fetch、normalise、store、rank、summarise、render、deliver —— 前三个 stage 已构建完成，五个信息源全部上线"></canvas>
         </div>
         <div class="card__body">
-          <p class="card__meta"><span class="status status--next-up">进行中 · 5 个 phase 中的第 3 个</span> · 开始于 <time datetime="2026-09-12">2026-09-12</time> · 更新于 <time datetime="2026-09-14" data-updated>2026-09-14</time> · <a class="card__gh" href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">GitHub ↗</a></p>
+          <p class="card__meta"><span class="status status--next-up">进行中 · 5 个 phase 中的第 3b 个</span> · 开始于 <time datetime="2026-09-12">2026-09-12</time> · 更新于 <time datetime="2026-09-15" data-updated>2026-09-15</time> · <a class="card__gh" href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">GitHub ↗</a></p>
           <h3 class="card__title">
             <a class="card__link" href="projects/daily-news-digest.html">AI-news：按我的兴趣给全网排序的个人每日摘要</a>
           </h3>
           <p class="card__desc">
             一个定时任务：抓取 AI、硬件和游戏类信息源，丢掉已经见过的内容，把剩下的按兴趣画像排序，
-            每天早上写出一页 Markdown。5 个 phase 已合并 3 个 —— 骨架、第一个信息源、带 canonical URL
-            与近重复检测的 SQLite store —— 每个都是一个经过评审的 pull request，一次一个 Claude Code
-            session 构建。dedupe 逻辑在页面上实时运行。
+            每天早上写出一页 Markdown。五个信息源全部上线，共用一份 adapter 契约；一个带 canonical URL
+            与近重复检测的 SQLite store；以及一次 54 条发现的阶段间 review，在 pipeline snapshot 一行未动的前提下
+            全部消化 —— 每一步都是一个经过评审的 pull request，一次一个 Claude Code session 构建。dedupe
+            逻辑在页面上实时运行。
           </p>
           <div class="tags">
             <span class="tag tag--accent">可交互</span>
