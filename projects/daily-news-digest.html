@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI-news: a personal daily digest that ranks the web against my interests — Yiming Cao</title>
-<meta name="description" content="One scheduled job that fetches AI, hardware and games sources, drops what it has seen, ranks the rest against an interest profile and renders one Markdown page a morning. Ongoing: all five sources live, a 54-finding code review absorbed, ranking next; built with Claude Code, with the dedupe logic running live on the page.">
+<title>My Daily News: an AI front page that can prove it showed me everything — Yiming Cao</title>
+<meta name="description" content="A personal AI front page: 48 public sources read each morning, only what I have not seen, summarised and categorised by an LLM, one page per category — and a line that says when a morning is incomplete. Third attempt at the idea, now in a code-frozen measurement; live figures of its novelty rule and integrity line.">
 <link rel="stylesheet" href="../assets/css/base.css">
 <link rel="stylesheet" href="../assets/css/project.css">
 <link rel="alternate" hreflang="zh-CN" href="../zh/projects/daily-news-digest.html">
@@ -38,84 +38,105 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       All work
     </a>
-    <p class="eyebrow">Ongoing · Python · SQLite · RSS + JSON APIs · scheduled job</p>
-    <h1>AI-news: a personal daily digest that ranks the web against my interests</h1>
+    <p class="eyebrow">Ongoing · Python · FastAPI · React · LLM pipeline</p>
+    <h1>My Daily News: an AI front page that can prove it showed me everything</h1>
     <p class="lede">
-      One scheduled job: fetch from a fixed list of AI, hardware and games sources, drop anything
-      seen before, rank what's left against an interest profile, summarise the top slice, and
-      write one Markdown page I read each morning instead of scrolling Hacker News. No app, no
-      server, no UI — the page is the product.
+      Every morning it reads 48 public AI sources — company and research blogs, release feeds,
+      changelogs, independent writers, and six standing rankings such as GitHub Trending, Hacker News
+      and Hugging Face Daily Papers — keeps only what I have not seen, has an LLM summarise and
+      categorise each item, and shows one page per category in my order. It is built to be read over
+      breakfast, and to say out loud when a morning's page is incomplete.
     </p>
     <div class="callout" style="margin-top:1.5rem;max-width:72ch">
-      <p><strong>Status: ongoing — phases 0 to 3a of 5 are merged, plus a full code review.</strong>
-      The skeleton, all five sources end to end, the SQLite store with deduplication, and an
-      interphase review that raised 54 findings and fixed 43 of them without moving a single row of
-      the pipeline snapshot. Next is phase 3b: the rule-based ranker with per-topic quotas, then the
-      rendered page. Started <time datetime="2026-09-12">2026-09-12</time> · last updated
-      <time datetime="2026-09-15" data-updated>2026-09-15</time>.</p>
+      <p><strong>Status: ongoing — a working prototype, now in a code-frozen measurement.</strong>
+      The prototype has been used every morning since 24 September; from
+      <time datetime="2026-09-28">28 September</time> its code is frozen while five mornings of real
+      reading are measured against thresholds written down before any data existed. The production
+      rebuild and deployment have not started, and the code stays private until that rebuild is
+      published. Last updated <time datetime="2026-09-28" data-updated>2026-09-28</time>.</p>
     </div>
     <dl class="case-meta">
-      <div><dt>Type</dt><dd>Independent project, in progress</dd></div>
-      <div><dt>Started</dt><dd><time datetime="2026-09-12">Sept 12, 2026</time></dd></div>
-      <div><dt>Updated</dt><dd><time datetime="2026-09-15" data-updated>Sept 15, 2026</time></dd></div>
-      <div><dt>Team</dt><dd>Solo, with Claude Code</dd></div>
-      <div><dt>Stack</dt><dd>Python 3.12 · uv · httpx · pydantic v2 · feedparser · selectolax · jinja2 · stdlib sqlite3 · pytest · ruff</dd></div>
-      <div><dt>Code</dt><dd><a href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">github.com/YimingCao-Eric/AI-news ↗</a></dd></div>
+      <div><dt>Type</dt><dd>Independent product, in progress — third attempt at the idea</dd></div>
+      <div><dt>Started</dt><dd><time datetime="2026-09-18">Sept 18, 2026</time></dd></div>
+      <div><dt>Updated</dt><dd><time datetime="2026-09-28" data-updated>Sept 28, 2026</time></dd></div>
+      <div><dt>Roles</dt><dd>I decided and directed · a planning Claude wrote the documents and coding prompts and reviewed every report · Claude Code wrote and tested the code</dd></div>
+      <div><dt>Stack</dt><dd>Python 3.12 · FastAPI · React + Vite · OpenAI-compatible LLM calls (gpt-5.4-mini) · JSON storage · Docker dev container</dd></div>
+      <div><dt>Code</dt><dd>Private until the production rebuild</dd></div>
     </dl>
   </div>
 </section>
 
-<!-- ============ DEDUPE LAB ============ -->
+<!-- ============ WEEK LAB ============ -->
 <section class="section--tight">
   <div class="wrap">
-    <div class="lab reveal" data-dedupe-lab>
+    <div class="lab reveal" data-week-lab>
       <div class="lab__head">
-        <h2 class="lab__title">Is it the same story?</h2>
+        <h2 class="lab__title">What counts as new?</h2>
         <p class="lab__note">
-          <code>canonical_url</code>, <code>url_hash</code> and <code>titles_are_near_duplicates</code>
-          from <code>src/digest/store.py</code>, ported to JavaScript as they are — the same tracking-parameter
-          list, the same 34 stopwords, the Dice coefficient at 0.85, and the numeric guard. Edit either
-          side and watch the verdict.
+          One source's week, fetched at 07:30 every morning. Each row is an item: the dot is the time
+          the source stamped on it, the line is how long its feed took to actually show it, and a
+          square is a morning it appeared on my page. The items are illustrative; the rules are the
+          product's. Pick how "new" is decided and watch what is lost.
         </p>
       </div>
-      <div class="dd-grid">
-        <div class="dd-col">
-          <h4>Two headlines from two outlets</h4>
-          <div class="gmm-field">
-            <label for="dd-preset-title">Preset</label>
-            <select id="dd-preset-title" data-dd-preset-title></select>
+      <div class="wk-controls">
+        <div class="wk-row">
+          <span class="wk-lbl">Window</span>
+          <div class="lab__seg wk-seg" role="radiogroup" aria-label="Reading window">
+            <label><input type="radio" name="wk-rule" value="24h"><span>last 24 hours</span></label>
+            <label><input type="radio" name="wk-rule" value="last"><span>since the last fetch</span></label>
+            <label><input type="radio" name="wk-rule" value="yday"><span>since yesterday</span></label>
+            <label><input type="radio" name="wk-rule" value="7d" checked><span>7 days (the product)</span></label>
           </div>
-          <div class="gmm-field"><label for="dd-left">Title A</label><input id="dd-left" type="text" data-dd-left autocomplete="off"></div>
-          <div class="gmm-field"><label for="dd-right">Title B</label><input id="dd-right" type="text" data-dd-right autocomplete="off"></div>
-          <table class="proj-table"><tbody data-dd-title-out></tbody></table>
-          <p class="dd-verdict" data-dd-verdict></p>
         </div>
-        <div class="dd-col">
-          <h4>Two links to one page</h4>
-          <div class="gmm-field">
-            <label for="dd-preset-url">Preset</label>
-            <select id="dd-preset-url" data-dd-preset-url></select>
+        <div class="wk-row">
+          <label class="wk-check"><input type="checkbox" data-wk-memory checked> Remember what was already shown</label>
+          <div class="wk-sub" data-wk-compare-row>
+            <span class="wk-lbl">compare by</span>
+            <div class="lab__seg" role="radiogroup" aria-label="Memory compares">
+              <label><input type="radio" name="wk-compare" value="day" checked><span>reading day</span></label>
+              <label><input type="radio" name="wk-compare" value="moment"><span>exact moment</span></label>
+            </div>
           </div>
-          <div class="gmm-field"><label for="dd-url-left">URL A</label><input id="dd-url-left" type="text" data-dd-url-left autocomplete="off" spellcheck="false"></div>
-          <div class="gmm-field"><label for="dd-url-right">URL B</label><input id="dd-url-right" type="text" data-dd-url-right autocomplete="off" spellcheck="false"></div>
-          <table class="proj-table"><tbody data-dd-url-out></tbody></table>
-          <p class="dd-verdict" data-dd-url-verdict></p>
+        </div>
+        <div class="wk-row">
+          <label class="wk-check"><input type="checkbox" data-wk-evening> Press Fetch again on Wednesday evening</label>
         </div>
       </div>
+      <div class="wk-scroll"><svg class="wk-svg" data-wk-svg role="img" aria-label="Timeline of fifteen items across six mornings, showing which mornings each appeared on"></svg></div>
+      <div class="lab__readout" data-wk-readout></div>
+      <p class="wk-note" data-wk-note></p>
     </div>
+
+    <div class="lab reveal" data-integrity-lab style="margin-top:1.25rem">
+      <div class="lab__head">
+        <h2 class="lab__title">A quiet day, or a broken one?</h2>
+        <p class="lab__note">
+          The line that sits above the page every morning, worded by the product's rules. A small page
+          can mean the sources were quiet or that some never answered; the line is the only thing that
+          tells the two apart. Source names in the failure case are examples.
+        </p>
+      </div>
+      <div class="il-grid">
+        <div class="gmm-field"><label>News items today <output data-il-out="news"></output></label><input type="range" min="0" max="40" value="1" data-il-news></div>
+        <div class="gmm-field"><label>Disabled in settings <output data-il-out="disabled"></output></label><input type="range" min="0" max="4" value="1" data-il="disabled"></div>
+        <div class="gmm-field"><label>Failed <output data-il-out="failed"></output></label><input type="range" min="0" max="3" value="0" data-il="failed"></div>
+        <div class="gmm-field"><label>Timed out <output data-il-out="timedout"></output></label><input type="range" min="0" max="3" value="0" data-il="timedout"></div>
+        <div class="gmm-field"><label>Parsed nothing <output data-il-out="zero"></output></label><input type="range" min="0" max="3" value="0" data-il="zero"></div>
+        <div class="gmm-field"><label>Undated cards skipped <output data-il-out="undated"></output></label><input type="range" min="0" max="4" value="2" data-il="undated"></div>
+      </div>
+      <p class="il-line" data-il-line></p>
+      <p class="wk-note" data-il-verdict></p>
+    </div>
+
     <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
-      Three things to try. The first title preset scores a Dice ratio of 0.89 — comfortably a
-      duplicate — and is rejected anyway, because <em>4.5</em> and <em>4.6</em> are different
-      numeric tokens; that guard is the difference between one story and two model releases.
-      The fifth preset is the known miss: "releases" and "released" are different tokens, so a
-      re-ordered headline scores 0.80 and slips through — fixing it needs stemming, which is
-      deliberately not in v1. On the URL side, the second preset shows why <code>source</code>
-      is <em>not</em> on the strip list: <code>?source=trending</code> and <code>?source=likes</code>
-      are two different Hugging Face listings, and stripping the parameter would have merged them
-      with no row, no log line and no way to notice. The last preset on each side is the first
-      cross-source duplicate the live database caught once five sources were running: the same
-      paper on Hugging Face and arXiv, two URLs that hash differently, one title that matches
-      exactly.
+      Things to try. Choose <em>since the last fetch</em>: six of the fifteen are never shown — the two
+      from last week, and every item whose feed showed it only after a fetch had already passed its
+      timestamp. That happened for real (below). Choose <em>since yesterday</em> and untick the memory:
+      a wider window catches more but repeats the overlap. The product's pairing — seven days plus
+      a memory — shows all fifteen, once each. Then tick <em>Fetch again on Wednesday</em> and switch
+      the memory to <em>exact moment</em>: the evening fetch treats the morning's items as old, and
+      because the page shows the day's last fetch, they vanish.
     </p>
   </div>
 </section>
@@ -126,485 +147,277 @@
     <div class="prose">
       <h2>What it is</h2>
       <p>
-        A command-line program with four subcommands — <code>digest fetch</code>,
-        <code>rank</code>, <code>render</code>, <code>run</code> — kept separate so that ranking
-        can be iterated on without re-fetching. It reads two YAML files: <code>sources.yaml</code>
-        (which feeds to pull, their weight, and a per-source <code>fetch_limit</code>) and
-        <code>interests.yaml</code> (topics with keywords, per-topic quotas, anti-topics, hard
-        rules). Everything it learns lands in one SQLite file; the output is
-        <code>digests/YYYY-MM-DD.md</code>. Five sources, all live — Hacker News, GitHub Trending,
-        Hugging Face daily papers, a bundle of six AI-lab blog feeds, arXiv cs.AI / cs.CL / cs.MA —
-        and a firm rule not to add a sixth until the pipeline works end to end.
+        A personal front page for one field. The idea started as "a personalised Hacker News for
+        everything I follow", with AI as the first domain; Hacker News named the idea, not the layout.
+        The sentence the prototype had to satisfy on its first run is written into the specification,
+        and it carries its own limit underneath:
+      </p>
+      <blockquote class="pull">
+        <p>"On any morning, everything my AI sources have published that I have not already been shown
+        is split into my categories, one page each in the order I set; within each page items are
+        sorted by my interest, every item carries a concise LLM summary, the layout is switchable — and
+        I finish the pages I care about over breakfast."</p>
+        <p>"The reach is bounded, and the bound is the compromise: a feed is read seven days back, a
+        trending list only as it stands now. A first run therefore shows a week rather than a day, and
+        anything older than a source's window is never shown at all."</p>
+      </blockquote>
+      <p>
+        <strong>Sources.</strong> Forty-eight, of three kinds: 33 RSS and Atom feeds through one
+        shared reader, nine page readers for sites that publish news without a usable feed, and six
+        standing rankings. Every source is a checkbox in Settings, grouped by the organisation behind
+        it — Anthropic, OpenAI, Google, Microsoft, NVIDIA, Hugging Face, Mistral, DeepSeek, Alibaba's
+        Qwen, independent writers such as Simon Willison and Andrej Karpathy, and so on.
       </p>
       <p>
-        The pipeline is seven stages, each a pure function where it can be, each behind its own
-        module with a one-line contract:
+        <strong>Each morning.</strong> I press Fetch. The sources are read concurrently, each with its
+        own deadline, so one slow site cannot hold up the rest; items whose feed carries too little text
+        to summarise have their page fetched once. Everything new is sent to the model, which writes a
+        short summary, a clearer title where the source's own is just an identifier, and picks one of
+        six categories. Rankings skip all of that and go straight to their own page. The page names
+        each step as it runs; a normal morning takes about ten seconds.
       </p>
-      <pre><code>fetch → normalise → store → rank → summarise → render → deliver
-
-adapters/    only fetch and map to Item. No scoring, no DB, no LLM.
-store.py     only reads/writes SQLite. No business logic.
-rank.py      pure: (items, profile) -> scored items. No I/O.
-summarise.py the only module allowed to call an LLM.
-render.py    only turns selected items into text via a jinja2 template.</code></pre>
       <p>
-        The layering is written into the repo's <code>CLAUDE.md</code> as hard constraints — no
-        web framework, no ORM, no Docker, no queue, no new dependency without asking, no network
-        access in tests — precisely so that an agent building phase 4 cannot re-litigate what
-        phase 0 decided.
+        <strong>The page.</strong> Three groups: <em>News</em> — six category pages in my order,
+        Products &amp; launches, Model releases, Tools &amp; libraries, Business &amp; policy, Writing
+        &amp; talks, and Research last, outside the breakfast read; <em>Trending</em> — one pane per
+        ranking, as it stood at the fetch; and <em>Others</em> for anything that fits no category. Two
+        layouts, a newspaper and a one-item-at-a-time stack. Any item can be saved to a collection that
+        keeps its own copy. A calendar opens any past day exactly as it was captured.
       </p>
     </div>
 
     <div class="stats reveal">
-      <div class="stat"><b>456</b><span>items per fetch across five live sources — hn 30, gh_trending 24, hf_papers 50, ai_blogs 112, arxiv 240 — and <code>new 0</code> on the second run</span></div>
-      <div class="stat"><b>242</b><span>tests, all offline: a session-wide socket guard makes a network call a test failure</span></div>
-      <div class="stat"><b>54</b><span>findings from the interphase review — 43 fixed, 10 deferred against a written trigger, 1 won't-fix</span></div>
-      <div class="stat"><b>425</b><span>rows in the pipeline snapshot that stayed byte-identical through seven refactoring themes</span></div>
+      <div class="stat"><b>48</b><span>sources: 33 feeds, 9 page readers, 6 standing rankings</span></div>
+      <div class="stat"><b>~10 s</b><span>a normal morning's fetch, end to end — all 47 enabled sources read in 3 to 6 seconds</span></div>
+      <div class="stat"><b>0 of 2,401</b><span>entries the sources served that the completeness check could not account for</span></div>
+      <div class="stat"><b>83.1%</b><span>agreement with my own labels on category — below the 85% bar set in advance, and accepted as a fail</span></div>
     </div>
   </div>
 </section>
 
-<!-- ============ PHASES ============ -->
-<section class="section--tight" id="phases">
+<!-- ============ NEW ============ -->
+<section class="section--tight" id="new">
   <div class="wrap">
     <div class="prose">
-      <h2>Where it stands</h2>
+      <h2>The decision everything rests on: what the product looks at vs. what it shows</h2>
       <p>
-        The build plan is phased so that each step is independently useful and independently
-        abandonable. What each phase delivered, and the acceptance check it had to pass before
-        it was merged:
+        The obvious design is a time window: show what was published since the last fetch, or in the
+        last 24 hours. Measured against real data, it loses news. On 24 September seven OpenAI posts
+        arrived carrying publication times about 4 to 15 hours <em>before</em> the previous morning's fetch —
+        which had not contained any of them. The feed made them visible long after the time it stamped
+        on them. Against that day's items, a seven-day window kept all 24 dated items; a 24-hour window
+        kept 8; "since the last fetch" kept 3; "since the start of yesterday" kept 17 and still lost all
+        seven. Because the delay belongs to the source, no window anchored on publication time can be
+        tightened without losing items.
+      </p>
+      <p>
+        So the two jobs are separated. A <strong>wide window</strong> — seven days, rolling back from
+        the moment of the fetch — decides what the product looks at. A <strong>memory of every item
+        already shown</strong> decides what counts as new. The window does not have to be right about
+        when a source publishes, and the memory does not have to be right about time at all. On the day
+        this was measured the sources served 115 items; 84 had been shown on an earlier day and were
+        held back, and 31 reached the page.
+      </p>
+      <p>
+        <strong>The memory compares reading days, not moments.</strong> An item is held back only if it
+        was first shown on an <em>earlier</em> day. Otherwise a second press of Fetch the same morning
+        would return nothing, because everything it found would already be remembered — and since the
+        page always shows the day's latest fetch, the morning's news would disappear. The reader's day
+        starts at 06:00 local, not at midnight, so a late-night reading still belongs to the day it
+        feels like.
+      </p>
+      <h3>What makes two items the same</h3>
+      <p>
+        An item is identified by its source, its publication time and its normalised title — three
+        things the source decides and my code cannot. The URL is deliberately <em>not</em> the
+        identity. Twice, a one-line change to how a source's link was read gave every item from that
+        source a new identity, and the product served a whole week of it again as if it were new.
+        Every link an item has ever arrived under is kept with it, and the link shown is always the
+        one the source published, character for character.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTEGRITY ============ -->
+<section class="section--tight" id="integrity">
+  <div class="wrap">
+    <div class="prose">
+      <h2>A page that accounts for itself</h2>
+      <p>
+        The product's first promise is <em>everything my sources published</em>, and a reader cannot
+        check that by looking at a page of summaries. So one line sits above the tabs every morning:
+        "✓ 47 of 47 sources read · 1 disabled · 2 undated skipped" on a good day, and on any other day
+        the name of each missing source and why — failed, timed out, or parsed nothing. It is shown
+        when everything is fine on purpose: an indicator that only appears on failure teaches the reader
+        not to look, and a line that reads the same every good morning is what makes a bad one legible
+        at a glance.
+      </p>
+      <p>
+        Behind the line are distinctions the product keeps rather than blurs. A source that parsed zero
+        entries is broken; a source with zero entries inside its window is merely quiet — they are
+        counted separately and only the first is a failure. A disabled source is counted as disabled,
+        never as missing. A card with no date is counted and named, never kept, because an identity made
+        up from the fetch time would show it again every day. And an item the model failed to summarise
+        stays on the page unsummarised, with the day marked partial: it has already been remembered, so
+        dropping it would lose it for good.
+      </p>
+      <p>
+        The line is also checked from outside. A completeness check re-reads the raw bytes each source
+        served, with a parser written independently of the product's own, and puts every entry into
+        exactly one bucket — on the page, held back as already shown, outside the window, or
+        unaccounted. On its first run, 2,401 entries: zero unaccounted, and the checker was shown to fire
+        on three deliberately planted drops before its clean result was believed. The honest limit is
+        stated with it: every check compares the product with what the sources <em>served</em>. A story
+        a source never put in its own feed is invisible to all of it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HYPOTHESES ============ -->
+<section class="section--tight" id="hypotheses">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Beliefs, each with the result that would disprove it</h2>
+      <p>
+        The product began as a document of hypotheses, and each measurable one got a threshold written
+        down before the data that would test it. A rule chosen after the numbers are visible is a
+        description, not a threshold — the project made that mistake once and wrote the rest down first.
       </p>
       <div class="table-wrap"><table class="data-table data-table--left">
-        <thead><tr><th>Phase</th><th>What</th><th>Done when</th><th>State</th></tr></thead>
+        <thead><tr><th>Belief</th><th>Bar, set in advance</th><th>Result</th></tr></thead>
         <tbody>
-          <tr><td>0</td><td>Skeleton: <code>uv</code> project, pydantic <code>Item</code> / <code>SourceHealth</code>, config loading with loud failures, four-subcommand CLI</td><td><code>uv run digest --help</code> lists four subcommands; 23 tests</td><td><strong>Merged</strong> Sept 12</td></tr>
-          <tr><td>1</td><td>Hacker News end to end: adapter contract, Algolia adapter, registry, concurrent fetch where one failing source never aborts the run</td><td>30 stories with working links; 52 tests pass with wifi off</td><td><strong>Merged</strong> Sept 13</td></tr>
-          <tr><td>2</td><td>SQLite store: canonical URLs, <code>INSERT OR IGNORE</code>, near-duplicate detection, a real failure counter, "new" defined as never-rendered</td><td>Second fetch reports <code>new 0</code>; the missed-run test passes; 99 tests</td><td><strong>Merged</strong> Sept 13</td></tr>
-          <tr><td>3a</td><td>Four more adapters behind one interface — Hugging Face papers, arXiv, the AI-blogs bundle, GitHub Trending — each probed against the live endpoint before it was written, with per-feed staleness diagnostics</td><td>All five sources report; <code>new 0</code> on the second run; 171 tests offline</td><td><strong>Merged</strong> Sept 14</td></tr>
-          <tr><td>review</td><td>Interphase review R0–R3: a pipeline snapshot as the contract, six review dimensions, 54 findings triaged into fix / defer / won't-fix, seven fix themes one per session</td><td>Snapshot unchanged at every commit; 242 tests; every README command actually runs</td><td><strong>Merged</strong> Sept 14</td></tr>
-          <tr><td>3b</td><td>Rule-based ranking: topic assignment with word-boundary keywords, a scored reason per item, engagement normalised per source, per-topic quotas as ceilings; an explicit cross-source precedence for duplicates</td><td><code>digest rank</code> prints the selection with score and reason; the quota tests pass</td><td>Next</td></tr>
-          <tr><td>3c</td><td>Markdown render with a source-health footer, <code>digest run</code> wired end to end — then four mornings of reading it before writing any LLM code</td><td>One command produces a dated file I'd read</td><td>Planned</td></tr>
-          <tr><td>4</td><td>One batched LLM re-rank over the rule survivors (titles only, never article bodies), structured summaries for the top eight, cost logged per run, graceful fallback when the API is down</td><td>Under a cent per run; still works with the key unset</td><td>Planned</td></tr>
-          <tr><td>5</td><td>Schedule (GitHub Action at 07:00 Vancouver, SQLite committed back) and one delivery channel</td><td>Seven unattended days in a row</td><td>Planned</td></tr>
+          <tr><td>The model files items into my six categories the way I would</td><td>at least 85% agreement with my labels, and at most 5% of items misfiled into Research</td><td><strong>Fails — 83.1%</strong> (three runs: 79.8 / 83.1 / 86.5); Research misfiling 2.6%</td></tr>
+          <tr><td>The breakfast pages can be read in one sitting</td><td>median of the five measured mornings at most 10 minutes, and no morning over 20</td><td>Being measured now</td></tr>
+          <tr><td>One layout is not enough</td><td>at least 3 deliberate layout switches over the five mornings</td><td>Being measured now</td></tr>
+          <tr><td>Nothing the sources served goes missing</td><td>zero entries unaccounted for</td><td><strong>Passes</strong> — 0 of 2,401</td></tr>
+          <tr><td>One source template fits feeds, APIs and scraped pages alike</td><td>—</td><td><strong>Passes</strong></td></tr>
+          <tr><td>The fixed tag vocabulary stays stable from day to day</td><td>—</td><td><strong>Passes</strong></td></tr>
+          <tr><td>Ordering items by learned interest improves a page</td><td>—</td><td><strong>Suspended</strong> — the like/dislike buttons that fed it went unused and were replaced by Save</td></tr>
+          <tr><td>The same story arrives from many sources and should be merged</td><td>—</td><td><strong>Refuted</strong> — zero repeats across 182 items in four days, one pair since</td></tr>
         </tbody>
       </table></div>
       <p>
-        The definition of done for the whole thing is five conditions holding for seven
-        consecutive days — runs unattended, under three minutes and CAD $0.10 a day, a source going
-        down degrades one section and never the page, fewer than three "why is this here" items —
-        and one that matters more than the others: I actually read it before opening Hacker News.
+        The categorisation failure is kept as a failure. The errors are concentrated in two pairs —
+        tools read as products, and business news read as writing — and merging either pair would lift
+        agreement to 91.4%. I kept six categories anyway: the taxonomy is a judgement about what I want
+        to read, the instrument itself moves several points between identical runs, and a merge chosen
+        to pass a number is chosen for the wrong reason. The trigger to revisit is a symptom I can
+        notice while reading — a business story sitting under Writing often enough to annoy — rather
+        than a statistic.
       </p>
     </div>
   </div>
 </section>
 
-<!-- ============ PHASE 3A ============ -->
-<section class="section--tight" id="sources">
+<!-- ============ USE ============ -->
+<section class="section--tight" id="use">
   <div class="wrap">
     <div class="prose">
-      <h2>Phase 3a: probe before you build</h2>
+      <h2>Four mornings of real use before anything was measured</h2>
       <p>
-        The four remaining adapters were specified from memory of their APIs, so the phase began by
-        probing every endpoint before writing against it — inventing hazards that don't exist would
-        have cost as much as missing real ones. Three of the brief's assumptions didn't survive.
-        arXiv titles were already clean: 0 of 270 cs.AI entries carried the <code>arXiv:</code>
-        prefix or embedded newlines the prompt warned about, so the normaliser stays as a guard
-        against older formats and a test pins the measurement so the comment can never drift into
-        claiming a hazard that isn't there. arXiv volume was five times the estimate — 270 for cs.AI
-        alone, 401 across three categories. And 38% of arXiv entries were <em>revisions</em>: a
-        <code>replace</code> is a v2 of a paper that may be months old and would enter the digest
-        looking brand new, so the adapter keeps only <code>new</code> and <code>cross</code>
-        announcements, with a test asserting the revision share exceeds 25% so that deleting the
-        filter explains what breaks rather than going quiet.
-      </p>
-      <h3>Three of six feeds were dead while returning 200</h3>
-      <div class="table-wrap"><table class="data-table data-table--left">
-        <thead><tr><th>Feed</th><th>Newest entry</th><th>Age at probe</th></tr></thead>
-        <tbody>
-          <tr><td>openai_news</td><td>2026-09-14</td><td>0 days</td></tr>
-          <tr><td>deepmind</td><td>2026-09-08</td><td>6 days</td></tr>
-          <tr><td>anthropic_news</td><td>2026-09-01</td><td>13 days</td></tr>
-          <tr><td>anthropic_engineering</td><td>2026-05-25</td><td>112 days — stale</td></tr>
-          <tr><td>meta_ai</td><td>2026-07-27</td><td>49 days — stale</td></tr>
-          <tr><td>mistral</td><td>2026-05-22</td><td>115 days — stale</td></tr>
-        </tbody>
-      </table></div>
-      <p>
-        The pattern matters more than the numbers: both <em>official</em> feeds were fresh and
-        three of four <em>mirror</em> feeds were stale, all with well-formed XML. A mirror that is
-        unreliable per feed is the worst shape, because one healthy feed tells you nothing about
-        the others. Every alternative checked 404s, so the mirror stays; the three dead feeds were
-        swapped for <code>claude</code>, <code>anthropic_research</code> and <code>cursor</code> —
-        fresh, and weighted toward AI coding agents, the highest-weighted topic in the profile — and
-        the dropped ones remain in <code>sources.yaml</code> as a comment with their measured ages,
-        so "why is Mistral not here?" has a written answer. A follow-up commit moved each feed's
-        staleness threshold into config beside its URL with the measured cadence as a comment,
-        because one global number either cries wolf on slow feeds or sleeps through fast ones, and a
-        warning that cries wolf gets ignored.
-      </p>
-      <h3>Two defects only the live run could catch</h3>
-      <p>
-        <strong>The blogs bundle imported its entire back catalogue — 1,824 items.</strong> Unlike
-        arXiv, Hugging Face or GitHub, which publish a current list, these feeds serve years of
-        history (<code>openai_news</code> alone: 1,193 entries), all of it permanently unselectable
-        under a 48-hour <code>max_age_hours</code>. A 30-day entry cutoff gives fifteen times the
-        headroom of anything that can ever be selected: 1,824 became 112.
+        The plan was to freeze the prototype and measure it straight away. One morning of actual use
+        overturned that: the first reading, on 24 September, turned up ten findings — a date header that
+        showed today above yesterday's news, titles that had silently broken, no sign of progress during
+        a 44-second fetch that felt like one to two minutes, rankings mixed in among the news, two categories I
+        could not tell apart. A freeze, it turned out, is a claim that the thing is finished enough to
+        measure, and that claim had not been tested. So the stage was split: first use it every morning
+        and fix what the use shows the same day; only after a morning that needs no change, freeze.
       </p>
       <p>
-        <strong>That fix would have silently destroyed the staleness warning.</strong> A
-        112-day-stale feed has zero entries inside a 30-day window, so measuring staleness
-        <em>after</em> the cutoff reports a bare "0 items" — which reads as a quiet week and loses
-        exactly the signal the mechanism exists for. The newest-entry date is now computed over
-        every entry before the cutoff, and a test asserts the note says <em>stale</em> rather than
-        <em>0 entries</em>. This was the project's fourth instance of the same shape — two
-        individually correct changes blinding each other — and it became a standing review
-        question in the plan: <em>for every filter, what downstream measurement reads the filtered
-        data, and does it need the unfiltered version?</em>
-      </p>
-      <h3>When zero items is an error</h3>
-      <p>
-        Raise when zero means we no longer understand the endpoint; return empty when zero is a
-        state the source can genuinely be in. GitHub Trending always has rows, so zero is selector
-        rot or a 403 body and the adapter raises; the curated papers list likewise. arXiv returns
-        empty but raises on a malformed feed; the blogs bundle returns empty per feed but raises if
-        all six yield nothing; Hacker News simply returns empty. Per-feed diagnostics travel as
-        data — a small <code>drain_notes()</code> extension to the adapter contract, since adapters
-        may not log and neither <code>Item</code> nor <code>SourceHealth</code> can say "worked,
-        but one of six feeds is four months dead" — and are drained in a <code>finally</code> so the
-        six failure lines survive the all-feeds-dead error. Losing the diagnostics exactly when
-        something went wrong would be the failure the mechanism exists to prevent.
+        The second morning showed only five new items, and the product could now say why rather than
+        leave me guessing: every source had answered, 80 items were inside their windows, and 75 of
+        them had already been shown. It also showed that the rankings — 36 rows to five news items —
+        had become most of the page, which prompted a proper source survey: 36 new sources were
+        probed and added the same day, bringing the total to 48. The weekend mornings that followed
+        brought one news item each, all others correctly held back, and no finding that needed a code
+        change. The last fixes landed on the evening of 27 September; the measured mornings began the
+        next day.
       </p>
       <p>
-        The phase also produced its first cross-source duplicate in the live database: the same
-        paper from Hugging Face and arXiv, two URLs that hash differently, caught by Dice and the
-        digit guard. No winner was implemented — the phase was for the observation — but two
-        findings went to 3b: both URLs end in the same arXiv id, so an extracted-id rule would catch
-        every such pair exactly and deserves to sit <em>above</em> title similarity rather than be
-        folded into <code>canonical_url</code>, where a collapse is a silent drop; and the current
-        winner is decided by config ordering, which is not a decision.
+        By then the prototype carried 261 automated tests, including a tripwire that fails any test
+        which touches the real data. On the first day it caught one: a test whose leftover background
+        work had written two lines into the real log.
       </p>
     </div>
   </div>
 </section>
 
-<!-- ============ REVIEW ============ -->
-<section class="section--tight" id="review">
-  <div class="wrap">
-    <div class="prose">
-      <h2>The interphase review: eleven commits, no features</h2>
-      <p>
-        Phase 3a added four adapters to a pipeline whose shape had been decided while there was
-        exactly one, and nothing had asked whether that shape survived. So before the ranker
-        started, the whole codebase was reviewed along six dimensions — silent failure and
-        observability, layering and coupling, duplication and the adapter shape, test-suite health,
-        vocabulary and the error taxonomy, documentation drift — with every finding sorted into
-        three buckets: improvable within the project's constraints; a constraint itself causing
-        harm; or the constraint working and the obvious improvement being a regression. Fifty-four
-        findings: 43 fixed, 10 deferred against a stated trigger, 1 won't-fix. Seven fix themes,
-        one per session. The test suite went from 178 collected tests to 242.
-      </p>
-      <h3>The safety net came first</h3>
-      <p>
-        Before any review session ran, one commit built a characterisation snapshot: the real
-        <code>fetch → store</code> composition over the recorded fixtures, dumped as 425 sorted rows
-        with a hash of each raw payload. It asserts nothing about correctness — only that the
-        composition has not moved — which is what makes it the contract a refactor can be measured
-        against, covering what unit tests structurally cannot: cross-source dedupe, the direction
-        of every <code>dupe_of</code>, four date formats arriving at one store. Its clock is pinned
-        from the fixture manifest rather than a constant, because the blogs bundle filters against
-        <em>now − 30 days</em>: freeze the clock and the first fixture refresh pushes every entry
-        outside the cutoff, giving a snapshot of nothing produced by a test that still passes. It
-        stayed byte-identical through a model split, six renames, a relocated cap, a replaced
-        registry and a new error hierarchy — and regenerating it to make a red test green is
-        forbidden, because that is a refactor with its evidence deleted.
-      </p>
-      <h3>The finding with the highest consequence</h3>
-      <p>
-        <strong>Every source could fail and the process still exited 0.</strong> Seven consecutive
-        total failures would have satisfied the project's own "runs unattended for seven days"
-        criterion while delivering nothing, and a scheduled job would have stayed green throughout.
-        Fixed as an exit code read from the outcomes — 4 when every enabled source failed — and
-        explicitly <em>not</em> by narrowing the catch that keeps one dead feed from aborting a
-        run. Close behind it: the mandated one-line-per-source run log sat at INFO under a WARNING
-        default, so the 07:00 scheduled run would have written it nowhere. Nobody types
-        <code>-v</code> in a crontab.
-      </p>
-      <p>
-        The single finding against a constraint: <code>CLAUDE.md</code>'s definition of done
-        required <code>digest run --dry-run</code> to complete, and <code>run</code> was a stub
-        that printed "not implemented" and exited 0 — so a change breaking every adapter satisfied
-        the quality gate exactly as written. Worse than no clause, because it reads like end-to-end
-        verification and displaces the check a session would otherwise improvise. It landed on its
-        own commit rather than inside a refactor, because a governance change buried in a diff is
-        hidden from whoever later asks why the gate moved.
-      </p>
-      <h3>Reports propose; diffs decide</h3>
-      <p>
-        The review document was derived from <code>git show</code> on the commits rather than from
-        the reports, and the comparison is the most interesting result. Every finding and every
-        fix-or-defer decision held. Five of the prescribed <em>mechanisms</em> did not: each moved
-        toward something more conservative or more specific once the code was in hand — two of them
-        corrections to the instruction rather than the finding, where the triage's suggested rename
-        would have reused the exact word the adjacent finding was removing. A triage written from
-        reports turns out to be directionally reliable and mechanically underspecified, and those
-        divergences exist only because each theme had to propose a plan before it was allowed to
-        write code. The triage got a dated amendment saying so, not a rewrite: it is a record of
-        what was decided at the time, and the gap is the useful part.
-      </p>
-      <p>
-        Some of what the fixes found is in no report, only in the diffs. The fixture recorder
-        hard-coded the entire Hacker News URL, so a config change would have left the snapshot
-        built from a window production no longer used. An extracted date helper nearly turned
-        malformed dates into absent ones — the item survives, nothing looks dropped, it simply
-        never ranks — and was caught by a test written for a different finding. One edit silently
-        never applied, and <code>digest render</code> mislabelled disabled sources as
-        <em>quiet</em> for a whole theme, because the test called the helper directly with the
-        argument the real call site was missing; that became a standing rule — <em>a test that
-        supplies the argument cannot prove the caller supplies it</em>. And executing every command
-        the README claims, as the last act of the last theme, found three false claims, including
-        one written in that same commit.
-      </p>
-      <p>
-        Six findings are recorded as things <em>not</em> to improve, because the obvious fix is the
-        regression: don't narrow the catch-all, don't make partial failure non-zero, don't fold the
-        arXiv id into URL canonicalisation, don't strip <code>source</code>, don't exempt four-digit
-        years from the numeric guard, don't merge the three 48-hour windows. The ten deferrals each
-        carry a trigger written into the file where the work would be done — a docstring, a
-        constant, a config comment — rather than only in a table that fires if someone rereads it.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ DECISIONS ============ -->
-<section class="section--tight" id="decisions">
-  <div class="wrap">
-    <div class="prose">
-      <h2>Decisions worth defending</h2>
-      <p>
-        Most of the code exists because of a specific decision, and each pull request records the
-        ones a reviewer should push on. The ones that shaped the store, all of which survived the
-        interphase review — several are on its list of things <em>not</em> to improve:
-      </p>
-      <h3>"New" means <code>digest_date IS NULL</code>, never a date comparison</h3>
-      <p>
-        The obvious query — items whose <code>first_seen_at</code> falls on today — is wrong twice.
-        The stored timestamp is UTC while the digest day is America/Vancouver, so a 07:00 local run
-        sits at 14:00 UTC and a calendar-date comparison splits one morning's items across two UTC
-        days, every day. And a date-based query permanently loses any day the run didn't happen:
-        laptop asleep, Action failed, away for the weekend. Instead <code>digest_date</code> starts
-        NULL and is stamped only when an item is rendered into a digest; a missed run then catches
-        up by itself. There is a test that skips a day and asserts both days come back.
-      </p>
-      <h3>Dice, not Jaccard — and a numeric guard on top</h3>
-      <p>
-        At a 0.85 threshold Jaccard is barely reachable for real headlines: one extra word on a
-        seven-token title already sits on the boundary, two words is a miss, so the check would
-        have looked like it was working while almost never firing. Dice keeps 0.85 meaningful. But
-        Dice alone has a false-positive class that lands squarely on this digest's subject matter —
-        <em>RTX 5090 Super</em> vs <em>RTX 5080 Super</em> scores 0.875, and so do two model
-        versions or two arXiv papers differing by a number. So titles whose digit-bearing tokens
-        differ are never duplicates, whatever the ratio; and the guard is "token contains a digit"
-        rather than <code>str.isdigit()</code>, because <code>7B</code>, <code>v2</code> and
-        <code>gpt-5</code> are exactly the tokens that matter and none of them is all digits. A
-        test named <code>test_the_numeric_guard_is_load_bearing</code> asserts that the 5090/5080
-        and 4.5/4.6 pairs both score above threshold, so deleting the guard makes the suite say
-        exactly what breaks rather than go quiet.
-      </p>
-      <h3>Strip only unambiguous tracking parameters</h3>
-      <p>
-        The original spec stripped <code>source</code> along with <code>utm_*</code>,
-        <code>fbclid</code> and <code>gclid</code>. It was wrong: a bare <code>source</code> is an
-        ordinary application parameter, and <code>huggingface.co/models?source=trending</code> and
-        <code>?source=likes</code> are two different listings that would hash identically. The
-        failure is asymmetric and invisible — dedupe is <code>INSERT OR IGNORE</code>, so the
-        second item is dropped with no row and no log line — while a false split merely shows a
-        story twice. That asymmetry, <em>seeing a story twice is recoverable, silently merging two
-        is not</em>, is the rule behind every dedupe choice in the project.
-      </p>
-      <h3>Timezone-aware or rejected</h3>
-      <p>
-        The <code>Item</code> model refuses a naive datetime rather than assuming UTC. feedparser
-        returns naive structs, the HN API returns ISO with a <code>Z</code>, arXiv carries its own
-        offset; silently assuming UTC is a multi-hour error nobody notices until the ranker sorts
-        by recency and mixes the two. The store converts to ISO strings on the way in and parses
-        back to aware datetimes on the way out, with a round-trip test on a <code>+05:30</code>
-        value — and the HN adapter takes its timestamp from the integer <code>created_at_i</code>,
-        where awareness is structural rather than dependent on a suffix.
-      </p>
-      <h3>Two caps with two names</h3>
-      <p>
-        <code>fetch_limit</code> is per source and bounds ingest; <code>quota</code> is per topic
-        and bounds selection. Giving them one name invites "which one binds?" bugs, so a test feeds
-        a <code>quota:</code> key into <code>sources.yaml</code> and asserts it raises. Ingest is
-        deliberately generous — arXiv 50, HN 30 — because every raw payload is kept in
-        <code>raw_json</code>, unedited, so that when the ranker changes in week three it can be
-        re-run over three weeks of history offline instead of waiting three weeks to see whether
-        the change helped.
-      </p>
-      <h3>A 48-hour window, not 24</h3>
-      <p>
-        A 24-hour creation window permanently loses slow burners: a story posted 30 hours ago that
-        crosses 100 points this morning was never inside the window on either run. Re-seeing
-        yesterday's items costs nothing once the URL hash dedupes them. The lookback and the
-        profile's <code>max_age_hours</code> currently share the value 48 and are annotated as
-        two different things that must stay free to diverge.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ WHAT THE WORK TURNED UP ============ -->
-<section class="section--tight" id="findings">
-  <div class="wrap">
-    <div class="prose">
-      <h2>What the work turned up</h2>
-      <p>
-        Each phase's pull request has a section with this title, because the bugs a phase finds in
-        the phases before it are the most useful thing to record.
-      </p>
-      <p>
-        <strong>A test started hitting the network the moment <code>fetch</code> went live.</strong>
-        A phase-0 test called <code>main(["fetch"])</code>, which quietly became a real HTTP call to
-        Algolia — and passed, so nothing flagged it. The fix is structural rather than an assertion:
-        <code>tests/conftest.py</code> installs a session-wide socket guard no test can opt out of.
-        Two details came out of probing it. Loopback has to be exempt, because on Windows the
-        asyncio event loop builds its self-pipe from a <code>127.0.0.1</code> socketpair and a
-        blanket raise takes down the tests it exists to protect. And the guard's exception derives
-        from <code>BaseException</code>, not <code>Exception</code>: recreating the regression showed
-        it still passing with the guard installed, because <code>fetch_all</code> catches every
-        <code>Exception</code> so that no source can abort a run — which turned the blocked
-        connection into a recorded source failure and an exit code of 0.
-      </p>
-      <p>
-        <strong>That same catch was swallowing Ctrl-C.</strong> Chasing the question above exposed
-        that <code>fetch_all</code> treated <code>KeyboardInterrupt</code>, <code>SystemExit</code>
-        and <code>CancelledError</code> as "this source failed" — an interrupted fetch would have
-        been recorded as a dead feed and surfaced as source rot in the next morning's health
-        footer. Non-<code>Exception</code> <code>BaseException</code>s are now re-raised: the
-        never-abort rule is about sources failing, not about the operator quitting.
-      </p>
-      <p>
-        <strong>A crash waiting for the first non-Latin-1 headline.</strong> <code>sys.stdout</code>
-        is cp1252 on the Windows console, so printing a CJK or emoji title raises
-        <code>UnicodeEncodeError</code> and takes down a job meant to run unattended at 07:00.
-        Reproduced, fixed by reconfiguring stdout to UTF-8, and worth noting that a GitHub Action
-        would never reproduce it — so the local run is the only thing standing between this and a
-        silent morning failure. <code>CLAUDE.md</code> now carries an explicit
-        <code>encoding="utf-8"</code> rule for all file I/O, since phase 3's <code>open(path, "w")</code>
-        is the same bug on a different surface.
-      </p>
-      <p>
-        <strong>Algolia omits <code>url</code> on text posts — it does not send <code>null</code>.</strong>
-        The adapter already fell back to the HN item page, but the first test asserted
-        <code>is None</code> and failed against the real fixture. It is now pinned with a
-        parametrised test over all three shapes (absent, <code>null</code>, empty string), so a
-        future change from one to another can't reach the job as a crash.
-      </p>
-      <p>
-        <strong>The numeric guard failed six of its own tests, and was right to.</strong> The
-        fixture pair was "…at CES 2027" vs "…at CES" — labelled a duplicate, but the numbers
-        differ, so the guard rejected it. The titles were wrong, not the rule. And WAL-mode SQLite
-        leaves <code>-wal</code> and <code>-shm</code> sidecars behind a killed process; they were
-        not in <code>.gitignore</code> until a run was interrupted.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ HOW IT'S MADE ============ -->
+<!-- ============ METHOD ============ -->
 <section class="section--tight" id="method">
   <div class="wrap">
     <div class="prose">
-      <h2>How it's made: one phase per session</h2>
+      <h2>Third attempt, and the method it produced</h2>
       <p>
-        The project has two design documents written before any code — a build plan (scope, the
-        source catalogue with each endpoint verified by hand, the data model, the ranking design
-        in three escalating versions, the phases) and an implementation guide that contains the
-        literal prompt for each phase. Both are in the repo under <code>docs/</code>. The method
-        follows from the JHA experience: <strong>every phase is a fresh Claude Code session</strong>,
-        so nothing drifts, and <code>CLAUDE.md</code> carries the standing constraints across
-        sessions instead of the conversation.
+        This is my third go at the same idea, and the first two failed in opposite directions. The first
+        followed a plan step by step with Claude Code implementing each step; it produced a real,
+        working codebase, but as it grew my review went shallow, and I was confirming that code existed
+        rather than understanding it — I lost control of where it was going. The second applied strict
+        rules to everything: probe before building, every design fork verified against real data, one
+        decision per change, a complete written record. Control never slipped, and in three days it
+        produced no demo — the rules were right, and they were spent on throwaway code. The lesson I
+        wrote down afterwards is one line:
+      </p>
+      <blockquote class="pull"><p>"Rigor has a phase."</p></blockquote>
+      <p>The method for this attempt puts rigor where it pays:</p>
+      <div class="table-wrap"><table class="data-table data-table--left">
+        <thead><tr><th>Phase</th><th>What happens</th><th>State</th></tr></thead>
+        <tbody>
+          <tr><td>1 · Hypothesis</td><td>The product on paper: what it does, what it believes, and what result would prove each belief wrong. No code.</td><td><strong>Done</strong> Sept 18</td></tr>
+          <tr><td>2 · Prototype</td><td>Built fast with Claude Code, judged by its behaviour on real data rather than by its code; the specification is corrected in the same pass as each change to the product.</td><td><strong>Done</strong></td></tr>
+          <tr><td>2.5 · Use, then measure</td><td>First daily use with same-day fixes; then a code freeze while the hypotheses are measured against their preset bars.</td><td><strong>Measuring</strong> from Sept 28</td></tr>
+          <tr><td>3 · Build</td><td>A fresh, reviewed codebase written from the stabilised specification — the prototype is reference, never promoted.</td><td>Not started</td></tr>
+          <tr><td>4 · Deploy</td><td>Publish it.</td><td>Not started</td></tr>
+        </tbody>
+      </table></div>
+      <p>
+        <strong>Who did what, plainly.</strong> I decided what the product is, used it every morning,
+        and made every call. A planning Claude, in Cowork, wrote every document — the specification,
+        the plan, the logs — wrote every prompt handed to the coding agent, and reviewed every report
+        that came back. Claude Code wrote and tested all of the code; I did not hand-write it. The
+        planning side never touched the code and the coding agent never wrote the documents, so every
+        change to the product passed through a written prompt and a written report — which is what keeps
+        a two-agent process from becoming a black box.
       </p>
       <p>
-        Each phase runs the same loop. Paste the prompt; it ends by asking for a short plan and a
-        question or two the agent must answer before writing ("tell me one case where
-        <code>canonical_url</code> could collapse two genuinely different URLs into one" — which
-        is how the <code>source</code>-parameter decision above surfaced). Read the plan, push back,
-        say go. When it says it's done, run the acceptance command myself — the tests with wifi
-        off, the second fetch that must say <code>new 0</code> — because this project is all I/O
-        and I/O is where an agent's confidence is least calibrated. Then a review prompt in a
-        fresh session, which reviews better than the one that wrote the code because it isn't
-        defending its own choices. One pull request per phase, with the decisions and the findings
-        written up in the description. Between phases, when the shape of the code has changed
-        enough — five adapters where the design assumed one — the same discipline scales up into
-        the interphase review above: a snapshot first, six independent review passes, a triage,
-        then one fix theme per session, each proposing its plan before it may write.
-      </p>
-      <p>
-        The rules I police personally rather than delegate: no new dependency without asking (the
-        token-set ratio, the CLI and config loading are all places an agent reaches for
-        <code>rapidfuzz</code>, <code>typer</code> or <code>pydantic-settings</code> to avoid
-        twenty lines); no network in tests; adapters stay dumb; and a scraper that can't parse
-        raises rather than returning an empty list, because an empty list is indistinguishable
-        from a quiet day and is precisely the silent rot the health footer can't catch.
-      </p>
-      <p>
-        Division of labour, plainly: the plan, the constraints, the phase boundaries, the
-        acceptance checks and the review are mine; nearly all of the code was written by Claude
-        Code against them. The decisions section above is a fair record of where the agent's first
-        answer was changed and why.
+        The earlier write-up at this address described the first attempt. That codebase is now
+        reference only; nothing from it was reused here except what it taught.
       </p>
     </div>
   </div>
 </section>
 
-<!-- ============ WHERE IT'S THIN ============ -->
+<!-- ============ THIN ============ -->
 <section class="section--tight" id="thin">
   <div class="wrap">
     <div class="prose">
       <h2>Where it's thin</h2>
       <div class="callout callout--warn">
         <p>
-          <strong>It doesn't produce a digest yet.</strong> Five sources in a database and a
-          plain-text list of 428 unrendered items is an ingest layer, not a product. Ranking,
-          rendering and the schedule are the part that decides whether this replaces Hacker News or
-          becomes another feed I don't read; the plan's answer to that risk is four mornings of
-          reading the rule-ranked output before any LLM code is written.
+          <strong>It is a prototype, and it runs on my machine.</strong> There is no scheduler — I press
+          Fetch, by decision — no deployment and no second user. The production rebuild is where the
+          code gets written to last; until then the code is private.
         </p>
         <p>
-          <strong>Near-duplicate detection has a known miss.</strong> Inflectional variants are
-          different tokens, so a re-ordered headline — "Anthropic releases X" vs "X released by
-          Anthropic" — scores 0.80 and passes as two stories. Stemming would fix it and is out of
-          scope for v1; the trade-off is recorded next to the threshold.
+          <strong>The categorisation missed its bar.</strong> 83.1% against 85%, kept deliberately, with
+          the two merges that would fix it already measured and waiting for a reason from real reading.
         </p>
         <p>
-          <strong>The AI-blogs mirror is unreliable per feed.</strong> Three of its six feeds were
-          months stale while returning HTTP 200 and well-formed XML, and every alternative checked
-          404s, so the mirror stays and the staleness warning is load-bearing rather than
-          decorative. Conditional GET is implemented and tested but not persisted: the
-          <code>sources</code> table has one <code>etag</code> column per source and the bundle
-          needs six, so every request still goes out unconditional — deliberately not half-built
-          until a host actually rate-limits the job.
+          <strong>The completeness check has a blind spot it names.</strong> Five of the page readers
+          are not checked independently — an independent parser would only duplicate them — so the check
+          lists their items by name instead of calling them clean.
         </p>
         <p>
-          <strong>Cross-source duplicate precedence is config ordering, not a decision.</strong>
-          The arXiv copy of a paper currently points at the Hugging Face copy only because
-          <code>hf_papers</code> precedes <code>arxiv_cs_ai</code> in <code>sources.yaml</code>;
-          alphabetising the file would silently flip it. Phase 3b owes an explicit precedence and a
-          test that reorders the file and asserts the winner doesn't move.
+          <strong>The same story from two sources is still two items.</strong> It has happened once, when
+          Anthropic's newsroom and research pages carried the same post. The direction for when it
+          matters is not hiding the copy but combining them — one entry per story, showing what each
+          source says — which needs grouping of events across sources that the product does not do yet.
         </p>
         <p>
-          <strong>The review says what nobody looked at.</strong> Performance, concurrency beyond
-          never-abort, year-scale data growth, database size and supply chain were out of scope, and
-          the review document lists them so that "54 findings, all decided" is not mistaken for
-          completeness six months from now.
-        </p>
-        <p>
-          <strong>Committing a WAL-mode SQLite file from a GitHub Action</strong> — the phase-5
-          plan — needs a <code>PRAGMA wal_checkpoint(TRUNCATE)</code> before the commit step, or
-          the committed file can be missing the very transactions the run just made. Noted for
-          phase 5, not yet handled.
+          <strong>The breakfast-read and layout hypotheses have no answer yet.</strong> Their verdicts
+          arrive after the fifth measured morning, and a morning that needs a code change restarts the
+          count.
         </p>
       </div>
     </div>
@@ -617,18 +430,16 @@ render.py    only turns selected items into text via a jinja2 template.</code></
     <div class="prose">
       <h2>Credits</h2>
       <div class="credits">
-        <h3>A solo project, built with an agent</h3>
+        <h3>A solo project, built with two agents</h3>
         <p>
-          Designed, directed and reviewed by Yiming Cao, September 2026 onward, as a tool for his
-          own mornings. Implemented with Claude Code, one phase — or one review theme — per session, against a
-          written plan and a <code>CLAUDE.md</code> of standing constraints; the division of labour
-          is described above.
+          Conceived, directed and used every morning by Yiming Cao, from September 2026. Documents and
+          prompts by a planning Claude in Cowork; code and tests by Claude Code; every decision, and the
+          judgement of every report, mine.
         </p>
         <p>
-          Built on httpx, feedparser, selectolax, pydantic, jinja2, pyyaml, uv, pytest and ruff,
-          and on the Hacker News Algolia API, the Hugging Face daily-papers API, arXiv RSS, GitHub
-          Trending and the Olshansk/rss-feeds mirrors. The dedupe figure on this page was written by Yiming
-          Cao from <code>store.py</code> after phase 2 merged.
+          Built on FastAPI, React and Vite, with gpt-5.4-mini for summaries and categories, and on the
+          public feeds, pages and rankings of the 48 sources it reads. The figures on this page were
+          written for it from the product's specification, not taken from its code.
         </p>
       </div>
     </div>
@@ -636,6 +447,7 @@ render.py    only turns selected items into text via a jinja2 template.</code></
 </section>
 
 </main>
+
 
 <footer class="site-footer">
   <div class="wrap footer-inner">

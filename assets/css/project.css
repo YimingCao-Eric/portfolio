@@ -614,3 +614,42 @@
 .dd-hash { margin-top: .35rem; font-family: var(--font-mono); font-size: .72rem; color: var(--text-faint); }
 .data-table--left th, .data-table--left td { text-align: left; vertical-align: top; }
 .data-table--left td:first-child { font-family: var(--font-mono); font-weight: 600; color: var(--text); }
+
+/* ---------- My Daily News figures ---------- */
+.pull { margin: 1.4rem 0; padding: .2rem 0 .2rem 1.1rem; border-left: 3px solid var(--accent); color: var(--text); }
+.pull p { font-size: 1rem; line-height: 1.6; margin: 0 0 .7rem; }
+.pull p:last-child { margin-bottom: 0; }
+.pull p + p { color: var(--text-soft); font-size: .92rem; }
+.wk-controls { display: grid; gap: .7rem; margin-bottom: 1rem; }
+.wk-row { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; }
+.wk-lbl { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); }
+.wk-seg { flex-wrap: wrap; border-radius: 16px; }
+.wk-check { display: inline-flex; align-items: center; gap: .45rem; font-size: .86rem; color: var(--text-soft); cursor: pointer; }
+.wk-check input { accent-color: var(--accent); }
+.wk-sub { display: inline-flex; align-items: center; gap: .6rem; transition: opacity .18s var(--ease); }
+.wk-sub.is-disabled { opacity: .4; pointer-events: none; }
+.wk-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 1rem; }
+.wk-svg { display: block; width: 100%; min-width: 640px; height: auto; font-family: var(--font-sans); }
+.wk-band { fill: var(--bg-sunken); }
+.wk-day { font-size: 11px; font-weight: 600; fill: var(--text-soft); }
+.wk-fetch { stroke: var(--border-strong); stroke-dasharray: 2 3; }
+.wk-fetch-lbl { font-size: 9px; fill: var(--text-faint); font-family: var(--font-mono); }
+.wk-label { font-size: 11px; fill: var(--text-soft); }
+.wk-earlier { font-size: 13px; fill: var(--text-faint); }
+.wk-pub { fill: var(--bg-elev); stroke: var(--text-soft); stroke-width: 1.3; }
+.wk-lag { stroke: var(--text-faint); stroke-width: 1.3; stroke-dasharray: 3 2; }
+.wk-shown { fill: var(--accent); }
+.wk-repeat { fill: none; stroke: var(--warn); stroke-width: 1.6; }
+.wk-res { font-size: 10px; font-weight: 600; }
+.wk-res--ok { fill: var(--accent-text); }
+.wk-res--rep { fill: var(--warn); }
+.wk-res--lost { fill: color-mix(in srgb, #d32f2f 78%, var(--text)); }
+.lab__readout b.is-bad { color: color-mix(in srgb, #d32f2f 78%, var(--text)); }
+.lab__readout b.is-warn { color: var(--warn); }
+.wk-note { margin: .9rem 0 0; font-size: .86rem; line-height: 1.55; color: var(--text-soft); max-width: 72ch; }
+.il-grid { display: grid; gap: .8rem 1.2rem; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 1rem; }
+.il-grid label { display: flex; justify-content: space-between; }
+.il-grid output { font-family: var(--font-mono); color: var(--text); }
+.il-line { margin: 0; padding: .65rem .8rem; border-radius: var(--r-sm); font-family: var(--font-mono); font-size: .8rem; line-height: 1.5; overflow-wrap: anywhere; border: 1px solid var(--border); background: var(--bg-elev); }
+.il-line--ok { color: var(--accent-text); }
+.il-line--bad { color: var(--text); border-color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, var(--bg-elev)); }

@@ -113,28 +113,27 @@
 
     <div class="grid">
 
-      <!-- ---- AI-news daily digest ---- -->
+      <!-- ---- My Daily News ---- -->
       <article class="card reveal">
         <div class="card__media">
-          <canvas data-digest-strip aria-label="一条七个 stage 的 pipeline —— fetch、normalise、store、rank、summarise、render、deliver —— 前三个 stage 已构建完成，五个信息源全部上线"></canvas>
+          <canvas data-digest-strip aria-label="某个早晨的页面：日期、确认 47 个信息源全部读取成功的那一行、新闻 / 热榜 / 其他三个标签页，以及六个类别标签"></canvas>
         </div>
         <div class="card__body">
-          <p class="card__meta"><span class="status status--next-up">进行中 · 5 个 phase 中的第 3b 个</span> · 开始于 <time datetime="2026-09-12">2026-09-12</time> · 更新于 <time datetime="2026-09-15" data-updated>2026-09-15</time> · <a class="card__gh" href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">GitHub ↗</a></p>
+          <p class="card__meta"><span class="status status--next-up">进行中 · 测量中</span> · 开始于 <time datetime="2026-09-18">2026-09-18</time> · 更新于 <time datetime="2026-09-28" data-updated>2026-09-28</time></p>
           <h3 class="card__title">
-            <a class="card__link" href="projects/daily-news-digest.html">AI-news：按我的兴趣给全网排序的个人每日摘要</a>
+            <a class="card__link" href="projects/daily-news-digest.html">My Daily News：一个能证明没有漏掉任何内容的 AI 头版</a>
           </h3>
           <p class="card__desc">
-            一个定时任务：抓取 AI、硬件和游戏类信息源，丢掉已经见过的内容，把剩下的按兴趣画像排序，
-            每天早上写出一页 Markdown。五个信息源全部上线，共用一份 adapter 契约；一个带 canonical URL
-            与近重复检测的 SQLite store；以及一次 54 条发现的阶段间 review，在 pipeline snapshot 一行未动的前提下
-            全部消化 —— 每一步都是一个经过评审的 pull request，一次一个 Claude Code session 构建。dedupe
-            逻辑在页面上实时运行。
+            每天早上读取 48 个 AI 信息源，只保留我没看过的内容，由 LLM 生成摘要并归入我的类别 ——
+            页面上还有一行字，会在某个早晨内容不完整时明确指出。原型已经可用，目前在代码冻结下接受测量，
+            对照的阈值在数据出现之前就已写定。这是我对这个想法的第三次尝试，我的开发方法也正是从这次尝试中形成的。
+            新内容判定规则在页面上实时运行。
           </p>
           <div class="tags">
             <span class="tag tag--accent">可交互</span>
-            <span class="tag">Python · uv</span>
-            <span class="tag">SQLite</span>
-            <span class="tag">RSS + JSON API</span>
+            <span class="tag">Python · FastAPI</span>
+            <span class="tag">React</span>
+            <span class="tag">LLM pipeline</span>
             <span class="tag">进行中</span>
           </div>
         </div>

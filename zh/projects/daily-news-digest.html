@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI-news：按我的兴趣给全网排序的个人每日摘要 — 曹一明</title>
-<meta name="description" content="一个定时任务：抓取 AI、硬件和游戏类信息源，丢掉已经见过的内容，把剩下的按兴趣画像排序，每天早上渲染成一页 Markdown。进行中：五个信息源全部上线，一次 54 条发现的代码 review 已消化，下一步是排序；用 Claude Code 构建，dedupe 逻辑在页面上实时运行。">
+<title>My Daily News：一个能证明没有漏掉任何内容的 AI 头版 — 曹一明</title>
+<meta name="description" content="一个个人 AI 头版：每天早上读取 48 个公开信息源，只保留我没看过的内容，由 LLM 生成摘要并分类，每个类别一页 —— 并用一行字在某个早晨内容不完整时明确指出。这是这个想法的第三次尝试，目前处于代码冻结下的测量阶段；页面上实时运行其新内容判定规则和完整性提示行的交互图示。">
 <link rel="stylesheet" href="../../assets/css/base.css">
 <link rel="stylesheet" href="../../assets/css/project.css">
 <link rel="alternate" hreflang="en" href="../../projects/daily-news-digest.html">
@@ -38,76 +38,99 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       全部作品
     </a>
-    <p class="eyebrow">进行中 · Python · SQLite · RSS + JSON API · 定时任务</p>
-    <h1>AI-news：按我的兴趣给全网排序的个人每日摘要</h1>
+    <p class="eyebrow">进行中 · Python · FastAPI · React · LLM pipeline</p>
+    <h1>My Daily News：一个能证明没有漏掉任何内容的 AI 头版</h1>
     <p class="lede">
-      一个定时任务：从一份固定的 AI、硬件和游戏类信息源列表抓取内容，丢掉所有之前见过的条目，
-      把剩下的按兴趣画像排序，对排名靠前的一段做摘要，然后写出一页 Markdown——我每天早上读它，
-      而不是去刷 Hacker News。没有 app，没有服务器，没有 UI——这一页就是产品本身。
+      每天早上，它读取 48 个公开的 AI 信息源 —— 公司和研究机构的博客、版本发布 feed、changelog、独立作者，
+      以及 GitHub Trending、Hacker News、Hugging Face Daily Papers 等六个常设榜单 —— 只保留我没看过的内容，
+      由 LLM 为每个条目撰写摘要并分类，再按我设定的顺序，每个类别显示一页。它是为早餐时间的阅读而设计的，
+      并且会在某个早晨的页面不完整时明确说出来。
     </p>
     <div class="callout" style="margin-top:1.5rem;max-width:72ch">
-      <p><strong>状态：进行中——5 个 phase 中的 phase 0 到 3a 已合并，外加一次完整的代码 review。</strong>骨架、端到端跑通的全部五个信息源、
-      带去重的 SQLite store，以及一次阶段间 review：提出 54 条发现、修掉其中 43 条，而 pipeline snapshot 一行未动。下一步是 phase 3b：带按主题配额的规则
-      ranker，然后是渲染出来的页面。开始于
-      <time datetime="2026-09-12">2026-09-12</time> · 最近更新于 <time datetime="2026-09-15" data-updated>2026-09-15</time>。</p>
+      <p><strong>状态：进行中 —— 原型已经可用，目前处于代码冻结下的测量阶段。</strong>
+      自 9 月 24 日起，原型每天早上都在使用；从
+      <time datetime="2026-09-28">9 月 28 日</time>起代码冻结，用五个早晨的真实阅读，对照在任何数据出现之前就已写定的阈值进行测量。
+      生产级重建和部署尚未开始，在重建版本发布之前，代码保持不公开。最后更新于 <time datetime="2026-09-28" data-updated>2026-09-28</time>。</p>
     </div>
     <dl class="case-meta">
-      <div><dt>类型</dt><dd>独立项目，进行中</dd></div>
-      <div><dt>开始于</dt><dd><time datetime="2026-09-12">2026 年 9 月 12 日</time></dd></div>
-      <div><dt>更新于</dt><dd><time datetime="2026-09-15" data-updated>2026 年 9 月 15 日</time></dd></div>
-      <div><dt>团队</dt><dd>独立完成，与 Claude Code 协作</dd></div>
-      <div><dt>技术栈</dt><dd>Python 3.12 · uv · httpx · pydantic v2 · feedparser · selectolax · jinja2 · stdlib sqlite3 · pytest · ruff</dd></div>
-      <div><dt>代码</dt><dd><a href="https://github.com/YimingCao-Eric/AI-news" target="_blank" rel="noopener">github.com/YimingCao-Eric/AI-news ↗</a></dd></div>
+      <div><dt>类型</dt><dd>独立产品，进行中 —— 这个想法的第三次尝试</dd></div>
+      <div><dt>开始于</dt><dd><time datetime="2026-09-18">2026 年 9 月 18 日</time></dd></div>
+      <div><dt>更新于</dt><dd><time datetime="2026-09-28" data-updated>2026 年 9 月 28 日</time></dd></div>
+      <div><dt>分工</dt><dd>我负责决策与主导 · 一个负责规划的 Claude 撰写文档和编码 prompt，并 review 每一份报告 · Claude Code 编写并测试代码</dd></div>
+      <div><dt>技术栈</dt><dd>Python 3.12 · FastAPI · React + Vite · OpenAI 兼容的 LLM 调用（gpt-5.4-mini） · JSON 存储 · Docker 开发容器</dd></div>
+      <div><dt>代码</dt><dd>生产级重建之前不公开</dd></div>
     </dl>
   </div>
 </section>
 
-<!-- ============ DEDUPE LAB ============ -->
+<!-- ============ WEEK LAB ============ -->
 <section class="section--tight">
   <div class="wrap">
-    <div class="lab reveal" data-dedupe-lab>
+    <div class="lab reveal" data-week-lab>
       <div class="lab__head">
-        <h2 class="lab__title">是同一条新闻吗？</h2>
+        <h2 class="lab__title">什么才算“新”？</h2>
         <p class="lab__note">
-          来自 <code>src/digest/store.py</code> 的 <code>canonical_url</code>、<code>url_hash</code> 和
-          <code>titles_are_near_duplicates</code>，被原样移植成了 JavaScript——同一份跟踪参数列表、同样的 34 个
-          stopword、阈值 0.85 的 Dice coefficient，以及同一个数字守卫。改动任意一侧，观察判定结果。
+          一个信息源的一周，每天早上 07:30 fetch 一次。每一行是一个条目：圆点是信息源给它标注的时间，
+          线段是它的 feed 实际显示它所花的时间，方块表示它出现在我页面上的那个早晨。条目是示意性的，
+          规则则是产品真实采用的。选择如何判定“新”，看看会丢掉什么。
         </p>
       </div>
-      <div class="dd-grid">
-        <div class="dd-col">
-          <h4>两家媒体的两条标题</h4>
-          <div class="gmm-field">
-            <label for="dd-preset-title">预设</label>
-            <select id="dd-preset-title" data-dd-preset-title></select>
+      <div class="wk-controls">
+        <div class="wk-row">
+          <span class="wk-lbl">窗口</span>
+          <div class="lab__seg wk-seg" role="radiogroup" aria-label="阅读窗口">
+            <label><input type="radio" name="wk-rule" value="24h"><span>最近 24 小时</span></label>
+            <label><input type="radio" name="wk-rule" value="last"><span>自上次 fetch 以来</span></label>
+            <label><input type="radio" name="wk-rule" value="yday"><span>自昨天以来</span></label>
+            <label><input type="radio" name="wk-rule" value="7d" checked><span>7 天（产品采用）</span></label>
           </div>
-          <div class="gmm-field"><label for="dd-left">标题 A</label><input id="dd-left" type="text" data-dd-left autocomplete="off"></div>
-          <div class="gmm-field"><label for="dd-right">标题 B</label><input id="dd-right" type="text" data-dd-right autocomplete="off"></div>
-          <table class="proj-table"><tbody data-dd-title-out></tbody></table>
-          <p class="dd-verdict" data-dd-verdict></p>
         </div>
-        <div class="dd-col">
-          <h4>指向同一页面的两个链接</h4>
-          <div class="gmm-field">
-            <label for="dd-preset-url">预设</label>
-            <select id="dd-preset-url" data-dd-preset-url></select>
+        <div class="wk-row">
+          <label class="wk-check"><input type="checkbox" data-wk-memory checked> 记住已经显示过的条目</label>
+          <div class="wk-sub" data-wk-compare-row>
+            <span class="wk-lbl">比较依据</span>
+            <div class="lab__seg" role="radiogroup" aria-label="记忆的比较依据">
+              <label><input type="radio" name="wk-compare" value="day" checked><span>阅读日</span></label>
+              <label><input type="radio" name="wk-compare" value="moment"><span>精确时刻</span></label>
+            </div>
           </div>
-          <div class="gmm-field"><label for="dd-url-left">URL A</label><input id="dd-url-left" type="text" data-dd-url-left autocomplete="off" spellcheck="false"></div>
-          <div class="gmm-field"><label for="dd-url-right">URL B</label><input id="dd-url-right" type="text" data-dd-url-right autocomplete="off" spellcheck="false"></div>
-          <table class="proj-table"><tbody data-dd-url-out></tbody></table>
-          <p class="dd-verdict" data-dd-url-verdict></p>
+        </div>
+        <div class="wk-row">
+          <label class="wk-check"><input type="checkbox" data-wk-evening> 周三晚上再按一次 Fetch</label>
         </div>
       </div>
+      <div class="wk-scroll"><svg class="wk-svg" data-wk-svg role="img" aria-label="十五个条目在六个早晨中的时间线，显示每个条目分别出现在哪些早晨"></svg></div>
+      <div class="lab__readout" data-wk-readout></div>
+      <p class="wk-note" data-wk-note></p>
     </div>
+
+    <div class="lab reveal" data-integrity-lab style="margin-top:1.25rem">
+      <div class="lab__head">
+        <h2 class="lab__title">是安静的一天，还是出了故障的一天？</h2>
+        <p class="lab__note">
+          每天早上位于页面上方的那一行字，按产品的规则措辞。页面内容少，可能是信息源确实没什么新东西，
+          也可能是有些信息源根本没有回应；这一行是唯一能把两者区分开的东西。失败情形中的信息源名称仅为示例。
+        </p>
+      </div>
+      <div class="il-grid">
+        <div class="gmm-field"><label>今日新闻条数 <output data-il-out="news"></output></label><input type="range" min="0" max="40" value="1" data-il-news></div>
+        <div class="gmm-field"><label>在 Settings 中停用 <output data-il-out="disabled"></output></label><input type="range" min="0" max="4" value="1" data-il="disabled"></div>
+        <div class="gmm-field"><label>失败 <output data-il-out="failed"></output></label><input type="range" min="0" max="3" value="0" data-il="failed"></div>
+        <div class="gmm-field"><label>超时 <output data-il-out="timedout"></output></label><input type="range" min="0" max="3" value="0" data-il="timedout"></div>
+        <div class="gmm-field"><label>解析出 0 条 <output data-il-out="zero"></output></label><input type="range" min="0" max="3" value="0" data-il="zero"></div>
+        <div class="gmm-field"><label>跳过的无日期条目 <output data-il-out="undated"></output></label><input type="range" min="0" max="4" value="2" data-il="undated"></div>
+      </div>
+      <p class="il-line" data-il-line></p>
+      <p class="wk-note" data-il-verdict></p>
+    </div>
+
     <p class="lab__note" style="margin-top:.9rem;max-width:72ch">
-      三个值得一试的操作。第一个标题预设的 Dice 比值是 0.89——妥妥的重复——却仍被判为不重复，因为
-      <em>4.5</em> 和 <em>4.6</em> 是两个不同的数字 token；这个守卫就是"一条新闻"与"两次模型发布"之间的分界线。
-      第五个预设是已知的漏网之鱼："releases"和"released"是不同的 token，所以一条调换了语序的标题只得到 0.80，
-      就这样溜了过去——要修它需要 stemming（词干提取），而 v1 刻意不做。在 URL 一侧，第二个预设说明了为什么
-      <code>source</code> <em>不在</em>剥除列表里：<code>?source=trending</code> 和 <code>?source=likes</code>
-      是 Hugging Face 上两个不同的列表页，若剥掉这个参数，两者就会被合并——没有新行、没有日志、也没有任何办法察觉。
-      两侧各自的最后一个预设，是五个信息源跑起来之后线上数据库抓到的第一个跨信息源重复：同一篇论文分别出现在
-      Hugging Face 和 arXiv 上，两个 URL 哈希不同，一条标题完全一致。
+      可以试试这些。选择<em>自上次 fetch 以来</em>：十五个条目中有六个永远不会显示 —— 上周的两个，
+      以及所有在某次 fetch 已经越过其时间戳之后才被 feed 显示出来的条目。这种情况真实发生过（见下文）。
+      选择<em>自昨天以来</em>并取消勾选记忆：更宽的窗口能接住更多条目，但会重复显示重叠的部分。
+      产品采用的组合 —— 七天窗口加记忆 —— 会显示全部十五个条目，每个只显示一次。然后勾选
+      <em>周三晚上再按一次 Fetch</em>，并把记忆的比较依据切换为<em>精确时刻</em>：晚上的 fetch 会把早上的条目视为旧内容，
+      而由于页面显示的是当天最后一次 fetch，这些条目就消失了。
     </p>
   </div>
 </section>
@@ -118,387 +141,231 @@
     <div class="prose">
       <h2>它是什么</h2>
       <p>
-        一个带四个子命令的命令行程序——<code>digest fetch</code>、<code>rank</code>、<code>render</code>、
-        <code>run</code>——刻意分开，好让排序逻辑可以反复迭代而无需重新抓取。它读取两个 YAML 文件：
-        <code>sources.yaml</code>（拉取哪些 feed、各自的权重，以及每个信息源的 <code>fetch_limit</code>）和
-        <code>interests.yaml</code>（带关键词的主题、按主题的配额、反主题、硬性规则）。它学到的一切都落在一个
-        SQLite 文件里；输出是 <code>digests/YYYY-MM-DD.md</code>。五个信息源，全部上线——Hacker News、GitHub Trending、
-        Hugging Face daily papers、一组六个 AI 实验室博客 feed、arXiv cs.AI / cs.CL / cs.MA——以及一条硬规矩：pipeline
-        端到端跑通之前，绝不加第六个。
+        一个只面向单一领域的个人头版。这个想法最初是“一个覆盖我所关注的一切的个性化 Hacker News”，
+        AI 是第一个领域；Hacker News 只是给这个想法命了名，并没有决定它的版式。原型首次运行时必须满足的那句话
+        写在规格说明里，下面还附着它自己的限制：
+      </p>
+      <blockquote class="pull">
+        <p>“在任何一个早晨，我的 AI 信息源发布过、而我尚未被展示过的所有内容，都会被分进我的类别，每个类别一页，
+        按我设定的顺序排列；每页之内的条目按我的兴趣排序，每个条目都附有一段简洁的 LLM 摘要，版式可以切换 ——
+        而我能在早餐时间读完自己关心的那几页。”</p>
+        <p>“覆盖范围是有边界的，而这个边界就是折中所在：feed 往回读七天，热榜只读它此刻的状态。
+        因此首次运行显示的是一周而不是一天，而早于某个信息源窗口的内容永远不会被显示。”</p>
+      </blockquote>
+      <p>
+        <strong>信息源。</strong>共 48 个，分三类：33 个 RSS 和 Atom feed，共用同一个读取器；9 个页面读取器，
+        用于那些发布新闻却没有可用 feed 的网站；以及 6 个常设榜单。每个信息源都是 Settings 中的一个复选框，
+        按背后的机构分组 —— Anthropic、OpenAI、Google、Microsoft、NVIDIA、Hugging Face、Mistral、DeepSeek、
+        阿里巴巴的 Qwen，以及 Simon Willison、Andrej Karpathy 等独立作者，等等。
       </p>
       <p>
-        pipeline 分七个 stage，能写成纯函数的都写成纯函数，每个 stage 都在自己的模块里，配一行契约：
+        <strong>每天早上。</strong>我按下 Fetch。各信息源并发读取，每个都有自己的截止时间，因此一个慢站点
+        拖不住其余站点；如果某个条目的 feed 文字太少、不足以生成摘要，就单独抓取一次它的页面。所有新条目都会
+        交给模型：模型写一段简短摘要；如果信息源自带的标题只是一个标识符，就另拟一个更清楚的标题；并从六个类别中
+        选出一个。榜单跳过这一切，直接进入它们自己的页面。页面会在每一步运行时显示当前步骤；一个普通的早晨
+        大约需要十秒。
       </p>
-      <pre><code>fetch → normalise → store → rank → summarise → render → deliver
-
-adapters/    only fetch and map to Item. No scoring, no DB, no LLM.
-store.py     only reads/writes SQLite. No business logic.
-rank.py      pure: (items, profile) -> scored items. No I/O.
-summarise.py the only module allowed to call an LLM.
-render.py    only turns selected items into text via a jinja2 template.</code></pre>
       <p>
-        这套分层作为硬性约束写进了仓库的 <code>CLAUDE.md</code>——不用 web 框架、不用 ORM、不用 Docker、不用队列、
-        不经询问不加新依赖、测试里不许访问网络——正是为了让构建 phase 4 的 agent 无法重新翻案 phase 0 已经定下的事。
+        <strong>页面。</strong>分为三组：<em>新闻</em> —— 按我设定的顺序排列的六个类别页：产品与发布（Products
+        &amp; launches）、模型发布与更新（Model releases）、工具与库（Tools &amp; libraries）、商业与政策（Business
+        &amp; policy）、文章与演讲（Writing &amp; talks），研究（Research）排在最后，不属于早餐阅读的范围；
+        <em>热榜</em> —— 每个榜单一个面板，呈现 fetch 那一刻的状态；以及<em>其他</em>，放不进任何类别的内容都在这里。
+        两种版式：报纸式，以及一次只看一条的卡片堆叠式。任何条目都可以收藏到一个自带副本的收藏夹中。
+        通过日历可以打开过去任意一天，内容与当天抓取时完全一致。
       </p>
     </div>
 
     <div class="stats reveal">
-      <div class="stat"><b>456</b><span>条每次 fetch 的条目，来自五个已上线的信息源——hn 30、gh_trending 24、hf_papers 50、ai_blogs 112、arxiv 240——第二次运行 <code>new 0</code></span></div>
-      <div class="stat"><b>242</b><span>个测试，全部离线：一个 session 级的 socket 守卫会让任何网络调用直接判为测试失败</span></div>
-      <div class="stat"><b>54</b><span>条阶段间 review 的发现——43 条已修复，10 条依据书面触发条件推迟，1 条不予修复</span></div>
-      <div class="stat"><b>425</b><span>行 pipeline snapshot，在七个重构主题之后仍逐字节一致</span></div>
+      <div class="stat"><b>48</b><span>个信息源：33 个 feed、9 个页面读取器、6 个常设榜单</span></div>
+      <div class="stat"><b>~10 s</b><span>一个普通早晨的 fetch 全程耗时 —— 47 个已启用的信息源在 3 到 6 秒内全部读完</span></div>
+      <div class="stat"><b>0 / 2,401</b><span>信息源提供的条目中，完整性检查无法解释其去向的数量</span></div>
+      <div class="stat"><b>83.1%</b><span>类别判定与我本人标注的一致率 —— 低于事先设定的 85% 标准，如实记为未通过</span></div>
     </div>
   </div>
 </section>
 
-<!-- ============ PHASES ============ -->
-<section class="section--tight" id="phases">
+<!-- ============ NEW ============ -->
+<section class="section--tight" id="new">
   <div class="wrap">
     <div class="prose">
-      <h2>进展到哪了</h2>
+      <h2>一切的基础：产品“看什么”与“显示什么”分开决定</h2>
       <p>
-        构建计划分 phase 推进，使每一步都独立有用、也可以独立放弃。各个 phase 交付了什么，以及合并前必须通过的验收检查：
+        最直观的设计是时间窗口：显示自上次 fetch 以来、或最近 24 小时内发布的内容。用真实数据一测，它会丢新闻。
+        9 月 24 日，OpenAI 的七篇文章到来时，所带的发布时间比前一天早上的那次 fetch 还<em>早</em>约 4 到 15 小时 ——
+        而那次 fetch 里一篇都没有。feed 在它所标注的时间之后很久，才让这些文章可见。以当天的条目为准：
+        七天窗口保留了全部 24 个有日期的条目；24 小时窗口保留 8 个；“自上次 fetch 以来”保留 3 个；
+        “自昨天零点以来”保留 17 个，那七篇仍然全部丢失。由于延迟来自信息源本身，任何以发布时间为锚点的窗口，
+        都无法在不丢条目的前提下收窄。
+      </p>
+      <p>
+        于是把这两件事分开。一个<strong>宽窗口</strong> —— 七天，从 fetch 那一刻往回滚动 —— 决定产品看什么；
+        一份<strong>所有已显示条目的记忆</strong>决定什么算新。窗口不必准确知道信息源何时发布，记忆则完全不必关心时间。
+        在做这次测量的那一天，信息源共提供了 115 个条目；其中 84 个已在之前某天显示过而被拦下，31 个出现在页面上。
+      </p>
+      <p>
+        <strong>记忆比较的是阅读日，而不是时刻。</strong>只有当一个条目是在<em>更早</em>的某一天首次显示时，它才会被拦下。
+        否则，同一个早上第二次按 Fetch 将一无所获，因为它找到的一切都已经被记住了 —— 而页面总是显示当天最近一次
+        fetch 的结果，早上的新闻就会消失。读者的一天从本地时间 06:00 开始，而不是午夜，所以深夜的阅读仍然归属于
+        感觉上的那一天。
+      </p>
+      <h3>什么样的两个条目算同一个</h3>
+      <p>
+        一个条目由它的信息源、发布时间和规范化后的标题来标识 —— 这三样都由信息源决定，我的代码无法改动。
+        URL 被刻意<em>排除</em>在标识之外。曾经有两次，对某个信息源链接读取方式的一行改动，让该信息源的每个条目
+        都换了新身份，产品于是把整整一周的内容当作新内容又推送了一遍。一个条目曾经出现过的所有链接都和它一起保存，
+        而显示出来的链接永远是信息源发布的那一个，一字不差。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTEGRITY ============ -->
+<section class="section--tight" id="integrity">
+  <div class="wrap">
+    <div class="prose">
+      <h2>一个能为自己作证的页面</h2>
+      <p>
+        产品的第一个承诺是<em>我的信息源发布的一切</em>，而读者无法靠浏览一页摘要来核实这一点。所以每天早上，
+        标签页上方都有一行字：顺利的日子里是“✓ 47 个信息源中读取了 47 个 · 1 个已停用 · 2 条无日期已跳过”，
+        其他日子则逐一写出缺失的信息源及原因 —— 失败、超时，或解析出 0 条。一切正常时也照样显示，是有意为之：
+        只在出错时才出现的提示，会让读者养成不看的习惯；而每个正常早晨都一模一样的一行字，才能让出问题的早晨一眼可辨。
+      </p>
+      <p>
+        这一行背后，是产品刻意保留、不肯混为一谈的区分。解析出零条的信息源是坏了；窗口内零条的信息源只是安静 ——
+        两者分开计数，只有前者算失败。停用的信息源计为停用，绝不算作缺失。没有日期的条目会被计数并点名，但绝不保留，
+        因为用抓取时间凑出来的身份会让它每天都再出现一次。模型没能生成摘要的条目仍然留在页面上，只是没有摘要，
+        同时当天被标记为不完整：它已经被记住了，丢掉它就等于永远丢失。
+      </p>
+      <p>
+        这一行也接受来自外部的检查。一个完整性检查会重新读取每个信息源返回的原始字节，用一个独立于产品、另行编写的解析器，
+        把每个条目归入且只归入一个类别：在页面上、因已显示过而被拦下、在窗口之外，或无法解释。首次运行共 2,401 个条目：
+        无法解释的为零；而且在采信这个干净的结果之前，先证明了检查器能对三处故意埋下的丢失发出报警。它的诚实边界也一并写明：
+        所有检查比较的，都是产品与信息源<em>提供</em>的内容。一条信息源从未放进自己 feed 的新闻，对这一切检查来说都是不可见的。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HYPOTHESES ============ -->
+<section class="section--tight" id="hypotheses">
+  <div class="wrap">
+    <div class="prose">
+      <h2>每一个假设，都配有能推翻它的结果</h2>
+      <p>
+        这个产品始于一份假设文档，每一个可测量的假设，都在用来检验它的数据出现之前就写下了阈值。看到数字之后才选定的规则
+        只是描述，而不是阈值 —— 这个项目犯过一次这样的错误，之后的阈值都是先写下来的。
       </p>
       <div class="table-wrap"><table class="data-table data-table--left">
-        <thead><tr><th>Phase</th><th>内容</th><th>完成标准</th><th>状态</th></tr></thead>
+        <thead><tr><th>假设</th><th>事先设定的标准</th><th>结果</th></tr></thead>
         <tbody>
-          <tr><td>0</td><td>骨架：<code>uv</code> 项目、pydantic 的 <code>Item</code> / <code>SourceHealth</code>、出错就大声失败的配置加载、四子命令 CLI</td><td><code>uv run digest --help</code> 列出四个子命令；23 个测试</td><td><strong>已合并</strong> 9 月 12 日</td></tr>
-          <tr><td>1</td><td>Hacker News 端到端：adapter 契约、Algolia adapter、注册表、并发抓取且单个信息源失败绝不中止整次运行</td><td>30 条带可用链接的新闻；关掉 wifi 后 52 个测试通过</td><td><strong>已合并</strong> 9 月 13 日</td></tr>
-          <tr><td>2</td><td>SQLite store：canonical URL、<code>INSERT OR IGNORE</code>、近重复检测、真正的失败计数器、把"新"定义为从未被渲染过</td><td>第二次 fetch 报告 <code>new 0</code>；漏跑一天的测试通过；99 个测试</td><td><strong>已合并</strong> 9 月 13 日</td></tr>
-          <tr><td>3a</td><td>同一接口之下再加四个 adapter——Hugging Face papers、arXiv、AI 博客合集、GitHub Trending——每个都在动笔之前先对着线上端点探测，并带有逐 feed 的陈旧度诊断</td><td>五个信息源全部有报告；第二次运行 <code>new 0</code>；171 个测试离线通过</td><td><strong>已合并</strong> 9 月 14 日</td></tr>
-          <tr><td>review</td><td>阶段间 review R0–R3：以一份 pipeline snapshot 作为契约、六个评审维度、54 条发现分流为修复 / 推迟 / 不予修复、七个修复主题一个 session 一个</td><td>每次 commit 时 snapshot 均未变化；242 个测试；README 里每条命令都真的能跑</td><td><strong>已合并</strong> 9 月 14 日</td></tr>
-          <tr><td>3b</td><td>规则排序：用词边界关键词分配主题、每条附带打分理由、按信息源归一化的互动热度、按主题配额作为上限；为重复项定一个明确的跨信息源优先级</td><td><code>digest rank</code> 打印出带分数和理由的选取结果；配额测试通过</td><td>下一步</td></tr>
-          <tr><td>3c</td><td>带信息源健康页脚的 Markdown 渲染、<code>digest run</code> 端到端接通——然后先读四个早上，再写任何 LLM 代码</td><td>一条命令产出一个我愿意读的带日期文件</td><td>计划中</td></tr>
-          <tr><td>4</td><td>对规则筛选的幸存者做一次批量 LLM 重排（只看标题，绝不看正文）、为前八条生成结构化摘要、每次运行记录成本、API 挂掉时优雅降级</td><td>每次运行不到一美分；未设 key 时仍能工作</td><td>计划中</td></tr>
-          <tr><td>5</td><td>定时调度（GitHub Action，温哥华时间 07:00，SQLite 提交回仓库）和一个投递渠道</td><td>连续七天无人值守运行</td><td>计划中</td></tr>
+          <tr><td>模型把条目归入我六个类别的方式和我自己一致</td><td>与我的标注一致率至少 85%，且误归入研究类的条目不超过 5%</td><td><strong>未通过 —— 83.1%</strong>（三次运行：79.8 / 83.1 / 86.5）；误归入研究类 2.6%</td></tr>
+          <tr><td>早餐时的几页能一次读完</td><td>五个测量早晨的中位数不超过 10 分钟，且没有任何一个早晨超过 20 分钟</td><td>正在测量</td></tr>
+          <tr><td>只有一种版式是不够的</td><td>五个早晨中至少有 3 次主动切换版式</td><td>正在测量</td></tr>
+          <tr><td>信息源提供的内容一条都不会丢失</td><td>无法解释去向的条目为零</td><td><strong>通过</strong> —— 2,401 条中 0 条</td></tr>
+          <tr><td>同一套信息源模板能同时适用于 feed、API 和抓取的页面</td><td>—</td><td><strong>通过</strong></td></tr>
+          <tr><td>固定的标签词表每天保持稳定</td><td>—</td><td><strong>通过</strong></td></tr>
+          <tr><td>按学习到的兴趣给条目排序能让页面更好</td><td>—</td><td><strong>搁置</strong> —— 为它提供信号的喜欢 / 不喜欢按钮无人使用，已被收藏（Save）取代</td></tr>
+          <tr><td>同一条新闻会从多个信息源到达，应当合并</td><td>—</td><td><strong>被推翻</strong> —— 四天 182 个条目中重复为零，此后只出现过一对</td></tr>
         </tbody>
       </table></div>
       <p>
-        整个项目的完成定义，是五个条件连续七天成立——无人值守运行、每天三分钟以内且花费不超过 0.10 加元、
-        某个信息源挂掉只降级一个板块而绝不拖垮整页、"这条怎么会在这里"的条目少于三条——外加一条比其他都重要的：
-        我真的会在打开 Hacker News 之前先读它。
+        分类的失败被如实保留为失败。错误集中在两对类别上 —— 工具被当成产品，商业新闻被当成文章 —— 合并其中任意一对，
+        都能把一致率提升到 91.4%。但我仍然保留了六个类别：分类体系体现的是我想读什么的判断；这个测量工具本身在完全相同的
+        几次运行之间就会波动好几个百分点；而为了通过一个数字而选择的合并，出发点就是错的。重新考虑的触发条件，是我在阅读时
+        能察觉到的症状 —— 比如商业新闻频繁出现在文章类下，多到让人烦 —— 而不是一个统计数字。
       </p>
     </div>
   </div>
 </section>
 
-<!-- ============ PHASE 3A ============ -->
-<section class="section--tight" id="sources">
+<!-- ============ USE ============ -->
+<section class="section--tight" id="use">
   <div class="wrap">
     <div class="prose">
-      <h2>Phase 3a：先探测，再动手</h2>
+      <h2>测量之前，先真实使用了四个早晨</h2>
       <p>
-        剩下的四个 adapter 是凭对各家 API 的记忆写出规格的，所以这个 phase 从对每个端点逐一探测开始，然后才对着它写代码——
-        凭空捏造不存在的隐患，代价和漏掉真实隐患一样大。brief 里的三条假设没能撑过探测。arXiv 的标题本来就是干净的：
-        270 条 cs.AI 条目里有 0 条带着 prompt 所警告的 <code>arXiv:</code> 前缀或内嵌换行，所以 normaliser 保留下来
-        作为对旧格式的防护，并用一个测试钉住这次测量，好让注释永远不会漂移成宣称一个并不存在的隐患。arXiv 的量是
-        估计的五倍——仅 cs.AI 就有 270 条，三个类别共 401 条。而且 38% 的 arXiv 条目是<em>修订版</em>：一条
-        <code>replace</code> 是某篇可能已经几个月前的论文的 v2，进入摘要时却像刚发布一样，所以 adapter 只保留
-        <code>new</code> 和 <code>cross</code> 两种 announcement，并用一个测试断言修订版占比超过 25%，这样一旦删掉
-        这个过滤器，测试会说明坏在哪里，而不是悄无声息。
-      </p>
-      <h3>六个 feed 里有三个已经死了，却仍返回 200</h3>
-      <div class="table-wrap"><table class="data-table data-table--left">
-        <thead><tr><th>Feed</th><th>最新条目</th><th>探测时的年龄</th></tr></thead>
-        <tbody>
-          <tr><td>openai_news</td><td>2026-09-14</td><td>0 天</td></tr>
-          <tr><td>deepmind</td><td>2026-09-08</td><td>6 天</td></tr>
-          <tr><td>anthropic_news</td><td>2026-09-01</td><td>13 天</td></tr>
-          <tr><td>anthropic_engineering</td><td>2026-05-25</td><td>112 天——陈旧</td></tr>
-          <tr><td>meta_ai</td><td>2026-07-27</td><td>49 天——陈旧</td></tr>
-          <tr><td>mistral</td><td>2026-05-22</td><td>115 天——陈旧</td></tr>
-        </tbody>
-      </table></div>
-      <p>
-        模式比数字更要紧：两个<em>官方</em> feed 都是新鲜的，四个<em>镜像</em> feed 里有三个已经陈旧，而且全都是
-        格式良好的 XML。一个逐 feed 不可靠的镜像是最糟糕的形态，因为一个健康的 feed 对其他 feed 的状况毫无说明。
-        核查过的每一个替代方案都返回 404，所以镜像保留；三个死掉的 feed 换成了 <code>claude</code>、
-        <code>anthropic_research</code> 和 <code>cursor</code>——都新鲜，并且偏向 AI coding agent，也就是画像里权重
-        最高的主题——被撤下的那几个则以注释的形式留在 <code>sources.yaml</code> 里，附上实测的年龄，这样"Mistral
-        怎么不在？"就有了书面答案。随后一个 commit 把每个 feed 的陈旧阈值挪到配置里，紧挨着它的 URL，并把实测的更新
-        节奏写成注释，因为一个全局数字要么对慢 feed 狼来了，要么对快 feed 睡过头，而一个狼来了的警告会被无视。
-      </p>
-      <h3>两个只有线上运行才能抓到的缺陷</h3>
-      <p>
-        <strong>博客合集把整个历史存档都导了进来——1,824 条。</strong>不同于发布当前列表的 arXiv、Hugging Face 或
-        GitHub，这些 feed 提供的是好几年的历史（仅 <code>openai_news</code> 就有 1,193 条），而在 48 小时的
-        <code>max_age_hours</code> 之下，它们永远不可能被选中。一个 30 天的条目截止线，给出了任何可能被选中的条目
-        十五倍的余量：1,824 变成了 112。
+        原计划是冻结原型后立刻开始测量。一个早晨的真实使用推翻了这个计划：9 月 24 日的第一次阅读发现了十个问题 ——
+        日期标题把今天显示在昨天的新闻上方，一些标题已经悄无声息地坏掉，一次 44 秒的 fetch 期间毫无进度提示、感觉像是等了
+        一到两分钟，榜单混在新闻中间，还有两个我分不清的类别。事实证明，冻结本身就是一种声明：它宣称这个东西已经完成到足以被测量，
+        而这个声明从未被检验过。于是这个阶段被一分为二：先每天早上使用，当天修复使用中暴露的问题；只有在出现一个不需要任何改动的早晨之后，
+        才进入冻结。
       </p>
       <p>
-        <strong>这个修复本会悄悄毁掉陈旧度警告。</strong>一个陈旧了 112 天的 feed，在 30 天窗口内的条目为零，所以
-        在截止线<em>之后</em>测量陈旧度只会报告一句干巴巴的"0 items"——读起来像是安静的一周，恰恰丢掉了这个机制
-        存在所为的那个信号。现在最新条目的日期是在截止之前对全部条目计算的，并有一个测试断言这条备注说的是
-        <em>stale</em> 而不是 <em>0 entries</em>。这是项目里第四次出现同一种形态——两个各自正确的改动互相遮蔽——
-        它变成了计划里一条常设的评审问题：<em>对每一个过滤器，下游有哪个测量读取的是过滤后的数据，它需要的是不是
-        未过滤的版本？</em>
-      </p>
-      <h3>什么时候零条目是个错误</h3>
-      <p>
-        当零意味着我们已经不再理解这个端点时，抛异常；当零是信息源真的可能处于的状态时，返回空。GitHub Trending 永远
-        有行，所以零就是选择器腐坏或者 403 的响应体，adapter 抛异常；精选论文列表同理。arXiv 返回空，但 feed 格式
-        错误时抛异常；博客合集逐 feed 返回空，但六个都一无所获时抛异常；Hacker News 直接返回空。逐 feed 的诊断信息
-        作为数据传递——对 adapter 契约做了一个小小的 <code>drain_notes()</code> 扩展，因为 adapter 不许写日志，而
-        <code>Item</code> 和 <code>SourceHealth</code> 都没法表达"成功了，但六个 feed 里有一个已经死了四个月"——
-        并在 <code>finally</code> 里排空，好让六行失败记录在"所有 feed 全死"的错误中幸存下来。恰恰在出了问题的时候
-        丢掉诊断信息，正是这个机制所要防止的那种失败。
+        第二个早晨只出现了五个新条目，而产品此时已经能说明原因，不必让我去猜：每个信息源都回应了，窗口内有 80 个条目，
+        其中 75 个已经显示过。它还暴露出榜单 —— 36 行对五条新闻 —— 已经占据了页面的大部分，这促成了一次正式的信息源调研：
+        当天就探查并新增了 36 个信息源，总数达到 48 个。之后周末的几个早晨各只有一条新闻，其余全部被正确拦下，也没有任何需要改代码的发现。
+        最后一批修复在 9 月 27 日晚上合入；第二天，正式测量的早晨开始了。
       </p>
       <p>
-        这个 phase 还在线上数据库里产出了第一个跨信息源重复：同一篇论文来自 Hugging Face 和 arXiv，两个 URL 哈希
-        不同，被 Dice 和数字守卫抓住了。没有实现胜出方——这个 phase 是为了观察——但有两条发现转到了 3b：两个 URL
-        都以同一个 arXiv id 结尾，所以一条提取 id 的规则能精确抓住每一对这样的重复，并且应该放在标题相似度<em>之上</em>，
-        而不是折叠进 <code>canonical_url</code>——在那里一次合并就是一次静默丢弃；而目前的胜出方是由配置顺序决定的，
-        那不算一个决定。
+        到那时，原型已有 261 个自动化测试，其中包括一道“绊线”：任何触碰真实数据的测试都会直接失败。第一天它就抓到了一个：
+        某个测试残留的后台任务往真实日志里写入了两行。
       </p>
     </div>
   </div>
 </section>
 
-<!-- ============ REVIEW ============ -->
-<section class="section--tight" id="review">
-  <div class="wrap">
-    <div class="prose">
-      <h2>阶段间 review：十一个 commit，零新功能</h2>
-      <p>
-        phase 3a 往一条 pipeline 里加了四个 adapter，而这条 pipeline 的形态是在只有一个 adapter 时定下的，从没有人问过
-        这个形态是否还成立。所以在 ranker 动工之前，整个代码库沿六个维度做了一次评审——静默失败与可观测性、分层与
-        耦合、重复与 adapter 的形态、测试套件的健康度、词汇与错误分类体系、文档漂移——每条发现都归入三个桶之一：
-        在项目约束内可以改进的；约束本身在造成伤害的；或者约束在起作用、而显而易见的改进反倒是退步的。五十四条
-        发现：43 条已修复，10 条依据明确的触发条件推迟，1 条不予修复。七个修复主题，一个 session 一个。测试套件从
-        收集到的 178 个增至 242 个。
-      </p>
-      <h3>先搭安全网</h3>
-      <p>
-        在任何评审 session 开跑之前，先用一个 commit 建了一份 characterisation snapshot：对录制好的 fixture 跑真实的
-        <code>fetch → store</code> 组合，导出为 425 行排好序的记录，每条附带原始载荷的哈希。它对正确性不做任何断言——
-        只断言这个组合没有移动——正因如此它才是重构可以被衡量的契约，覆盖了单元测试在结构上无法覆盖的东西：跨信息源
-        dedupe、每一条 <code>dupe_of</code> 的方向、四种日期格式汇入同一个 store。它的时钟从 fixture manifest 里
-        钉定，而不是一个常量，因为博客合集是按 <em>now − 30 days</em> 过滤的：把时钟冻住，第一次刷新 fixture 就会把
-        每一条都推出截止线之外，得到一份空空如也的 snapshot，而生成它的测试依然通过。它经历了一次模型拆分、六次重命名、
-        一次上限搬迁、一次注册表替换和一套新的错误层级，仍然逐字节一致——而为了让红色的测试变绿而重新生成它是被
-        禁止的，因为那等于一次删掉了证据的重构。
-      </p>
-      <h3>后果最严重的一条发现</h3>
-      <p>
-        <strong>所有信息源都可以失败，而进程仍然以 0 退出。</strong>连续七次全盘失败，本可以在什么都没交付的情况下满足
-        项目自己的"无人值守连跑七天"标准，而定时任务会自始至终显示为绿色。修复方式是从各个 outcome 读出一个
-        exit code——所有启用的信息源全部失败时为 4——而明确<em>不是</em>去收窄那个让一个死掉的 feed 不会中止整次
-        运行的 catch。紧随其后的一条：明文要求的"每个信息源一行"运行日志位于 INFO 级别，而默认级别是 WARNING，
-        所以 07:00 的定时运行会把它写到无处可寻。没有人会在 crontab 里敲 <code>-v</code>。
-      </p>
-      <p>
-        唯一一条针对约束本身的发现：<code>CLAUDE.md</code> 的完成定义要求 <code>digest run --dry-run</code> 能跑完，
-        而 <code>run</code> 是一个打印"not implemented"然后以 0 退出的桩——于是一个弄坏了所有 adapter 的改动，也
-        能一字不差地满足质量门槛。这比没有这一条更糟，因为它读起来像端到端验证，挤掉了 session 本会即兴补上的
-        检查。它单独落在一个 commit 上，而不是塞进某次重构里，因为埋在 diff 里的治理改动，对后来追问"门槛为什么
-        变了"的人是不可见的。
-      </p>
-      <h3>报告提议，diff 决定</h3>
-      <p>
-        review 文档是从各个 commit 的 <code>git show</code> 推导出来的，而不是从报告，而两者的比较是最有意思的结果。
-        每一条发现、每一个修复或推迟的决定都站住了。五条规定好的<em>机制</em>却没有：一旦代码在手，每一条都朝着更
-        保守或更具体的方向挪动了——其中两条是对指令而非发现的纠正，triage 建议的重命名会恰好重用相邻那条发现正在
-        移除的那个词。事实证明，从报告写出来的 triage 在方向上可靠、在机制上欠缺细节，而这些偏离之所以存在，只是
-        因为每个主题在被允许写代码之前都必须先提出计划。triage 得到的是一条注明日期的修正说明，而不是重写：它是
-        当时所作决定的记录，而那道差距正是有用的部分。
-      </p>
-      <p>
-        修复过程中发现的一些东西不在任何报告里，只在 diff 里。fixture 录制器把整个 Hacker News 的 URL 写死了，
-        所以一次配置改动就会让 snapshot 建立在一个生产环境已经不再使用的窗口上。一个抽取出来的日期 helper 差点把
-        格式错误的日期变成缺失的日期——条目还在，看起来什么都没丢，只是永远不会被排进去——它被一个为另一条发现
-        而写的测试抓住了。有一处编辑悄悄地从未生效，<code>digest render</code> 在整整一个主题期间把禁用的信息源
-        错标为<em>quiet</em>，因为测试直接调用了 helper 并传入了真实调用点所缺的那个参数；这变成了一条常设规则——
-        <em>一个自己提供参数的测试，证明不了调用方也提供了它</em>。而作为最后一个主题的最后一步，把 README 里声称的
-        每条命令都执行一遍，找出了三处不实的说法，其中一处就写在同一个 commit 里。
-      </p>
-      <p>
-        六条发现被记录为<em>不要</em>改进的事项，因为显而易见的修复恰恰是退步：不要收窄 catch-all，不要把部分失败
-        变成非零退出，不要把 arXiv id 折叠进 URL canonicalisation，不要剥除 <code>source</code>，不要让四位数年份
-        豁免数字守卫，不要合并那三个 48 小时窗口。十条推迟项各自带着一个触发条件，写在将来动手的那个文件里——一条
-        docstring、一个常量、一句配置注释——而不是只写在一张要有人重读才会生效的表格里。
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ DECISIONS ============ -->
-<section class="section--tight" id="decisions">
-  <div class="wrap">
-    <div class="prose">
-      <h2>值得辩护的决定</h2>
-      <p>
-        大多数代码之所以存在，都是因为某个具体的决定，而每个 pull request 都记录了评审者应该追问的那些决定。
-        塑造了 store 的几个——它们全部经受住了阶段间 review，其中好几条还在它"<em>不要</em>改进"的清单上：
-      </p>
-      <h3>"新"意味着 <code>digest_date IS NULL</code>，而绝不是日期比较</h3>
-      <p>
-        最显而易见的查询——<code>first_seen_at</code> 落在今天的条目——错在两处。存储的时间戳是 UTC，而摘要的"一天"
-        是 America/Vancouver，所以当地 07:00 的一次运行对应 UTC 14:00，按日历日期比较会把同一个早上的条目劈到两个
-        UTC 日期里，天天如此。而且基于日期的查询会永久丢掉任何没跑成的那一天：笔记本休眠、Action 失败、周末出门。
-        取而代之，<code>digest_date</code> 一开始为 NULL，只有当条目被渲染进某期摘要时才盖章；漏跑一次之后自然会
-        自己补上。有一个测试专门跳过一天，并断言两天的条目都会回来。
-      </p>
-      <h3>Dice 而非 Jaccard——上面再叠一层数字守卫</h3>
-      <p>
-        在 0.85 的阈值下，Jaccard 对真实标题几乎够不到：七个 token 的标题多出一个词就已经贴在边界上，多两个词就
-        判为不同，于是这项检查看起来在工作，实际上几乎从不触发。Dice 让 0.85 保持有意义。但 Dice 单独使用有一类
-        误报，正好砸在这份摘要的题材上——<em>RTX 5090 Super</em> 与 <em>RTX 5080 Super</em> 得 0.875，两个只差一个
-        数字的模型版本或两篇 arXiv 论文也是如此。所以凡是含数字的 token 不一致的标题，无论比值多高，一律不算重复；
-        而且守卫用的是"token 里含有数字"而非 <code>str.isdigit()</code>，因为 <code>7B</code>、<code>v2</code> 和
-        <code>gpt-5</code> 恰恰是最要紧的 token，而它们没有一个是纯数字。一个名为
-        <code>test_the_numeric_guard_is_load_bearing</code> 的测试断言 5090/5080 和 4.5/4.6 这两对都得分高于阈值，
-        这样一旦删掉守卫，测试套件会准确说出坏在哪里，而不是悄无声息。
-      </p>
-      <h3>只剥除毫无歧义的跟踪参数</h3>
-      <p>
-        最初的 spec 把 <code>source</code> 和 <code>utm_*</code>、<code>fbclid</code>、<code>gclid</code> 一起剥掉。
-        这是错的：光秃秃的 <code>source</code> 是个普通的应用参数，<code>huggingface.co/models?source=trending</code>
-        和 <code>?source=likes</code> 是两个不同的列表页，却会得到完全相同的哈希。这种失败是不对称且不可见的——
-        dedupe 用的是 <code>INSERT OR IGNORE</code>，所以第二条会被直接丢弃，没有新行也没有日志——而误拆则不过是把
-        一条新闻显示两次。这种不对称——<em>一条新闻看到两次可以挽回，两条被悄悄合并则不能</em>——是这个项目里每一个
-        dedupe 决定背后的准则。
-      </p>
-      <h3>要么带时区，要么拒收</h3>
-      <p>
-        <code>Item</code> 模型会拒绝 naive datetime，而不是默认它是 UTC。feedparser 返回 naive 的结构体，HN API 返回
-        带 <code>Z</code> 的 ISO 字符串，arXiv 自带偏移量；默认当作 UTC 是一个数小时的误差，没人会注意到，直到 ranker
-        按时间新旧排序并把两者混在一起。store 在写入时转成 ISO 字符串，读出时解析回带时区的 datetime，并用一个
-        <code>+05:30</code> 的值做往返测试——HN adapter 则从整数 <code>created_at_i</code> 取时间戳，时区信息由结构
-        保证，而不依赖某个后缀。
-      </p>
-      <h3>两个上限，两个名字</h3>
-      <p>
-        <code>fetch_limit</code> 按信息源计，限制摄入；<code>quota</code> 按主题计，限制选取。给它们同一个名字会招来
-        "到底哪个生效"的 bug，所以有一个测试往 <code>sources.yaml</code> 里塞一个 <code>quota:</code> 键并断言它会
-        报错。摄入刻意放得宽——arXiv 50、HN 30——因为每条原始载荷都原封不动地存在 <code>raw_json</code> 里，这样当
-        第三周 ranker 改了之后，可以离线对三周的历史重跑一遍，而不是再等三周才知道改动是否有效。
-      </p>
-      <h3>48 小时窗口，而不是 24</h3>
-      <p>
-        24 小时的创建窗口会永久错过慢热的新闻：一条 30 小时前发布、今天早上才破 100 分的帖子，在两次运行中都不曾
-        落在窗口内。重新看到昨天的条目没有任何代价，URL 哈希一去重就没了。回看窗口和画像里的 <code>max_age_hours</code>
-        目前共享 48 这个值，并被注明是两件不同的事，必须保留各自独立变化的自由。
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ WHAT THE WORK TURNED UP ============ -->
-<section class="section--tight" id="findings">
-  <div class="wrap">
-    <div class="prose">
-      <h2>做的过程中发现了什么</h2>
-      <p>
-        每个 phase 的 pull request 都有一个以此为题的小节，因为一个 phase 在它之前的 phase 里发现的 bug，是最值得记录的东西。
-      </p>
-      <p>
-        <strong><code>fetch</code> 一上线，就有一个测试开始访问网络。</strong>phase 0 的一个测试调用了
-        <code>main(["fetch"])</code>，它悄悄变成了一次对 Algolia 的真实 HTTP 调用——而且通过了，所以没有任何东西标记它。
-        修复是结构性的，而不是加一句断言：<code>tests/conftest.py</code> 安装了一个 session 级的 socket 守卫，任何测试都
-        无法选择退出。深挖它的过程中冒出两个细节。loopback 必须豁免，因为在 Windows 上 asyncio 事件循环用一对
-        <code>127.0.0.1</code> socket 搭建自己的 self-pipe，一刀切地抛异常会把它本该保护的测试一起干掉。而守卫的异常
-        派生自 <code>BaseException</code> 而非 <code>Exception</code>：复现这个回归时发现守卫装上后测试依然通过，因为
-        <code>fetch_all</code> 会捕获所有 <code>Exception</code> 以保证没有哪个信息源能中止运行——于是被拦下的连接
-        变成了一次记录在案的信息源失败，以及退出码 0。
-      </p>
-      <p>
-        <strong>同一个 catch 还吞掉了 Ctrl-C。</strong>追查上面的问题时暴露出 <code>fetch_all</code> 把
-        <code>KeyboardInterrupt</code>、<code>SystemExit</code> 和 <code>CancelledError</code> 都当成"这个信息源失败了"——
-        一次被打断的抓取会被记录成一个死掉的 feed，并在第二天早上的健康页脚里显示为信息源腐坏。现在非
-        <code>Exception</code> 的 <code>BaseException</code> 会被重新抛出：绝不中止的规则说的是信息源失败，不是操作者退出。
-      </p>
-      <p>
-        <strong>一个只等第一条非 Latin-1 标题出现就会崩溃的 bug。</strong>在 Windows 控制台上 <code>sys.stdout</code>
-        是 cp1252，所以打印一条 CJK 或 emoji 标题会抛出 <code>UnicodeEncodeError</code>，把一个本该在 07:00 无人值守运行
-        的任务整个打垮。已复现，通过把 stdout 重新配置为 UTF-8 修复，而且值得一提的是 GitHub Action 永远不会复现它——
-        所以本地运行是横在它和一次静默失败的早晨之间的唯一屏障。<code>CLAUDE.md</code> 现在对所有文件 I/O 明确要求
-        <code>encoding="utf-8"</code>，因为 phase 3 的 <code>open(path, "w")</code> 就是同一个 bug 换了个表面。
-      </p>
-      <p>
-        <strong>Algolia 对纯文本帖子会省略 <code>url</code> 字段——而不是发 <code>null</code>。</strong>
-        adapter 本来就会回退到 HN 的条目页，但第一版测试断言的是 <code>is None</code>，对着真实 fixture 就挂了。现在它被
-        一个参数化测试钉死在全部三种形态上（缺失、<code>null</code>、空字符串），将来从一种变成另一种也不会以崩溃的形式
-        传到定时任务里。
-      </p>
-      <p>
-        <strong>数字守卫让自己的六个测试挂了，而它是对的。</strong>fixture 里那一对是"…at CES 2027"与"…at CES"——
-        被标注为重复，但数字不同，所以守卫拒绝了它。错的是标题，不是规则。另外，WAL 模式的 SQLite 在进程被杀后会留下
-        <code>-wal</code> 和 <code>-shm</code> 伴生文件；直到某次运行被打断之前，它们都不在 <code>.gitignore</code> 里。
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ HOW IT'S MADE ============ -->
+<!-- ============ METHOD ============ -->
 <section class="section--tight" id="method">
   <div class="wrap">
     <div class="prose">
-      <h2>开发方法：一个 phase 一个 session</h2>
+      <h2>第三次尝试，以及由此形成的方法</h2>
       <p>
-        这个项目在写任何代码之前就有两份设计文档——一份构建计划（范围、每个端点都经手动验证的信息源目录、数据模型、
-        三个递进版本的排序设计、各个 phase），以及一份实施指南，里面写着每个 phase 要用的 prompt 原文。两者都在仓库的
-        <code>docs/</code> 下。这套方法承袭自 JHA 的经验：<strong>每个 phase 都是一个全新的 Claude Code session</strong>，
-        因此不会有任何漂移，而跨 session 的固定约束由 <code>CLAUDE.md</code> 承载，而不是靠对话记忆。
+        这是我第三次尝试同一个想法，而前两次恰好从相反的方向失败。第一次按计划逐步推进，由 Claude Code 实现每一步；
+        它产出了一个真实、可运行的代码库，但随着规模增长，我的 review 变得流于表面，我确认的只是代码存在，而不是真正理解了它 ——
+        我失去了对项目走向的掌控。第二次则对一切都套用严格的规则：先探查再构建，每个设计分岔都用真实数据验证，每次改动只做一个决定，
+        保留完整的书面记录。掌控从未丢失，但三天里连一个 demo 都没做出来 —— 规则本身是对的，却花在了用完即弃的代码上。
+        事后我写下的教训只有一句：
+      </p>
+      <blockquote class="pull"><p>“严谨要分阶段。”</p></blockquote>
+      <p>这次尝试的方法，把严谨放在值得投入的地方：</p>
+      <div class="table-wrap"><table class="data-table data-table--left">
+        <thead><tr><th>阶段</th><th>内容</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>1 · 假设</td><td>纸面上的产品：它做什么、基于哪些假设，以及什么样的结果能证明每个假设是错的。不写代码。</td><td><strong>已完成</strong> 9 月 18 日</td></tr>
+          <tr><td>2 · 原型</td><td>用 Claude Code 快速构建，依据它在真实数据上的行为而非代码本身来评判；每次改动产品，都在同一轮中同步修正规格说明。</td><td><strong>已完成</strong></td></tr>
+          <tr><td>2.5 · 先使用，再测量</td><td>先每天使用并当天修复；然后代码冻结，按预设标准测量各项假设。</td><td><strong>测量中</strong> 自 9 月 28 日起</td></tr>
+          <tr><td>3 · 构建</td><td>以稳定后的规格说明为依据，从头编写一个经过 review 的新代码库 —— 原型只作参考，绝不直接转为正式代码。</td><td>未开始</td></tr>
+          <tr><td>4 · 部署</td><td>正式发布。</td><td>未开始</td></tr>
+        </tbody>
+      </table></div>
+      <p>
+        <strong>谁做了什么，直说。</strong>产品是什么由我决定，我每天早上使用它，所有决定都由我做出。Cowork 中一个负责规划的 Claude
+        撰写了全部文档 —— 规格说明、计划、日志 —— 撰写了交给 coding agent 的每一条 prompt，并 review 了每一份返回的报告。
+        Claude Code 编写并测试了全部代码；代码不是我手写的。规划一方从不碰代码，coding agent 也从不写文档，因此对产品的每一次改动，
+        都要经过一份书面 prompt 和一份书面报告 —— 正是这一点，让两个 agent 的协作不至于变成黑箱。
       </p>
       <p>
-        每个 phase 都走同一个循环。贴上 prompt；prompt 的结尾要求 agent 先给一份简短计划，并在动手之前回答一两个问题
-        （"说出一种 <code>canonical_url</code> 可能把两个真正不同的 URL 合并成一个的情况"——上文的 <code>source</code>
-        参数决定正是这样浮现的）。读计划、提出反对、说开始。当它说完成时，我亲自跑验收命令——关掉 wifi 跑测试、第二次
-        fetch 必须报告 <code>new 0</code>——因为这个项目全是 I/O，而 I/O 正是 agent 的自信最不可靠的地方。然后在一个
-        全新的 session 里跑一个评审 prompt，它比写代码的那个 session 审得更好，因为它不用为自己的选择辩护。每个 phase
-        一个 pull request，决定和发现都写进描述里。在 phase 之间，当代码的形态变化足够大时——设计时假设只有一个
-        adapter，现在有五个——同一套纪律就放大成上文的阶段间 review：先做 snapshot，再跑六轮相互独立的评审，然后
-        triage，最后一个 session 一个修复主题，每个主题在获准写代码之前先提出自己的计划。
-      </p>
-      <p>
-        我亲自把关而不委托出去的规则：不经询问不加新依赖（token 集合比值、CLI 和配置加载都是 agent 会伸手去拿
-        <code>rapidfuzz</code>、<code>typer</code> 或 <code>pydantic-settings</code> 来省二十行代码的地方）；测试不许联网；
-        adapter 保持"笨"；解析不了的抓取器要抛异常而不是返回空列表，因为空列表和"今天没新闻"无法区分，而这恰恰是
-        健康页脚抓不住的静默腐坏。
-      </p>
-      <p>
-        分工说得直白一点：计划、约束、phase 边界、验收检查和评审是我的；几乎全部代码是 Claude Code 依据它们写出来的。
-        上面的"决定"一节，如实记录了 agent 的第一版答案在哪里被改掉、以及为什么。
+        此前这个地址上的介绍写的是第一次尝试。那个代码库如今只作参考；除了它带来的教训，这里没有复用其中任何东西。
       </p>
     </div>
   </div>
 </section>
 
-<!-- ============ WHERE IT'S THIN ============ -->
+<!-- ============ THIN ============ -->
 <section class="section--tight" id="thin">
   <div class="wrap">
     <div class="prose">
       <h2>不足之处</h2>
       <div class="callout callout--warn">
         <p>
-          <strong>它还产不出摘要。</strong>数据库里的五个信息源，外加一份 428 条未渲染条目的纯文本列表，是一个摄入层，
-          不是一个产品。排序、渲染和定时调度才是决定它究竟能取代 Hacker News、还是沦为又一个我不读的 feed 的部分；计划对这个
-          风险的回答是：在写任何 LLM 代码之前，先读四个早上的规则排序输出。
+          <strong>它是原型，而且只在我自己的机器上运行。</strong>没有调度器 —— 手动按 Fetch 是刻意的决定 —— 没有部署，也没有第二个用户。
+          生产级重建才是写出经得起长期使用的代码的阶段；在那之前，代码不公开。
         </p>
         <p>
-          <strong>近重复检测有一个已知的漏网之鱼。</strong>屈折变体是不同的 token，所以一条调换语序的标题——
-          "Anthropic releases X"与"X released by Anthropic"——只得 0.80，会被当成两条新闻放过。stemming 能修它，
-          但不在 v1 范围内；这个取舍记录在阈值旁边。
+          <strong>分类没有达标。</strong>83.1% 对 85%，刻意保留；能修复它的两种合并方案已经测过，正等待真实阅读给出合并的理由。
         </p>
         <p>
-          <strong>AI 博客镜像逐 feed 来看并不可靠。</strong>它六个 feed 里有三个已经陈旧了好几个月，却仍返回 HTTP 200
-          和格式良好的 XML，而核查过的每一个替代方案都返回 404，所以镜像保留，陈旧度警告是承重的而非装饰性的。
-          conditional GET 已实现并有测试，但没有持久化：<code>sources</code> 表每个信息源只有一个 <code>etag</code>
-          列，而合集需要六个，所以每次请求仍然是无条件发出的——刻意不做成半成品，直到真有哪个主机对这个任务限流。
+          <strong>完整性检查有一个它自己点明的盲区。</strong>其中五个页面读取器没有被独立检查 —— 独立解析器只会重复它们的逻辑 ——
+          所以检查会逐一列出它们的条目名称，而不是宣称它们没有问题。
         </p>
         <p>
-          <strong>跨信息源重复的优先级是配置顺序，不是一个决定。</strong>一篇论文的 arXiv 副本目前指向 Hugging Face
-          副本，仅仅因为 <code>hf_papers</code> 在 <code>sources.yaml</code> 里排在 <code>arxiv_cs_ai</code> 之前；
-          把文件按字母排一下序就会悄悄翻转它。phase 3b 欠一个明确的优先级，以及一个把文件重新排序后断言胜出方不变的测试。
+          <strong>来自两个信息源的同一条新闻，仍然是两个条目。</strong>这种情况发生过一次：Anthropic 的新闻页和研究页刊登了同一篇文章。
+          等到这件事真正重要时，方向不是隐藏副本，而是合并 —— 每条新闻一个条目，并展示每个信息源各自怎么说 —— 这需要跨信息源的事件归组，
+          而产品目前还做不到。
         </p>
         <p>
-          <strong>review 写明了没有人看过的地方。</strong>性能、never-abort 之外的并发、年量级的数据增长、数据库体积和
-          供应链都不在范围内，而 review 文档把它们列了出来，好让"54 条发现，全部有了决定"在六个月后不会被误当成完整。
-        </p>
-        <p>
-          <strong>从 GitHub Action 提交一个 WAL 模式的 SQLite 文件</strong>——phase 5 的计划——需要在 commit 步骤之前先执行
-          <code>PRAGMA wal_checkpoint(TRUNCATE)</code>，否则提交的文件可能恰好缺少这次运行刚写下的那些事务。已记下留给
-          phase 5，尚未处理。
+          <strong>早餐阅读和版式这两个假设还没有答案。</strong>它们的结论要在第五个测量早晨之后才会得出，而任何一个需要改代码的早晨，
+          都会让计数从头开始。
         </p>
       </div>
     </div>
@@ -511,14 +378,14 @@ render.py    only turns selected items into text via a jinja2 template.</code></
     <div class="prose">
       <h2>致谢与分工</h2>
       <div class="credits">
-        <h3>一个人的项目，与 agent 协作完成</h3>
+        <h3>一个人的项目，借助两个 agent 完成</h3>
         <p>
-          由曹一明自 2026 年 9 月起设计、主导并评审，作为他本人每天早上使用的工具。用 Claude Code 实现，一个 phase
-          ——或一个 review 主题——一个 session，依据一份书面计划和一份记录固定约束的 <code>CLAUDE.md</code>；分工已在上文说明。
+          由曹一明构思、主导，并自 2026 年 9 月起每天早上使用。文档和 prompt 由 Cowork 中负责规划的 Claude 撰写；代码和测试由
+          Claude Code 完成；每一个决定，以及对每一份报告的判断，都出自我本人。
         </p>
         <p>
-          基于 httpx、feedparser、selectolax、pydantic、jinja2、pyyaml、uv、pytest 和 ruff 构建，并使用 Hacker News
-          的 Algolia API、Hugging Face 的 daily-papers API、arXiv RSS、GitHub Trending 以及 Olshansk/rss-feeds 镜像。本页的 dedupe 图示由曹一明在 phase 2 合并后根据 <code>store.py</code> 编写。
+          基于 FastAPI、React 和 Vite 构建，使用 gpt-5.4-mini 生成摘要和分类，并依托它所读取的 48 个信息源的公开 feed、页面和榜单。
+          本页的图示是根据产品的规格说明专门编写的，并非取自其代码。
         </p>
       </div>
     </div>
@@ -526,6 +393,7 @@ render.py    only turns selected items into text via a jinja2 template.</code></
 </section>
 
 </main>
+
 
 <footer class="site-footer">
   <div class="wrap footer-inner">
