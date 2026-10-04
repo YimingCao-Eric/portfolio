@@ -1,0 +1,146 @@
+/* Method page: phase map, roles, rules, Phase 2.5 simulator. Loaded after base.css and project.css. */
+
+.mt-wide { max-width: 980px; }
+
+/* ---------- Figure A: phase map ---------- */
+.pm-track {
+  position: relative; display: grid; gap: .5rem;
+  grid-template-columns: 1fr 1fr 1fr 2.1fr 1fr 1fr;
+  margin: .25rem 0 1.25rem;
+}
+.pm-track::before {
+  content: ""; position: absolute; left: 1.5rem; right: 1.5rem; top: 1.55rem; height: 2px;
+  background: var(--border-strong); z-index: 0;
+}
+.pm-tab {
+  position: relative; z-index: 1; text-align: left; cursor: pointer;
+  display: flex; flex-direction: column; gap: .2rem;
+  padding: .7rem .75rem .75rem; min-width: 0;
+  background: var(--bg-elev); color: var(--text-soft);
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  font: inherit; transition: border-color .18s var(--ease), box-shadow .18s var(--ease), transform .18s var(--ease);
+}
+.pm-tab:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.pm-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pm-tab.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow-sm); color: var(--text); }
+.pm-tab__num { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 650; color: var(--text); letter-spacing: -.02em; }
+.pm-tab.is-active .pm-tab__num { color: var(--accent-text); }
+.pm-tab__name { font-size: .8rem; font-weight: 600; line-height: 1.25; }
+.pm-tab--idea { background: var(--bg-sunken); border-style: dashed; }
+.pm-subs { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; margin-top: .35rem; }
+.pm-sub {
+  font-size: .7rem; line-height: 1.3; padding: .3rem .4rem; border-radius: var(--r-sm);
+  background: var(--bg-sunken); color: var(--text-soft);
+}
+.pm-sub--frozen { background: color-mix(in srgb, var(--accent) 13%, transparent); color: var(--accent-text); }
+.pm-pin {
+  display: inline-flex; align-items: center; gap: .35rem; margin-top: .4rem; align-self: flex-start;
+  font-size: .68rem; font-weight: 600; letter-spacing: .02em;
+  padding: .18rem .5rem; border-radius: 999px;
+  background: var(--accent); color: var(--bg-elev);
+}
+.pm-pin::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pm-pulse 2s ease-in-out infinite; }
+@keyframes pm-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .pm-pin::before { animation: none; } }
+
+.pm-panel { border-top: 1px solid var(--border); padding-top: 1.1rem; }
+.pm:not(.is-js) .pm-panel + .pm-panel { margin-top: 1.4rem; }
+.pm-panel h3 { font-size: 1.05rem; margin: 0 0 .45rem; }
+.pm-what { font-size: .93rem; color: var(--text); max-width: 76ch; margin: 0 0 1rem; line-height: 1.6; }
+.pm-facts { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: .55rem 1.1rem; margin: 0; font-size: .87rem; }
+.pm-facts dt { font-size: .7rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-faint); padding-top: .2rem; }
+.pm-facts dd { margin: 0; color: var(--text-soft); line-height: 1.55; max-width: 72ch; }
+.pm-facts dd code { font-size: .86em; }
+.pm-facts .pm-mdn-dt { color: var(--accent-text); }
+.pm-facts .pm-mdn { color: var(--text); }
+
+@media (max-width: 760px) {
+  .pm-track { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pm-track::before { display: none; }
+  .pm-tab--25 { grid-column: 1 / -1; }
+  .pm-facts { grid-template-columns: 1fr; gap: .15rem; }
+  .pm-facts dd { margin-bottom: .6rem; }
+}
+
+/* ---------- roles, steps, rules ---------- */
+.mt-roles { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 1.6rem 0; }
+@media (max-width: 860px) { .mt-roles { grid-template-columns: 1fr; } }
+.mt-role { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.1rem 1.2rem; }
+.mt-role h3 { font-size: 1rem; margin: 0 0 .15rem; }
+.mt-role .mt-role__who { font-size: .76rem; color: var(--text-faint); margin: 0 0 .7rem; }
+.mt-role p { font-size: .88rem; color: var(--text-soft); margin: 0 0 .6rem; line-height: 1.55; }
+.mt-role p:last-child { margin-bottom: 0; }
+.mt-role strong { color: var(--text); }
+
+.mt-steps { list-style: none; counter-reset: mt; padding: 0 !important; margin: 1.4rem 0 1.6rem; display: grid; gap: .6rem; }
+.mt-steps li { counter-increment: mt; position: relative; padding: .7rem .9rem .7rem 3rem; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--r-md); font-size: .93rem; }
+.mt-steps li::before {
+  content: counter(mt); position: absolute; left: .85rem; top: .7rem;
+  width: 1.45rem; height: 1.45rem; border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--font-mono); font-size: .78rem; font-weight: 650;
+  background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent-text);
+}
+
+.mt-rules { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); margin-top: 1.6rem; }
+.mt-rule { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1rem 1.15rem; }
+.mt-rule h3 { font-size: .95rem; margin: 0 0 .45rem; }
+.mt-rule p { font-size: .86rem; color: var(--text-soft); margin: 0; line-height: 1.55; }
+
+.mt-docs { list-style: none; padding: 0 !important; margin: 1.2rem 0 1.6rem; display: grid; gap: .45rem; }
+.mt-docs li { display: grid; grid-template-columns: 11.5rem minmax(0, 1fr); gap: .2rem 1rem; font-size: .9rem; padding: .5rem 0; border-bottom: 1px solid var(--border); }
+.mt-docs a { font-family: var(--font-mono); font-size: .84rem; color: var(--accent-text); }
+.mt-docs span { color: var(--text-soft); }
+@media (max-width: 560px) { .mt-docs li { grid-template-columns: 1fr; } }
+
+.mt-timeline { margin: 1.2rem 0 0; display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: .7rem 1.1rem; font-size: .9rem; }
+.mt-timeline dt { font-family: var(--font-mono); font-size: .8rem; font-weight: 600; color: var(--text); padding-top: .12rem; }
+.mt-timeline dd { margin: 0; color: var(--text-soft); line-height: 1.55; }
+
+/* ---------- Figure B: Phase 2.5 simulator ---------- */
+.sim-legend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; margin: 0 0 .9rem; font-size: .78rem; color: var(--text-soft); }
+.sim-legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.sim-ico { display: inline-block; width: 12px; height: 12px; flex: none; }
+.sim-ico--q { border-radius: 50%; background: var(--accent); }
+.sim-ico--f { background: var(--warn); transform: rotate(45deg) scale(.86); border-radius: 2px; }
+.sim-ico--c { border: 2px solid var(--warn); border-radius: 3px; }
+.sim-ico--n { border-radius: 50%; border: 1.5px dashed var(--text-faint); }
+
+.sim-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .4rem; margin-bottom: 1rem; }
+.sim-day {
+  display: flex; flex-direction: column; align-items: center; gap: .35rem; min-width: 0;
+  padding: .5rem .2rem .45rem; cursor: pointer; font: inherit;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-md);
+  transition: border-color .15s var(--ease), transform .15s var(--ease);
+}
+.sim-day:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.sim-day:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sim-day .sim-ico { width: 14px; height: 14px; }
+.sim-day__date { font-size: .68rem; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.sim-day__badge { font-family: var(--font-mono); font-size: .72rem; font-weight: 650; padding: .05rem .35rem; border-radius: 4px; min-height: 1.2em; color: var(--text-faint); }
+.sim-day--s1 .sim-day__badge, .sim-day--entry .sim-day__badge { background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
+.sim-day--morning { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.sim-day--morning .sim-day__badge { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent-text); }
+.sim-day--done { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.sim-day--done .sim-day__badge { background: var(--accent); color: var(--bg-elev); }
+.sim-day--restart .sim-day__badge { color: color-mix(in srgb, #d32f2f 78%, var(--text)); font-size: .85rem; }
+.sim-day--after { opacity: .5; }
+.sim-day--none { background: var(--bg-sunken); }
+
+.sim-log { list-style: none; padding: 0; margin: 1rem 0 0; border-top: 1px solid var(--border); }
+.sim-log__row { display: grid; grid-template-columns: 6.8rem minmax(0, 1fr); gap: .2rem 1rem; padding: .55rem 0; border-bottom: 1px solid var(--border); font-size: .84rem; }
+.sim-log__date { font-family: var(--font-mono); font-size: .76rem; color: var(--text-faint); padding-top: .1rem; }
+.sim-log__body { display: flex; flex-direction: column; gap: .2rem; }
+.sim-log__body b { font-weight: 550; color: var(--text); }
+.sim-log__body span { color: var(--text-soft); }
+.sim-log__row--restart .sim-log__body b { color: color-mix(in srgb, #d32f2f 70%, var(--text)); }
+.sim-log__row--done .sim-log__body b { color: var(--accent-text); }
+.sim-log__row--after { opacity: .55; }
+.sim-reset { font: inherit; font-size: .8rem; padding: .3rem .7rem; border-radius: var(--r-sm); border: 1px solid var(--border); background: var(--bg-elev); color: var(--text-soft); cursor: pointer; }
+.sim-reset:hover { color: var(--text); border-color: var(--border-strong); }
+
+@media (max-width: 560px) {
+  .sim-strip { gap: .25rem; }
+  .sim-day { padding: .4rem .1rem; }
+  .sim-day__date { font-size: .6rem; }
+  .sim-log__row { grid-template-columns: 1fr; }
+}

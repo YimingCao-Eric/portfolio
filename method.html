@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Method — Yiming Cao</title>
+<meta name="description" content="How Yiming Cao builds software with two AI agents: three roles, three kinds of document, phases from hypothesis to deploy, and a use-then-measure stage between prototype and build — with My Daily News as the worked example.">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/project.css">
+<link rel="stylesheet" href="assets/css/method.css">
+<link rel="alternate" hreflang="zh-CN" href="zh/method.html">
+<script defer src="assets/js/site.js"></script>
+<script defer src="assets/js/method-lab.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"></span>Yiming Cao</a>
+    <nav class="nav">
+      <a href="index.html">Projects</a>
+      <a href="method.html" aria-current="page">Method</a>
+      <a href="resume.html">Résumé</a>
+      <a class="lang-switch" data-lang-toggle="zh" href="zh/method.html" title="切换到中文" aria-label="Switch language"><span class="lang-switch__opt is-on">EN</span><span class="lang-switch__opt" lang="zh-CN">中文</span></a>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle colour theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="case-hero">
+  <div class="wrap">
+    <p class="eyebrow">Method · how I build software with AI agents</p>
+    <h1>Rigor has a phase: how I build with two AI agents</h1>
+    <p class="lede">
+      I build my own projects with two AI agents and a written method. One agent plans with me and
+      writes every document; the other writes every line of code; I decide, use the product, and
+      commit. The method decides where rigor goes — very little while the code is a throwaway
+      prototype, all of it where the code is meant to last — and in between, a stage where the
+      product is used every day and then measured with its code frozen.
+    </p>
+    <div class="callout" style="margin-top:1.5rem;max-width:72ch">
+      <p><strong>A working document.</strong> First written on 18 September 2026, rewritten on
+      25 September from a week of running it on My Daily News, consolidated on 27 September and
+      amended on 28 September. Every rule is stated with its reason, because a rule whose reason is
+      forgotten gets re-litigated. Last updated <time datetime="2026-10-04" data-updated>2026-10-04</time>.</p>
+    </div>
+    <dl class="case-meta">
+      <div><dt>Actors</dt><dd>Me · a planning Claude in Cowork · Claude Code as the coding agent</dd></div>
+      <div><dt>Phases</dt><dd>0 Idea · 1 Hypothesis · 2 Prototype · 2.5 Use, then measure · 3 Build · 4 Deploy</dd></div>
+      <div><dt>Worked example</dt><dd><a href="projects/daily-news-digest.html">My Daily News</a> — in Phase 2.5, measuring</dd></div>
+      <div><dt>The record</dt><dd>Each project's <code>docs/</code> — My Daily News's are <a href="https://github.com/YimingCao-Eric/My-daily-news/tree/main/docs" target="_blank" rel="noopener">public on GitHub ↗</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ FIGURE A: PHASE MAP ============ -->
+<section class="section--tight">
+  <div class="wrap">
+    <div class="lab reveal pm" data-phase-map>
+      <div class="lab__head">
+        <h2 class="lab__title">The phases, and where My Daily News stands</h2>
+        <p class="lab__note">Choose a phase to see who works in it, what it produces, which rules are in force and how it ends.</p>
+      </div>
+      <div class="pm-track" role="tablist" aria-label="Phases of the method">
+        <button class="pm-tab pm-tab--idea" type="button" role="tab" data-pm-tab="0" aria-controls="pm-0"><span class="pm-tab__num">0</span><span class="pm-tab__name">Idea</span></button>
+        <button class="pm-tab" type="button" role="tab" data-pm-tab="1" aria-controls="pm-1"><span class="pm-tab__num">1</span><span class="pm-tab__name">Hypothesis</span></button>
+        <button class="pm-tab" type="button" role="tab" data-pm-tab="2" aria-controls="pm-2"><span class="pm-tab__num">2</span><span class="pm-tab__name">Prototype</span></button>
+        <button class="pm-tab pm-tab--25 is-active" type="button" role="tab" data-pm-tab="2.5" aria-controls="pm-25"><span class="pm-tab__num">2.5</span><span class="pm-tab__name">Use, then measure</span>
+          <span class="pm-subs"><span class="pm-sub">stage 1 · daily use and same-day fixes</span><span class="pm-sub pm-sub--frozen">stage 2 · code frozen, measured</span></span>
+          <span class="pm-pin">My Daily News · since 28 Sept</span></button>
+        <button class="pm-tab" type="button" role="tab" data-pm-tab="3" aria-controls="pm-3"><span class="pm-tab__num">3</span><span class="pm-tab__name">Build</span></button>
+        <button class="pm-tab" type="button" role="tab" data-pm-tab="4" aria-controls="pm-4"><span class="pm-tab__num">4</span><span class="pm-tab__name">Deploy</span></button>
+      </div>
+
+      <div class="pm-panel" role="tabpanel" id="pm-0" data-pm-panel="0">
+        <h3>Stage 0 · Idea</h3>
+        <p class="pm-what">Not a phase. An immature idea is written down — a paragraph, a note, not a document — so that it is not lost.</p>
+        <dl class="pm-facts">
+          <dt>Who</dt><dd>Me alone.</dd>
+          <dt>Produces</dt><dd>A note in my ideas folder.</dd>
+          <dt>Rules</dt><dd>None: no structure and no exit test.</dd>
+          <dt>How it ends</dt><dd>I decide to start, and starting means opening Phase 1.</dd>
+          <dt class="pm-mdn-dt">My Daily News</dt><dd class="pm-mdn">A note that began as “a personalised Hacker News for everything I follow”, with AI as the first field.</dd>
+        </dl>
+      </div>
+
+      <div class="pm-panel" role="tabpanel" id="pm-1" data-pm-panel="1">
+        <h3>Phase 1 · Hypothesis</h3>
+        <p class="pm-what">In conversation with the planning side, the idea becomes a product that exists only on paper: what it does, what it does not, what it believes about the world, and what would prove each belief wrong. Nothing is built. A question a demo could settle more cheaply than more thought is marked for Phase 2 instead of argued.</p>
+        <dl class="pm-facts">
+          <dt>Who</dt><dd>Me and the planning side. No coding agent, no code.</dd>
+          <dt>Produces</dt><dd><code>PRODUCT.md</code> — the first-run sentence (what the demo has to show on its first run for me to say “that's the idea”), the shape, every hypothesis with the test a demo would have to fail to refute it, the foreseeable problems, what is out of scope; then Pending and Open, always last. <code>PLAN.md</code> — how each later stage will be worked, so that Phase 2 starts from a plan rather than from momentum.</dd>
+          <dt>Rules</dt><dd>A belief without a refutation test is an assumption, and is listed as one.</dd>
+          <dt>How it ends</dt><dd>A five-point test, run by the planning side rather than merely confirmed by me: every hypothesis has a test a demo can perform; every foreseeable problem has an answer or is marked for Phase 2; the first-run sentence follows from the shape alone; the last full pass added nothing a demo could not settle faster; the plan names the environment decision as Phase 2's first act. I accept the paragraph recording the result — the paragraph, not the phase.</dd>
+          <dt class="pm-mdn-dt">My Daily News</dt><dd class="pm-mdn">Closed on 18 September with the product on paper: the first-run sentence, and each belief with the result that would refute it.</dd>
+        </dl>
+      </div>
+
+      <div class="pm-panel" role="tabpanel" id="pm-2" data-pm-panel="2">
+        <h3>Phase 2 · Prototype</h3>
+        <p class="pm-what">It opens by choosing the production environment — stack, runtime, where the code runs — judged on suitability for the project alone, never on anyone's familiarity with it. Then a prototype is built fast to check the product document against facts, and the document is corrected in the same pass as each correction to the product. The prototype implements and tests features; only what needs elapsed time, unattended running or data that does not exist yet is deferred, with the reason written.</p>
+        <dl class="pm-facts">
+          <dt>Who</dt><dd>All three, from the first session.</dd>
+          <dt>Produces</dt><dd>A working prototype in <code>lab/</code>, kept as reference only; <code>PRODUCT.md</code> corrected as it goes; one log, written by the planning side.</dd>
+          <dt>Rules</dt><dd><strong>Loosened:</strong> the behaviour is reviewed, not the code; forks come to me only when product behaviour is at stake — names, libraries and layout are picked by whoever is closest and recorded. <strong>Strict, the control fence:</strong> prototype code never becomes the codebase; every claim about data is measured before it is stated; tests never touch the product's real data, enforced by a tripwire that hashes the data before any test runs; a snapshot before anything destructive; no keys in the repository.</dd>
+          <dt>How it ends</dt><dd>Every hypothesis has been measured, or deferred to Phase 2.5 with its reason written. The log closes.</dd>
+          <dt class="pm-mdn-dt">My Daily News</dt><dd class="pm-mdn">Ran to about thirty sessions where the plan had said a handful — which is why session budgets were taken out of the method.</dd>
+        </dl>
+      </div>
+
+      <div class="pm-panel" role="tabpanel" id="pm-25" data-pm-panel="2.5">
+        <h3>Phase 2.5 · Use, then measure</h3>
+        <p class="pm-what">Some beliefs need days of use to test, and the prototype that leaves Phase 2 never quite matches the vision. Stage 1: use it every morning and fix what the use shows the same day. Stage 2: freeze the code and measure, each measurement against a threshold fixed before its data existed. Figure B, below, runs these rules day by day.</p>
+        <dl class="pm-facts">
+          <dt>Who</dt><dd>All three; sessions are named by day.</dd>
+          <dt>Produces</dt><dd>A daily log, one section per date, frozen once the next day begins; the measurements' verdicts; then <code>SPEC.md</code>, written from what the prototype showed, every requirement traceable to something observed.</dd>
+          <dt>Rules</dt><dd>An issue found on a day is resolved that day, or marked “carried” with its reason. Stage 2 begins after a day of use with no finding that needs a code change and nothing landing after it. Any code change restarts the count. The freeze is checked before each measured day is accepted.</dd>
+          <dt>How it ends</dt><dd>The verdicts are reported — a measurement with no verdict is a result, stated with its reason — the specification is accepted, and the boundary question is answered in writing.</dd>
+          <dt class="pm-mdn-dt">My Daily News</dt><dd class="pm-mdn">Stage 1 from 24 September — four mornings of use, the first with ten findings. Stage 2 from 28 September — the code frozen and five mornings measured against bars written down before the data. One belief has already landed below its bar, and the fail stands.</dd>
+        </dl>
+      </div>
+
+      <div class="pm-panel" role="tabpanel" id="pm-3" data-pm-panel="3">
+        <h3>Phase 3 · Build</h3>
+        <p class="pm-what">A fresh start from an empty tree, on a deterministic architecture, written from the stabilised specification. The prototype is reference and is never promoted. Where the prototype was vibe-coded with the agent in full control, here people review and modify the code.</p>
+        <dl class="pm-facts">
+          <dt>Who</dt><dd>All three, with the code reviewed by people.</dd>
+          <dt>Produces</dt><dd>The product's codebase.</dd>
+          <dt>Rules</dt><dd>The strict rules suspended for the prototype return: one decision per diff, forks raised before code, and every prompt recorded verbatim in the log.</dd>
+          <dt>How it ends</dt><dd>As at every boundary, with the boundary question answered in writing.</dd>
+        </dl>
+      </div>
+
+      <div class="pm-panel" role="tabpanel" id="pm-4" data-pm-panel="4">
+        <h3>Phase 4 · Deploy</h3>
+        <p class="pm-what">The product is published and run for real.</p>
+        <dl class="pm-facts">
+          <dt>At launch</dt><dd>The product's tree is made clean: <code>lab/</code> and <code>docs/</code> leave it in a single commit, so a clone gets only the product. The history keeps them — the goal is a clean product, not a hidden process.</dd>
+          <dt>Rules</dt><dd>The ones that hold everywhere: no keys in the repository, backups at defined points, the boundary question at the end.</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section class="section--tight" id="why">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Why there is a method</h2>
+      <p>
+        My Daily News is my third attempt at the same idea, and the first two failed in opposite
+        directions. The first followed a plan step by step with a coding agent implementing each step.
+        It produced working code, but as the code grew my review went shallow, and I lost control of
+        where it was going. The second applied strict rules everywhere — probe before building, every
+        design fork checked against real data, one decision per change, a complete written record.
+        Control never slipped, and in three days it produced no demo: the rules were right, and they
+        were spent on throwaway code. What I wrote down afterwards was one line.
+      </p>
+      <blockquote class="pull"><p>"Rigor has a phase."</p></blockquote>
+      <p>
+        The method is that sentence worked out in detail. It separates the one who decides from the
+        agent that plans and the agent that codes; it separates the documents that say what the product
+        is from the ones that record how it got there; and it says, phase by phase, which rules are
+        loosened and which never are.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTORS ============ -->
+<section class="section--tight" id="actors">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Three actors, and what each owns</h2>
+    </div>
+    <div class="mt-roles mt-wide">
+      <div class="mt-role reveal">
+        <h3>Me</h3>
+        <p class="mt-role__who">Decides, uses, commits</p>
+        <p>I decide what the product is, use it, judge every report, and make every commit.</p>
+        <p>Deterministic work — a fetch, a command whose output is fixed and knowable — defaults to me, because an agent doing it costs tokens and can hallucinate. It goes to the coding agent when splitting it out would break a task's continuity.</p>
+      </div>
+      <div class="mt-role reveal">
+        <h3>The planning side</h3>
+        <p class="mt-role__who">Claude in Cowork</p>
+        <p>Thinks with me and <strong>owns every document</strong>: the product document, the plan, the logs, the boundary paragraphs, the coding agent's prompts, and the repository's <code>CLAUDE.md</code>.</p>
+        <p>It may read any file, measure data with its own scripts, and move and back up files. <strong>It never runs, modifies or verifies the product's code.</strong></p>
+      </div>
+      <div class="mt-role reveal">
+        <h3>The coding agent</h3>
+        <p class="mt-role__who">Claude Code</p>
+        <p><strong>Owns the code</strong>: writes it, runs it, tests it, and reports. It does not commit and does not write the planning documents.</p>
+        <p>A defect it finds in a document is reported, decided by me, and fixed by the planning side. It is absent until Phase 2.</p>
+      </div>
+    </div>
+    <div class="prose">
+      <p>
+        The boundary is the product's code, not the filesystem, and the reason is the point of the
+        whole arrangement: work done on the code outside the agent's loop is unrecorded, and an
+        unrecorded change is a black box. Because the planning side never touches the code and the
+        coding agent never writes the documents, every change to the product passes through a written
+        prompt and a written report.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOCUMENTS ============ -->
+<section class="section--tight" id="documents">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Three kinds of document</h2>
+      <div class="table-wrap"><table class="data-table data-table--left">
+        <thead><tr><th>Kind</th><th>What it is for</th><th>Files</th></tr></thead>
+        <tbody>
+          <tr><td>Product</td><td>Defines the product — what it <em>is</em></td><td><code>PRODUCT.md</code>; from the end of Phase 2.5, <code>SPEC.md</code></td></tr>
+          <tr><td>Plan</td><td>How each stage is worked: the methodology, the runbooks, the measurements and their thresholds</td><td><code>PLAN.md</code></td></tr>
+          <tr><td>Log</td><td>What happened, what was decided, what went wrong</td><td>One per phase; in Phase 2.5 only, a daily log</td></tr>
+        </tbody>
+      </table></div>
+      <p>
+        The split removes an ambiguity: a product document that also records how it came to say what it
+        says stops being readable as a product document. So <code>PRODUCT.md</code> states what the
+        product is, with nothing superseded left standing, and always ends with two sections in the same
+        order — <strong>Pending</strong>, everything outstanding with the stage it waits on, then
+        <strong>Open</strong>, the questions waiting on a decision. Every dated derivation, costed option
+        and reversed recommendation lives in a log.
+      </p>
+      <p>
+        Every document from Phase 1 on lives in the repository's <code>docs/</code>. Prototype code lives
+        in <code>lab/</code>, versioned so that every session is a diff, with its data kept out of git
+        because it holds session cookies, tokens and personal records. <code>CLAUDE.md</code> is written
+        by the planning side and read by the coding agent at the start of every session. Backups go
+        outside every repository, each with a hash manifest, so a bad command inside a repository cannot
+        reach them.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SESSION LOOP ============ -->
+<section class="section--tight" id="session">
+  <div class="wrap">
+    <div class="prose">
+      <h2>One session, from prompt to commit</h2>
+      <ol class="mt-steps">
+        <li>The planning side writes the prompt <strong>at the moment it is used, never in advance</strong>, as one copyable block, and I paste it.</li>
+        <li>The coding agent works, and reports in five fixed parts.</li>
+        <li>The planning side checks the report against the files it describes, verifies every number it intends to reuse, updates <code>PRODUCT.md</code> in the same pass, and writes the session into the log — including what it got wrong itself.</li>
+        <li>I commit.</li>
+      </ol>
+      <p>
+        <strong>Every prompt</strong> names the real paths of the documents to read, says <em>do not
+        commit</em>, says <em>never read, print or echo <code>.env</code></em>, requires a snapshot before
+        anything destructive, and ends by asking for anything found that was not asked about. A prompt
+        that changes how a key, path or field is derived names every reader of it; a prompt that removes
+        something records what would have to change for the removal to be wrong.
+      </p>
+      <p>
+        <strong>Every report</strong> has the same five parts: what ran, and where the snapshot is; what
+        it showed, with numbers — never “tests pass”; the choices made where the prompt left them open;
+        anything found that was not asked about, and anything in the prompt that turned out to be wrong;
+        and one line confirming that nothing was committed and no document was touched.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PHASE 2.5 ============ -->
+<section class="section--tight" id="phase-2-5">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Phase 2.5: use it, then measure it</h2>
+      <p>
+        Some beliefs cannot be tested at once — they need days of use, elapsed time, or data that
+        accumulates. And the prototype that leaves Phase 2 never quite matches the vision: its first real
+        use produces findings. So between the prototype and the build there is a stage of its own, in two
+        parts, and the reason for the order is one sentence:
+      </p>
+      <blockquote class="pull"><p>"A freeze is a claim that the thing is finished enough to measure."</p></blockquote>
+      <p>
+        <strong>Stage 1 — daily iteration.</strong> The prototype is used every morning and changed the
+        same day in response to what the use shows. An issue found on a day is resolved that day; where it
+        is not, the log says “carried” and gives the reason, because a carried issue is a decision, not an
+        oversight, and has to look like one. Once a new day begins, the previous day's section is frozen.
+        Nothing is measured here: editing the page writes real events into the product's own usage log,
+        indistinguishable from a reader's. While the code moves, the instrument records the author.
+      </p>
+      <p>
+        <strong>Entry to stage 2.</strong> A day qualifies when using the product produced no finding that
+        needs a code change, and no code landed after it. A finding means a finding <em>from use</em>: a
+        defect caught by a test or in the agent's report does not disqualify the day, because a defect
+        caught by a test is evidence that the process works.
+      </p>
+      <p>
+        <strong>Stage 2 — stabilisation.</strong> Nothing that changes the code under measurement happens.
+        Each measurement runs against a threshold fixed before its data existed — a rule chosen once the
+        numbers are visible is a description, not a threshold — and a measurement that yields no verdict is
+        a result, reported with its reason. Any code change returns the process to stage 1 and the count
+        starts again. Restarting is cheap by design, so it is done rather than argued about. Before each
+        measured day is accepted, the freeze is checked: a diff against the tagged stage-boundary commit,
+        and a hash manifest for anything git does not hold.
+      </p>
+      <p>
+        One rule was added by running it. On the evening the last stage-1 fixes were ready, the choice was
+        between landing them and spending another day of use before the freeze, or landing them and
+        measuring the next morning. My answer is now in the method:
+      </p>
+      <blockquote class="pull"><p>"If a modification is required, the stabilisation will simply be postponed by another day."</p></blockquote>
+      <p>
+        So the first reading after the last change may count as measured morning 1, provisionally: it
+        stands only if its use finds nothing to fix and no code lands after it. The restart rule holds
+        exactly, and the changed product is still read once before any measured day stands. When the
+        product has stabilised, <code>SPEC.md</code> is written from what the prototype showed — not before.
+      </p>
+    </div>
+
+    <div class="lab reveal" data-sim style="margin-top:2rem">
+      <div class="lab__head">
+        <h2 class="lab__title">Phase 2.5, day by day</h2>
+        <p class="lab__note">
+          Each square is a day. Click one to change what happened on it; the rules above decide the rest.
+          The preset replays My Daily News from its first morning of use.
+        </p>
+      </div>
+      <div class="wk-controls">
+        <div class="wk-row">
+          <span class="wk-lbl">Days</span>
+          <div class="lab__seg wk-seg" role="radiogroup" aria-label="Preset">
+            <label><input type="radio" name="sim-preset" value="mdn" checked><span>My Daily News · 24 Sept – 3 Oct</span></label>
+            <label><input type="radio" name="sim-preset" value="blank"><span>A blank fortnight</span></label>
+          </div>
+          <button class="sim-reset" type="button" data-sim-reset>Reset days</button>
+        </div>
+        <div class="wk-row">
+          <span class="wk-lbl">Mornings to measure</span>
+          <div class="lab__seg" role="radiogroup" aria-label="Measured mornings needed">
+            <label><input type="radio" name="sim-need" value="3"><span>3</span></label>
+            <label><input type="radio" name="sim-need" value="5" checked><span>5 (My Daily News)</span></label>
+            <label><input type="radio" name="sim-need" value="7"><span>7</span></label>
+          </div>
+        </div>
+        <div class="wk-row">
+          <label class="wk-check"><input type="checkbox" data-sim-prov checked> Provisional morning 1 (added 27 September)</label>
+        </div>
+      </div>
+      <div class="sim-legend" aria-hidden="true">
+        <span><i class="sim-ico sim-ico--q"></i>read · nothing to change</span>
+        <span><i class="sim-ico sim-ico--f"></i>read · finding → fixed that evening</span>
+        <span><i class="sim-ico sim-ico--c"></i>read · code landed anyway</span>
+        <span><i class="sim-ico sim-ico--n"></i>no reading</span>
+      </div>
+      <div class="sim-strip" data-sim-strip></div>
+      <div class="lab__readout" data-sim-readout></div>
+      <ol class="sim-log" data-sim-log aria-label="What the rules made of each day"></ol>
+      <p class="wk-note">
+        Things to try. Untick the provisional rule: the fixes that landed on 27 September then cost a
+        further day of stage-1 use, and by 3 October only four mornings are in. Turn any measured morning
+        into a finding: the count restarts from the next reading, and every morning already counted is
+        lost. Turn 2 October into a reading: the fifth morning arrives a day sooner.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RULES ============ -->
+<section class="section--tight" id="rules">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Rules that hold at every stage</h2>
+    </div>
+    <div class="mt-rules mt-wide">
+      <div class="mt-rule reveal"><h3>Every planning reply has three parts</h3><p><strong>Boundary check</strong> — the phase, the stage, and which exit criteria hold and which do not. <strong>What changed</strong> — by file, then by section. <strong>Your next steps</strong> — only what exists nowhere but in my head or hands; anything the planning side can read or run itself is not handed to me.</p></div>
+      <div class="mt-rule reveal"><h3>A fork is raised only when it matters</h3><p>Only after the options have been run against real data and shown to differ; identical results mean the planning side picks, records the measurement and moves on. A fork arrives as options with their costs and <strong>one</strong> recommendation — never a question that has already chosen its answer.</p></div>
+      <div class="mt-rule reveal"><h3>Decision rules come before numbers</h3><p>Any rule that will be read against a number is fixed and written down before the number exists.</p></div>
+      <div class="mt-rule reveal"><h3>Backups at defined points, never ad hoc</h3><p>Before any session that deletes, migrates or repairs data; before any reorganisation of the documents; at every phase or stage boundary — each with a hash manifest. A backup taken because someone happened to think of it is not one the method can rely on.</p></div>
+      <div class="mt-rule reveal"><h3>References name something stable</h3><p>A pointer from outside a document names the session that made a change, or a rule by its name — never a row or section number. Positions move, and a pointer that lands on the wrong rule is worse than one that lands on nothing.</p></div>
+      <div class="mt-rule reveal"><h3>One question at every boundary</h3><p>“Is the product wrong, or is the stage being worked wrong?” — answered in writing at every phase or stage boundary. It replaced session budgets, which is what they were for.</p></div>
+      <div class="mt-rule reveal"><h3>Stopping is a result</h3><p>Any stage may end in “stop”. A product whose hypotheses keep failing exits to a write-up: a documented negative result is a legitimate deliverable, and stopping needs only the reason, written down.</p></div>
+      <div class="mt-rule reveal"><h3>Lessons have an inbox</h3><p>Each project keeps a lessons file, written the day something is learned, with the method change it proposes. At the end of every stage I decide each entry; an approved one becomes a rule here. A lesson's text lives in one place at a time — a lesson kept in two places drifts.</p></div>
+      <div class="mt-rule reveal"><h3>No keys in the repository</h3><p>Credentials live in <code>.env</code> only, and nobody — agent or planner — reads, prints, echoes or commits it. Everything else about the process can be published.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ IN PRACTICE ============ -->
+<section class="section--tight" id="practice">
+  <div class="wrap">
+    <div class="prose">
+      <h2>In practice: My Daily News</h2>
+      <p>
+        The method was rewritten from a week of running it on My Daily News, and that project's documents
+        are public, so every rule above can be checked against the record it came from.
+      </p>
+      <p>
+        The prototype phase ran to about thirty sessions where the plan had said a handful; nobody was
+        counting, and the budget mechanism left the method. Phase 2.5 began on 24 September, and its first
+        morning of real use produced ten findings — the morning that showed a freeze needs real use behind
+        it. The tripwire caught a test on its first day, a test whose leftover background work had written
+        two lines into the real log. The measured mornings began on 28 September on a frozen build,
+        re-hashed against a 53-file manifest before each one was accepted.
+      </p>
+      <p>
+        The rules held when they were inconvenient. The model's agreement with my own category labels came
+        in at 83.1% against a bar of 85% set in advance; the merge of two categories that would have
+        passed it was declined, because a change chosen to pass a number is chosen for the wrong reason,
+        and the fail stands. The first measured morning was an evening glance of about half a minute, and
+        whether it should count was raised as a fork: three options, each with its costs, and one
+        recommendation — restart the count. I kept the morning instead, because it met every rule written
+        before the data, and discarding a morning because its number looks odd is choosing the rule after
+        seeing the number. The costed options then moved from the specification to the log, because a
+        decided option does not stay in the specification.
+      </p>
+      <ul class="mt-docs">
+        <li><a href="https://github.com/YimingCao-Eric/My-daily-news/blob/main/docs/PRODUCT.md" target="_blank" rel="noopener">PRODUCT.md ↗</a><span>What the product is, with Pending and Open last.</span></li>
+        <li><a href="https://github.com/YimingCao-Eric/My-daily-news/blob/main/docs/PLAN.md" target="_blank" rel="noopener">PLAN.md ↗</a><span>How each stage is worked, including the Phase 2.5 measurements and their thresholds.</span></li>
+        <li><a href="https://github.com/YimingCao-Eric/My-daily-news/blob/main/docs/PHASE1-LOG.md" target="_blank" rel="noopener">PHASE1-LOG.md ↗</a><span>The closed record of the hypothesis phase.</span></li>
+        <li><a href="https://github.com/YimingCao-Eric/My-daily-news/blob/main/docs/PHASE2-LOG.md" target="_blank" rel="noopener">PHASE2-LOG.md ↗</a><span>The closed record of the prototype phase, session by session.</span></li>
+        <li><a href="https://github.com/YimingCao-Eric/My-daily-news/blob/main/docs/DAILY-LOG.md" target="_blank" rel="noopener">DAILY-LOG.md ↗</a><span>Phase 2.5, one section per day, each frozen when the next begins.</span></li>
+        <li><a href="https://github.com/YimingCao-Eric/My-daily-news/blob/main/lab/CLAUDE.md" target="_blank" rel="noopener">lab/CLAUDE.md ↗</a><span>What the coding agent reads at the start of every session.</span></li>
+        <li><a href="https://github.com/YimingCao-Eric/My-daily-news/tree/main/lab" target="_blank" rel="noopener">lab/ ↗</a><span>The prototype itself — reference only, never promoted.</span></li>
+      </ul>
+      <p>The product, what it does and what it has measured so far: <a href="projects/daily-news-digest.html">the My Daily News case study →</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HISTORY ============ -->
+<section class="section--tight" id="history">
+  <div class="wrap">
+    <div class="prose">
+      <h2>How the method changes</h2>
+      <p>
+        The method is a document, and it changes the way the products do: from evidence, with the reason
+        written. Every ambiguity met while running it was put to me and settled, in my words where I gave
+        them, and each settlement is recorded next to the rule it produced — “Remove the budget mechanism.”
+        “Ad-hoc backups do not count as valid backups.” “Phase 2.5 falls between Phase 2 and Phase 3;
+        strictly speaking, SPEC.md is written after the product has stabilised.”
+      </p>
+      <dl class="mt-timeline">
+        <dt>18 Sept</dt><dd>First written.</dd>
+        <dt>25 Sept</dt><dd>Rewritten from a review of the whole workflow after a week of running it: session budgets removed in favour of the boundary question, Phase 2.5 placed between the prototype and the build, backups fixed to defined points, and a five-point exit test for Phase 1 in place of my confirmation alone.</dd>
+        <dt>27 Sept</dt><dd>Consolidated into a single document; the provisional first measured morning added.</dd>
+        <dt>28 Sept</dt><dd>Prototype code and documents brought under version control, so every session is a diff; a lessons inbox for each project, decided at the end of every stage.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THIN ============ -->
+<section class="section--tight" id="thin">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Where it's thin</h2>
+      <p>
+        <strong>It comes from one product's week.</strong> The rules were rewritten from what happened on
+        My Daily News. A rule that has run once rests on one data point, and every new project tests the
+        method as much as it uses it.
+      </p>
+      <p>
+        <strong>It costs calendar time.</strong> Stage 2 needs real mornings of use. A missed morning costs
+        a day and a finding costs a restart — the price of a measurement that means something, paid in days.
+      </p>
+      <p>
+        <strong>One person checks the record.</strong> The planning side writes every log, and records its
+        own mistakes next to the coding agent's, but every review ends with me. The method makes a black
+        box less likely; it does not replace a second reviewer.
+      </p>
+      <p>
+        <strong>It is carried by a document.</strong> The method is meant to become a skill, so that a fresh
+        planning session behaves from its first reply the way the planning side did after a week of
+        practice. That work is paused; today the method lives in its document, and in this page.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>© <span id="year">2026</span> Yiming Cao</span>
+    <nav class="footer-links">
+      <a href="https://github.com/YimingCao-Eric">GitHub</a>
+      <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
+      <a href="resume.html">Résumé</a>
+      <a href="mailto:caoyimingeric@gmail.com">Email</a>
+    </nav>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -7,15 +7,19 @@ in a browser and it works — locally or hosted.
 
 ```
 site/
-  index.html                          home: hero, project grid, about
+  index.html                          Projects (home): hero, "What I can do", work, planned, research
+  method.html                         Method: the development method, two live figures
+  resume.html                         Résumé (moved off the home page; old #resume links redirect)
   projects/
     ddpm-diffusion-models.html        the 501 case study
   assets/
     css/base.css                      design tokens + base layer (edit colours here)
     css/home.css                      home page only
     css/project.css                   case-study components
+    css/method.css                    Method page only (phase map, simulator, rule cards)
     js/site.js                        theme toggle, scroll reveal, slide viewer
     js/diffusion-lab.js               the interactive forward-diffusion figure
+    js/method-lab.js                  Method page: phase map + Phase 2.5 simulator
     files/                            report PDF, both decks as PDF, notebook
     img/slides-intro/  slide-01.jpg … 29 rendered slides
     img/slides-math/   slide-01.jpg … 22 rendered slides
@@ -97,3 +101,16 @@ slug (e.g. `projects/daily-news-digest.html` with its figure in `assets/js/diges
 the old `projects/planned-<slug>.html` becomes a one-line `<meta http-equiv="refresh">` redirect
 so links that were already shared keep working. Keep bumping the `data-updated` stamp on the
 card and the page hero as phases land.
+
+## Navigation and the Method / Résumé pages
+
+The header on every page has exactly three tabs — **Projects · Method · Résumé** (项目 · 方法 · 简历) —
+plus the language switch and the theme toggle; the current page's tab carries
+`aria-current="page"`. Contact lives in the home hero card and the footer.
+
+- The home page's **What I can do** card lists capabilities, each with the project that shows
+  it; the résumé's **Technical Skills** table (`resume.html#skills`) lists the stack item by item.
+  Each links to the other — keep both in step when either changes.
+- `method.html` is the public form of the method document. When the method changes, update
+  both languages and the `data-updated` stamp in its hero callout. The simulator's My Daily News
+  preset (`MDN` in `assets/js/method-lab.js`) replays that project's daily log.

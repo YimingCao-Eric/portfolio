@@ -32,6 +32,11 @@
     lang: lang,
     t: function (en, zh) { return lang === "zh" && zh != null ? zh : en; }
   };
+  /* the résumé moved from the home page to its own page; keep old #resume links working */
+  if (location.hash === "#resume" && /\/(index\.html)?$/.test(location.pathname)) {
+    location.replace("resume.html");
+    return;
+  }
   /* remembered preference: hop to the alternate-language page if one exists */
   try {
     var want = localStorage.getItem(LKEY);

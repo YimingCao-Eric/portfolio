@@ -61,11 +61,8 @@
 .card__gh { position: relative; z-index: 1; color: var(--accent-text); text-decoration: none; border-bottom: 1px solid transparent; }
 .card__gh:hover { border-bottom-color: var(--accent); }
 
-/* compact nav on narrow screens */
-@media (max-width: 520px) { .nav { gap: 0; } .nav a { font-size: .82rem; padding: .4rem .45rem; } }
 
 /* ---------- résumé ---------- */
-@media (max-width: 520px) { .nav a.nav__resume { display: none; } }
 .resume { max-width: 860px; font-size: .95rem; }
 .resume h3 {
   font-size: .78rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
@@ -134,3 +131,20 @@
 /* résumé: one-line undergraduate items */
 .resume ul.resume__compact { padding-left: 1.1rem; }
 .resume ul.resume__compact li { margin-bottom: .25em; font-size: .9rem; }
+
+/* ---------- capability card (home) ---------- */
+#can-do, #skills, #experience, #education { scroll-margin-top: 5rem; }
+.cap-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .95rem; }
+.cap-list li { display: flex; flex-direction: column; gap: .2rem; }
+.cap-list b { font-size: .9rem; font-weight: 600; color: var(--text); }
+.cap-list span { font-size: .82rem; color: var(--text-soft); line-height: 1.5; }
+.cap-list .cap-ev { font-size: .76rem; color: var(--text-faint); }
+.cap-list .cap-ev a, .cap-more a { color: var(--accent-text); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+.cap-list .cap-ev a:hover, .cap-more a:hover { border-bottom-color: var(--accent); }
+.cap-more { margin: 1.1rem 0 0; padding-top: .9rem; border-top: 1px dashed var(--border-strong); font-size: .8rem; color: var(--text-faint); }
+
+/* ---------- résumé page ---------- */
+.page-top { padding-top: clamp(2.5rem, 6vw, 4.5rem); }
+.page-top .section-head h1 { font-size: clamp(1.8rem, 1.3rem + 2vw, 2.6rem); margin-bottom: .5rem; }
+.resume__xlink { font-size: .84rem; color: var(--text-soft); background: var(--bg-sunken); border: 1px solid var(--border); border-radius: var(--r-md); padding: .65rem .9rem; margin: 0 0 1rem !important; }
+.resume__xlink a { color: var(--accent-text); }

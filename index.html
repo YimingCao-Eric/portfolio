@@ -21,12 +21,9 @@
   <div class="site-header__inner">
     <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"></span>Yiming Cao</a>
     <nav class="nav">
-      <a href="#work">Work</a>
-      <a href="#planned">Planned</a>
-      <a href="#research">Research</a>
-      <a href="#about">About</a>
-      <a href="#resume" class="nav__resume">Résumé</a>
-      <a href="mailto:caoyimingeric@gmail.com">Contact</a>
+      <a href="index.html" aria-current="page">Projects</a>
+      <a href="method.html">Method</a>
+      <a href="resume.html">Résumé</a>
       <a class="lang-switch" data-lang-toggle="zh" href="zh/index.html" title="切换到中文" aria-label="Switch language"><span class="lang-switch__opt is-on">EN</span><span class="lang-switch__opt" lang="zh-CN">中文</span></a>
       <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle colour theme">
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
@@ -89,15 +86,17 @@
             </li>
           </ul>
         </div>
-        <div class="side-card">
-          <h3>Skills</h3>
-          <ul class="skill-list">
-            <li><span>Languages</span><b>Python, Go, TypeScript / JavaScript, Java, SQL</b></li>
-            <li><span>Backend &amp; data</span><b>FastAPI, SQLAlchemy, Alembic, Pydantic, Go Fiber, GORM, Spring Boot, REST API design, JWT / RBAC, PostgreSQL / PostGIS, MySQL, MongoDB Atlas, Redis, Kafka, GeoPandas / Shapely, NetworkX, schema &amp; ERD design, data contracts, data validation frameworks</b></li>
-            <li><span>LLM &amp; AI</span><b>PyTorch, NumPy, SciPy, scikit-learn, HuggingFace, OpenAI API, RAG, vector search, prompt engineering &amp; prefix caching, rule-first LLM pipelines, LLM evaluation, diffusion models, knowledge distillation, few-shot learning, ensemble methods, Slurm</b></li>
-            <li><span>Frontend, cloud &amp; testing</span><b>React 19, TypeScript, TanStack Query, Redux, React Router, Tailwind CSS, Chrome Extension (Manifest V3), Pytest, JUnit / Mockito, Postman, AWS (Elastic Beanstalk, EC2, CloudWatch), Docker / Docker Compose, GitHub Actions CI/CD, Git / GitHub PR workflow</b></li>
-            <li><span>Practices</span><b>spec-driven development, soak testing, security review, two-agent development method</b></li>
+        <div class="side-card" id="can-do">
+          <h3>What I can do</h3>
+          <ul class="cap-list">
+            <li><b>Build LLM products end to end</b><span>Retrieval, prompting, per-item model calls, and evaluation against thresholds set in advance — a RAG chatbot for a client, and a daily news pipeline over 48 sources.</span><span class="cap-ev">Shown in <a href="projects/daily-news-digest.html">My Daily News</a> · <a href="resume.html#experience">NextTier (résumé)</a></span></li>
+            <li><b>Run automation unattended, and prove it held</b><span>A browser-extension scraper and LLM matching pipeline that ingested 1,306 postings in one unattended cycle, hardened by 10- and 5-hour soak tests.</span><span class="cap-ev">Shown in <a href="projects/job-hunting-assistant.html">Job Hunting Assistant</a></span></li>
+            <li><b>Design backends and the contracts between them</b><span>REST APIs in Go, Java and Python with authentication and role-based access; a versioned data contract, and an ingestion template adopted by 21 sector pipelines.</span><span class="cap-ev">Shown in <a href="projects/ecommerce-admin.html">E-Commerce Admin</a> · <a href="resume.html#experience">Tomkulak (résumé)</a></span></li>
+            <li><b>Model complex systems and rank their trade-offs</b><span>Infrastructure dependencies as a typed graph, with a multi-objective scoring engine that flags the non-dominated options.</span><span class="cap-ev">Shown in <a href="resume.html#experience">Tomkulak (résumé)</a></span></li>
+            <li><b>Turn ML research into working experiments</b><span>Diffusion models, knowledge distillation, few-shot learning, ensembles, and a training-free detector of AI-generated images — each implemented and measured.</span><span class="cap-ev">Shown in <a href="#research">Graduate research projects</a></span></li>
+            <li><b>Keep AI-assisted development under control</b><span>A written two-agent method: loose while the code is throwaway, strict where it is meant to last, and every claim measured before it is stated.</span><span class="cap-ev">Shown in <a href="method.html">Method</a> · <a href="projects/daily-news-digest.html">My Daily News</a></span></li>
           </ul>
+          <p class="cap-more">These are capabilities, each with the work that shows it. The full technology stack, item by item, is on the <a href="resume.html#skills">Résumé → Technical skills</a>.</p>
         </div>
       </aside>
     </div>
@@ -444,145 +443,6 @@
 </section>
 
 
-<!-- ============ RÉSUMÉ ============ -->
-<section class="section section--after" id="resume">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Résumé</h2>
-      <p class="lede">Education, experience and projects at a glance — each project title links to its full write-up.</p>
-    </div>
-    <article class="resume prose">
-<p class="resume__meta">Web version · updated October 2026</p>
-
-<h3>Education</h3>
-<h4>University of British Columbia — Master of Engineering, Electrical &amp; Computer Engineering <span class="resume__date">Sept 2022 – May 2024</span></h4>
-<ul>
-<li>GPA 87%. Focus: deep learning, computer vision, generative models, medical image analysis, reinforcement learning.</li>
-</ul>
-<h4>University of Victoria — Bachelor of Science with Distinction, Honours Combined Computer Science and Mathematics <span class="resume__date">Sept 2017 – Apr 2021</span></h4>
-<ul>
-<li>Cumulative GPA 7.53/9. Honours thesis on off-policy reinforcement learning.</li>
-</ul>
-
-<h3>Experience</h3>
-<h4>Machine Learning Engineer — Xi'an University of Posts and Telecommunications (remote) <span class="resume__date">Sept 2026 – present</span></h4>
-<p class="resume__stack">Embodied AI for robotic parcel sorting with <a href="https://www.twowinit.com/" target="_blank" rel="noopener">TWOWIN Technology</a>, a Shenzhen AI hardware company.</p>
-<ul>
-<li>Robotic arm with grippers, supervised by Dr. Chen Wei: a pre-trained vision-language-action / world-action model, post-trained on human teleoperation data.</li>
-<li>Current stage: literature and pipeline onboarding, ahead of data collection and post-training.</li>
-</ul>
-<h4>Software Engineer (volunteer) — Tomkulak Consortium (remote) <span class="resume__date">Jan 2026 – present</span></h4>
-<p class="resume__stack">Critical-infrastructure system-modelling platform covering 21 sectors.</p>
-<ul>
-<li>Owned the system-modelling architecture: nine modelling entities, a <strong>NetworkX</strong> dependency graph, and the versioned <strong>Pydantic</strong> Stage 1 → Stage 2 data contract.</li>
-<li>Built the multi-objective scoring and ranking engine: eight bounded objectives, <strong>YAML</strong> weight profiles, Pareto non-domination flags; 253 modelling tests.</li>
-<li>Built the dependency and constraint framework: eight relationship categories as typed <strong>NetworkX</strong> edges, feasibility rules in editable <strong>YAML</strong>.</li>
-<li>Engineered the configuration-driven <strong>Python</strong> ingestion template adopted by all 21 sector pipelines, loading into <strong>PostgreSQL/PostGIS</strong>; 186 tests.</li>
-</ul>
-<h4>Software Engineer — NextTier, Covina, CA <span class="resume__date">Sept 2024 – Sept 2025</span></h4>
-<p class="resume__stack">Designed and built from scratch a music-focused RAG chatbot for a client.</p>
-<ul>
-<li>Implemented the <strong>RAG</strong> retrieval layer: <strong>OpenAI text-embedding-3</strong> embeddings with <strong>k-NN</strong> search on <strong>MongoDB Atlas Vector Search</strong>, grounding <strong>GPT-4o</strong> responses.</li>
-<li>Built the <strong>Java 17</strong> / <strong>Spring Boot</strong> backend exposing <strong>REST APIs</strong> over <strong>MongoDB</strong>, and a <strong>React</strong> + <strong>TypeScript</strong> chat interface with end-to-end token streaming.</li>
-<li>Reached 100% test coverage with <strong>JUnit</strong> and <strong>Mockito</strong>; deployed to <strong>AWS Elastic Beanstalk</strong> with autoscaling and <strong>CloudWatch</strong> monitoring.</li>
-</ul>
-<h4>Research Intern — Xi'an University of Posts and Telecommunications, Xi'an, China <span class="resume__date">May 2023 – Aug 2023</span></h4>
-<p class="resume__stack">Denoising diffusion models generating directed acyclic graphs as deep-neural-network architectures (neural architecture search).</p>
-<h4>Research Intern — Path Academics (remote) <span class="resume__date">Aug 2020 – Sept 2020</span></h4>
-<p class="resume__stack">Reinforcement-learning-based tracking for occlusion handling.</p>
-<h4>Research Intern — Institute of Automation, Chinese Academy of Sciences, Beijing <span class="resume__date">May 2020 – Aug 2020</span></h4>
-<p class="resume__stack">Collaborative filtering algorithms in recommendation systems.</p>
-
-<h3>Independent Projects</h3>
-<h4><a href="projects/daily-news-digest.html">My Daily News</a> — an AI front page that can prove it showed me everything · <a href="https://github.com/YimingCao-Eric/My-daily-news" target="_blank" rel="noopener">GitHub</a> <span class="resume__date">Sept 2026 – present</span></h4>
-<p class="resume__stack">Ongoing — prototype code-frozen for measurement since Sept 28, 2026.</p>
-<ul>
-<li>Reads 48 AI-focused sources each morning and makes one <strong>LLM</strong> call per item for a summary, a primary category and tags.</li>
-<li>A 7-day rolling window decides what the product looks at; a seen store comparing product days decides what it shows.</li>
-<li>Independent reconciliation of the raw feed bytes: 0 unaccounted entries across 2,401 served, the checker proved on three planted drops.</li>
-<li>Hypothesis thresholds fixed before the data: <strong>LLM</strong> category agreement reached 83.1% against an 85% bar and stands as a fail.</li>
-</ul>
-<h4><a href="projects/job-hunting-assistant.html">Job Hunting Assistant</a> — multi-site job scraper with an LLM matching pipeline · <a href="https://github.com/YimingCao-Eric/job-hunting-assistant" target="_blank" rel="noopener">GitHub</a> · <a href="https://github.com/YimingCao-Eric/filter-matcher" target="_blank" rel="noopener">filter-matcher</a> <span class="resume__date">Mar 2026 – present</span></h4>
-<ul>
-<li>A <strong>Chrome extension</strong> scraping LinkedIn, Indeed and Glassdoor into a <strong>FastAPI</strong>/<strong>PostgreSQL</strong> backend — 1,306 postings ingested in one unattended cycle.</li>
-<li>Cut <strong>LLM</strong> scoring cost 5–6× (to ~$0.14 per 200-job run) by routing only ambiguous jobs to <strong>gpt-4o-mini</strong>.</li>
-<li>Fixes from 10-hour and 5-hour soak tests of the <strong>Manifest V3</strong> orchestrator reached 8/9 cycles with zero attribution errors.</li>
-</ul>
-<h4><a href="projects/ecommerce-admin.html">E-Commerce Admin Platform</a> — Go REST API and React dashboard · <a href="https://github.com/YimingCao-Eric/go-admin" target="_blank" rel="noopener">go-admin</a> · <a href="https://github.com/YimingCao-Eric/react-admin" target="_blank" rel="noopener">react-admin</a> <span class="resume__date">Nov 2025 – Dec 2025</span></h4>
-<p class="resume__stack">Following and extending a Udemy course.</p>
-<ul>
-<li>A 28-route <strong>Go</strong> <strong>REST</strong> API (<strong>Fiber v3</strong> + <strong>GORM</strong>/<strong>MySQL</strong>) and a 14-route <strong>React</strong>/<strong>TypeScript</strong> dashboard.</li>
-<li><strong>HS256</strong> JWTs in HTTP-only cookies, <strong>bcrypt</strong> (cost 14) hashing, and role-based access control with per-method permission checks.</li>
-<li>Ported the course codebase to current major versions (<strong>Fiber v2</strong>→v3, <strong>React Router 5</strong>→7, <strong>React 19</strong>, <strong>Redux 5</strong>).</li>
-</ul>
-
-<h3>Research Projects (UBC M.Eng. coursework)</h3>
-<h4><a href="projects/bayer-fake-image-detection.html">Detecting AI-generated images by their missing Bayer pattern</a> — EECE 541 (Panos Nasiopoulos) <span class="resume__date">Jan – Apr 2024</span></h4>
-<ul>
-<li>Training-free: re-mosaic under the four Bayer layouts, demosaic, and test the spread of <strong>PSNR</strong>s — 97–100% detection, 90% of real photographs retained.</li>
-</ul>
-<h4><a href="projects/age-invariant-face-recognition.html">Age-invariant face recognition by knowledge distillation</a> — EECE 571L (Panos Nasiopoulos) <span class="resume__date">Jan – Apr 2024</span></h4>
-<ul>
-<li>Distilled a <strong>ResNet-100</strong> <strong>ElasticFace</strong> teacher into students on <strong>Compute Canada</strong> <strong>V100</strong> GPUs; a weak student gained 19.5 points on AgeDB (57.0% → 76.5%).</li>
-</ul>
-<h4>Reinforcement learning for a Robocode AI tank — CPEN 502 (Sarbjit Sarkaria) <span class="resume__date">Sept – Dec 2023</span></h4>
-<ul>
-<li><strong>Q-learning</strong> with neural networks written from scratch and lookup tables to optimise tank movement, targeting and combat.</li>
-</ul>
-<h4><a href="projects/ddpm-diffusion-models.html">Denoising Diffusion Probabilistic Models</a> — EECE 501 (Lele Wang) <span class="resume__date">Sept – Dec 2023</span></h4>
-<ul>
-<li>Derived the <strong>DDPM</strong> training objective end to end and ran forward/reverse diffusion experiments in <strong>PyTorch</strong>.</li>
-</ul>
-<h4><a href="projects/ensemble-stacking.html">Image classification with ensemble stacking</a> — EECE 571T (Matt Yedlin) <span class="resume__date">Jan – Apr 2023</span></h4>
-<ul>
-<li>Stacked <strong>LeNet</strong>, <strong>AlexNet</strong>, <strong>VGG</strong> and <strong>ResNet-18</strong> on CIFAR-10: the best three-model stack (88.7%) beat the best single model (85.6%).</li>
-</ul>
-<h4><a href="projects/few-shot-learning.html">Feature extractors for few-shot learning</a> — EECE 570 (Xiaoxiao Li) <span class="resume__date">Jan – Apr 2023</span></h4>
-<ul>
-<li><strong>ResNet-18</strong>, <strong>DenseNet-121</strong> and <strong>ConvNeXt-T</strong> as <strong>Prototypical Network</strong> feature extractors on CUB-200: DenseNet 83.8% &gt; ResNet 81.8% &gt; ConvNeXt 78.6%.</li>
-</ul>
-<h4>Speech re-synthesis from MRI with unsupervised keypoints and a graph convolutional network — EECE 571F (Renjie Liao) <span class="resume__date">Sept – Dec 2022</span></h4>
-<ul>
-<li>Trained a <strong>GCN</strong> on electromagnetic articulography data to test re-synthesizing speech (<strong>MFCC</strong>) from graphs.</li>
-</ul>
-<h4><a href="projects/mri-segmentation.html">Unsupervised brain-tumour segmentation by k-means and GMM</a> — EECE 562 (Zhen Wang) <span class="resume__date">Sept – Dec 2022</span></h4>
-<ul>
-<li>Gaussian-mixture-model EM from scratch in <strong>PyTorch</strong> on the GPU: Dice ≈ 0.9 on six of ten patients without any labels.</li>
-</ul>
-<h4><a href="projects/mri-denoising.html">Denoising diffusion-weighted MRI with PCA and DCT</a> — ELEC 523 (Siamak Najarian) <span class="resume__date">Sept – Dec 2022</span></h4>
-<ul>
-<li>Block-DCT and PCA denoisers from scratch in <strong>NumPy</strong>: ~5 dB SNR gain for <strong>PCA</strong> against ~1.7 dB for <strong>DCT</strong>.</li>
-</ul>
-
-<h3>Undergraduate Projects (University of Victoria)</h3>
-<ul class="resume__compact">
-<li>Honours thesis: off-policy reinforcement learning — CSC 499 (Nishant Mehta) · Sept – Dec 2020</li>
-<li>Movie recommendation system based on collaborative filtering — SENG 474 Data Mining (Nishant Mehta) · May – Aug 2020</li>
-<li>UI design for a study-resource app — SENG 310 Human–Computer Interaction (Adam Murray) · Jan – Apr 2020</li>
-<li>"Native vs. Invasive": the impact of population size on a single native and a single invasive species — MATH 377 Mathematical Modelling (Trefor Bazett) · Jan – Apr 2020</li>
-<li>Database system for an online student mutual-assistance study platform — CSC 370 Database Systems (Nirmala Gnanaratnam) · Sept – Dec 2019</li>
-</ul>
-
-<h3>Technical Skills</h3>
-<table>
-<tbody>
-<tr><td><strong>Languages</strong></td><td>Python, Go, TypeScript / JavaScript, Java, SQL</td></tr>
-<tr><td><strong>Backend &amp; data</strong></td><td>FastAPI, SQLAlchemy, Alembic, Pydantic, Go Fiber, GORM, Spring Boot, REST API design, JWT / RBAC, PostgreSQL / PostGIS, MySQL, MongoDB Atlas, Redis, Kafka, GeoPandas / Shapely, NetworkX, schema &amp; ERD design, data contracts, data validation frameworks</td></tr>
-<tr><td><strong>LLM &amp; AI</strong></td><td>PyTorch, NumPy, SciPy, scikit-learn, HuggingFace, OpenAI API, RAG, vector search, prompt engineering &amp; prefix caching, rule-first LLM pipelines, LLM evaluation, diffusion models, knowledge distillation, few-shot learning, ensemble methods, Slurm</td></tr>
-<tr><td><strong>Frontend, cloud &amp; testing</strong></td><td>React 19, TypeScript, TanStack Query, Redux, React Router, Tailwind CSS, Chrome Extension (Manifest V3), Pytest, JUnit / Mockito, Postman, AWS (Elastic Beanstalk, EC2, CloudWatch), Docker / Docker Compose, GitHub Actions CI/CD, Git / GitHub PR workflow</td></tr>
-<tr><td><strong>Practices</strong></td><td>spec-driven development, soak testing, security review, two-agent development method</td></tr>
-</tbody>
-</table>
-
-<h3>Awards</h3>
-<ul>
-<li>Faculty of Science Dean's List, University of Victoria (Oct 2020)</li>
-<li>International Student Scholarship, University of Victoria (2017)</li>
-</ul>
-
-    </article>
-  </div>
-</section>
 
 </main>
 
@@ -592,7 +452,7 @@
     <nav class="footer-links">
       <a href="https://github.com/YimingCao-Eric">GitHub</a>
       <a href="https://linkedin.com/in/yiming-cao-a760841b0">LinkedIn</a>
-      <a href="#resume">Résumé</a>
+      <a href="resume.html">Résumé</a>
       <a href="mailto:caoyimingeric@gmail.com">Email</a>
     </nav>
   </div>
