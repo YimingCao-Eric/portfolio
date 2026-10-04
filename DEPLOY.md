@@ -165,7 +165,7 @@ sharper split, tighten it — but do not broaden it.
 
 ### 3. Course codes — **done**
 
-Now reads "EECE 501, UBC" and "EECE 523, UBC" in the Context field of each page.
+Now reads "EECE 501, UBC" and "ELEC 523, UBC" in the Context field of each page.
 If either number is wrong, fix the one line in the `case-meta` block. A wrong
 course code is the kind of small error that makes a reader doubt the big claims.
 
